@@ -3385,530 +3385,439 @@
         <!-- header end-->
 
         <div class="wrap-main wrap-page">
+          <script language="javascript">
+            function clear_cart() {
+              if (confirm('Bạn có muốn xóa tất giỏ hàng không ?')) {
+                document.form1.command.value = 'clear'
+                document.form1.submit()
+              }
+            }
+            function update_cart() {
+              document.form1.command.value = 'update'
+              document.form1.submit()
+            }
+          </script>
+          <script language="javascript">
+            function xoa(pid) {
+              if (confirm('Xóa sản phẩm này ! ')) {
+                document.form_giohang.pid.value = pid
+                document.form_giohang.command.value = 'delete'
+                document.form_giohang.submit()
+              }
+            }
+          </script>
+
+          <form
+            name="form_giohang"
+            action="index.php?com=thanh-toan"
+            method="get"
+          >
+            <input type="hidden" name="com" value="thanh-toan" />
+            <input type="hidden" name="pid" />
+            <input type="hidden" name="command" />
+          </form>
+
+          <link href="css/giohang.css" rel="stylesheet" type="text/css" />
+
           <div class="sub_main">
-            <div class="title_main" style="margin-bottom: 20px">
-              <span>Giới thiệu</span>
-            </div>
+            <div class="title_main"><span>Thanh toán</span></div>
             <div class="content_main">
-              <div class="text">
-                <p>
-                  <span style="font-family: tahoma, geneva, sans-serif"
-                    ><span style="font-size: 20px"
-                      ><strong
+              <div class="contain_table_giohang">
+                <table
+                  style="width: 100%; color: #333; border: 1px solid #e9e9e9"
+                >
+                  <thead>
+                    <tr style="background-color: #fff">
+                      <th
                         style="
-                          border: 0px;
-                          background-image: initial;
-                          background-position: initial;
-                          background-size: initial;
-                          background-repeat: initial;
-                          background-attachment: initial;
-                          background-origin: initial;
-                          background-clip: initial;
-                          font-size: 12px;
-                          margin: 0px;
-                          padding: 0px;
-                          outline: 0px;
-                          vertical-align: top;
-                          color: rgb(0, 0, 0);
-                          font-family: Arial, Helvetica, sans-serif;
-                          text-align: justify;
+                          text-align: center;
+                          padding: 5px;
+                          white-space: nowrap;
+                          font-size: 13px;
+                          border: 1px solid #e9e9e9;
                         "
-                        >GIỚI THIỆU CHUNG</strong
-                      ></span
-                    ></span
-                  >
-                </p>
-
-                <p>
-                  <span style="font-family: tahoma, geneva, sans-serif"
-                    ><span style="font-size: 20px"
-                      ><b
+                      >
+                        Hình ảnh
+                      </th>
+                      <th
                         style="
-                          font-size: 12px;
-                          color: rgb(0, 0, 0);
-                          font-family: Arial, Helvetica, sans-serif;
-                          text-align: justify;
+                          text-align: center;
+                          padding: 5px;
+                          white-space: nowrap;
+                          font-size: 13px;
+                          border: 1px solid #e9e9e9;
                         "
-                        >Tên Đăng Ký :&nbsp; CÔNG TY TNHH PHÁT TRIỂN TIN HỌC
-                        SÁNG TẠO&nbsp;</b
-                      ></span
-                    ></span
-                  >
-                </p>
-
-                <p>
-                  <span style="font-family: tahoma, geneva, sans-serif"
-                    ><span style="font-size: 20px"
-                      ><b
+                      >
+                        Tên
+                      </th>
+                      <th
                         style="
-                          font-size: 12px;
-                          color: rgb(0, 0, 0);
-                          font-family: Arial, Helvetica, sans-serif;
-                          text-align: justify;
+                          text-align: center;
+                          padding: 5px;
+                          white-space: nowrap;
+                          font-size: 13px;
+                          border: 1px solid #e9e9e9;
                         "
-                        >GPKD : 0313929826 do Sở KH&amp;ĐT TP HCM Cấp ngày
-                        25/07/2016</b
-                      ></span
-                    ></span
-                  >
-                </p>
-
-                <p>
-                  <span style="font-family: tahoma, geneva, sans-serif"
-                    ><span style="font-size: 20px"
-                      ><b
+                      >
+                        Số lượng
+                      </th>
+                      <th
                         style="
-                          font-size: 12px;
-                          color: rgb(0, 0, 0);
-                          font-family: Arial, Helvetica, sans-serif;
-                          text-align: justify;
+                          text-align: center;
+                          padding: 5px;
+                          white-space: nowrap;
+                          font-size: 13px;
+                          border: 1px solid #e9e9e9;
                         "
-                        >Số Đt : 028 38 333 667-0932 333 667</b
-                      ></span
-                    ></span
-                  >
-                </p>
-
-                <p>
-                  <span style="font-family: tahoma, geneva, sans-serif"
-                    ><span style="font-size: 20px"
-                      ><span style="color: rgb(255, 0, 0)"
-                        ><strong
-                          style="
-                            background-image: initial;
-                            background-position: initial;
-                            background-size: initial;
-                            background-repeat: initial;
-                            background-attachment: initial;
-                            background-origin: initial;
-                            background-clip: initial;
-                            border: 0px;
-                            font-size: 12px;
-                            margin: 0px;
-                            padding: 0px;
-                            outline: 0px;
-                            vertical-align: top;
-                            color: rgb(0, 0, 0);
-                            font-family: Arial, Helvetica, sans-serif;
-                            text-align: justify;
-                          "
-                          >Sáng Tạo stcom.vn&nbsp;</strong
-                        ></span
-                      ><span style="color: rgb(0, 0, 0); text-align: justify"
-                        >trãi qua trên 10 năm hoạt động kinh doanh và phát
-                        triển, đã và đang hoàn thiện bằng tất cả nỗ lực và uy
-                        tín về chất lượng sản phẩm hàng hoá, dịch vụ đến với
-                        người tiêu dùng,&nbsp;</span
-                      ><a
-                        href="http://sangtaocomputer.com/"
+                      >
+                        Tổng
+                      </th>
+                    </tr>
+                  </thead>
+                  <!--head-->
+                  <tfoot>
+                    <tr style="border: 1px solid #e9e9e9">
+                      <td
+                        colspan="5"
                         style="
-                          color: rgb(34, 34, 34);
-                          background-image: initial;
-                          background-position: initial;
-                          background-size: initial;
-                          background-repeat: initial;
-                          background-attachment: initial;
-                          background-origin: initial;
-                          background-clip: initial;
-                          border: 0px;
-                          font-size: 12px;
-                          margin: 0px;
-                          padding: 0px;
-                          outline: none;
-                          vertical-align: top;
-                          text-decoration-line: none;
-                          cursor: pointer;
-                          font-family: Arial, Helvetica, sans-serif;
-                          text-align: justify;
-                        "
-                        ><strong
-                          style="
-                            border: 0px;
-                            background: transparent;
-                            margin: 0px;
-                            padding: 0px;
-                            outline: 0px;
-                            vertical-align: top;
-                          "
-                          >Sáng Tạo&nbsp;</strong
-                        ></a
-                      ><span style="color: rgb(0, 0, 0); text-align: justify"
-                        ><strong>stcom.vn&nbsp;</strong>hiện đang kinh doanh với
-                        tiêu chí "&nbsp;</span
-                      ><span style="color: rgb(0, 0, 255)"
-                        ><span style="text-align: justify"
-                          ><strong
-                            >B<strong>Á</strong>N LẺ- GIÁ SỈ</strong
-                          ></span
-                        ></span
-                      ><span style="color: rgb(0, 0, 0); text-align: justify"
-                        >&nbsp;' nhằm đảm bảo được tất cả các sản phẩm đều đến
-                        được với tất cả người tiêu dùng cuối .</span
-                      ><span style="color: rgb(0, 0, 0); text-align: justify"
-                        >&nbsp;Với tên gọi&nbsp;</span
-                      ><a
-                        href="http://sonychinhhang.com/"
-                        style="
-                          color: rgb(34, 34, 34);
-                          background-image: initial;
-                          background-position: initial;
-                          background-size: initial;
-                          background-repeat: initial;
-                          background-attachment: initial;
-                          background-origin: initial;
-                          background-clip: initial;
-                          border: 0px;
-                          font-size: 12px;
-                          margin: 0px;
-                          padding: 0px;
-                          outline: none;
-                          vertical-align: top;
-                          text-decoration-line: none;
-                          cursor: pointer;
-                          font-family: Arial, Helvetica, sans-serif;
-                          text-align: justify;
-                        "
-                        ><strong
-                          style="
-                            border: 0px;
-                            background: transparent;
-                            margin: 0px;
-                            padding: 0px;
-                            outline: 0px;
-                            vertical-align: top;
-                          "
-                          >Sáng Tạo&nbsp;</strong
-                        ></a
-                      ><span style="color: rgb(0, 0, 0); text-align: justify"
-                        ><strong>stcom.vn</strong>, chuyên doanh các dòng sản
-                        phẩm tin học, linh kiện máy vi tính, laptop, máy văn
-                        phòng gồm các tiêu chí về đa dạng sản phẩm hàng hoá, giá
-                        cả cực tốt phù hợp với tất cả các nhu cầu mua sắm của
-                        người tiêu dùng.</span
-                      ></span
-                    ></span
-                  >
-                </p>
-
-                <p>
-                  <span style="font-family: tahoma, geneva, sans-serif"
-                    ><span style="font-size: 20px"
-                      ><span style="color: rgb(0, 0, 0); text-align: justify"
-                        >Sự tồn tại và phát triển của&nbsp;</span
-                      ><strong
-                        style="
-                          border: 0px;
-                          background-image: initial;
-                          background-position: initial;
-                          background-size: initial;
-                          background-repeat: initial;
-                          background-attachment: initial;
-                          background-origin: initial;
-                          background-clip: initial;
-                          font-size: 12px;
-                          margin: 0px;
-                          padding: 0px;
-                          outline: 0px;
-                          vertical-align: top;
-                          color: rgb(0, 0, 0);
-                          font-family: Arial, Helvetica, sans-serif;
-                          text-align: justify;
-                        "
-                        ><a
-                          href="http://sonychinhhang.vn/"
-                          style="
-                            color: rgb(34, 34, 34);
-                            border: 0px;
-                            background: transparent;
-                            margin: 0px;
-                            padding: 0px;
-                            outline: none;
-                            vertical-align: top;
-                            text-decoration-line: none;
-                            cursor: pointer;
-                          "
-                          >Sáng Tạo</a
-                        ></strong
-                      ><span style="color: rgb(0, 0, 0); text-align: justify"
-                        >&nbsp;<strong>stcom.vn&nbsp;</strong>luôn luôn gắn liền
-                        với sự uy tín được tạo dựng bởi chính khách hàng tiêu
-                        dùng và các đối tác trong và ngoài nước.</span
-                      ><br
-                        style="
-                          border: none;
-                          color: rgb(0, 0, 0);
-                          font-family: Arial, Helvetica, sans-serif;
-                          font-size: 12px;
-                          text-align: justify;
-                        "
-                      />
-                      <span style="color: rgb(0, 0, 0); text-align: justify"
-                        >Bằng tất cả những gì đã minh chứng trong suốt thời gian
-                        hoạt động kinh doanh trải qua,&nbsp;</span
-                      ><a
-                        href="http://sangtaocomputer.com/"
-                        style="
-                          color: rgb(34, 34, 34);
-                          border: 0px;
-                          background-image: initial;
-                          background-position: initial;
-                          background-size: initial;
-                          background-repeat: initial;
-                          background-attachment: initial;
-                          background-origin: initial;
-                          background-clip: initial;
-                          font-size: 12px;
-                          margin: 0px;
-                          padding: 0px;
-                          outline: none;
-                          vertical-align: top;
-                          text-decoration-line: none;
-                          cursor: pointer;
-                          font-family: Arial, Helvetica, sans-serif;
-                          text-align: justify;
-                        "
-                        ><strong
-                          style="
-                            border: 0px;
-                            background: transparent;
-                            margin: 0px;
-                            padding: 0px;
-                            outline: 0px;
-                            vertical-align: top;
-                          "
-                          >Sáng Tạo</strong
-                        ></a
-                      >&nbsp;<span
-                        style="color: rgb(0, 0, 0); text-align: justify"
-                        ><strong>stcom.vn&nbsp;</strong>tin rằng có đầy đủ năng
-                        lực để mang lại sự hài lòng cho khách hàng khi mua sắm
-                        tại&nbsp;</span
-                      ><a
-                        href="http://sangtaocomputer.vn/"
-                        style="
-                          color: rgb(34, 34, 34);
-                          border: 0px;
-                          background-image: initial;
-                          background-position: initial;
-                          background-size: initial;
-                          background-repeat: initial;
-                          background-attachment: initial;
-                          background-origin: initial;
-                          background-clip: initial;
-                          font-size: 12px;
-                          margin: 0px;
-                          padding: 0px;
-                          outline: none;
-                          vertical-align: top;
-                          text-decoration-line: none;
-                          cursor: pointer;
-                          font-family: Arial, Helvetica, sans-serif;
-                          text-align: justify;
-                        "
-                        ><strong
-                          style="
-                            border: 0px;
-                            background: transparent;
-                            margin: 0px;
-                            padding: 0px;
-                            outline: 0px;
-                            vertical-align: top;
-                          "
-                          >Sáng Tạo&nbsp;</strong
-                        ></a
-                      ><span style="color: rgb(0, 0, 0); text-align: justify"
-                        ><strong>stcom.vn&nbsp;</strong>với phương châm: “Cung
-                        cấp sản phẩm, dịch vụ tốt nhất với giá cả cạnh tranh
-                        nhất”.</span
-                      ><br
-                        style="
-                          border: none;
-                          color: rgb(0, 0, 0);
-                          font-family: Arial, Helvetica, sans-serif;
-                          font-size: 12px;
-                          text-align: justify;
-                        "
-                      />
-                      <strong>QUAN ĐIỂM KINH DOANH :</strong
-                      ><br
-                        style="
-                          border: none;
-                          color: rgb(0, 0, 0);
-                          font-family: Arial, Helvetica, sans-serif;
-                          font-size: 12px;
-                          text-align: justify;
-                        "
-                      />
-                      <span style="color: rgb(0, 0, 0); text-align: justify"
-                        >- Luôn đặt chữ&nbsp;<strong>TÍN</strong>&nbsp;lên hàng
-                        đầu.</span
-                      ><br
-                        style="
-                          border: none;
-                          color: rgb(0, 0, 0);
-                          font-family: Arial, Helvetica, sans-serif;
-                          font-size: 12px;
-                          text-align: justify;
-                        "
-                      />
-                      <span style="color: rgb(0, 0, 0); text-align: justify"
-                        >- Luôn làm hài lòng và đáp ứng nhu cầu của khách hàng
-                        với quan điểm:&nbsp;<strong
-                          >“Khách hàng luôn đúng”.</strong
-                        ></span
-                      ><br
-                        style="
-                          border: none;
-                          color: rgb(0, 0, 0);
-                          font-family: Arial, Helvetica, sans-serif;
-                          font-size: 12px;
-                          text-align: justify;
-                        "
-                      />
-                      <span style="color: rgb(0, 0, 0); text-align: justify"
-                        >- Luôn cung cấp cho khách hàng những sản phẩm chất
-                        lượng và sự tư vấn phù hợp với nhu cầu của người tiêu
-                        dùng.</span
-                      ><br
-                        style="
-                          border: none;
-                          color: rgb(0, 0, 0);
-                          font-family: Arial, Helvetica, sans-serif;
-                          font-size: 12px;
-                          text-align: justify;
-                        "
-                      />
-                      <span style="color: rgb(0, 0, 0); text-align: justify"
-                        >- Luôn cung cấp những chính sách ưu đãi và chế độ dịch
-                        vụ đi kèm hoàn hảo nhất.</span
-                      ><br
-                        style="
-                          border: none;
-                          color: rgb(0, 0, 0);
-                          font-family: Arial, Helvetica, sans-serif;
-                          font-size: 12px;
-                          text-align: justify;
-                        "
-                      />
-                      <span style="color: rgb(0, 0, 0); text-align: justify"
-                        >- Nói&nbsp;<strong>KHÔNG</strong>&nbsp;với việc bán
-                        hàng kém chất lượng, hàng giả, hàng nhái, hàng hoá không
-                        rõ nguồn gốc xuất xứ.</span
-                      ><br
-                        style="
-                          border: none;
-                          color: rgb(0, 0, 0);
-                          font-family: Arial, Helvetica, sans-serif;
-                          font-size: 12px;
-                          text-align: justify;
-                        "
-                      />
-                      <span style="color: rgb(0, 0, 0); text-align: justify"
-                        >- Khuyến khích và tư vấn khách hàng sử dụng phần mềm có
-                        bản quyền.</span
-                      ><br
-                        style="
-                          border: none;
-                          color: rgb(0, 0, 0);
-                          font-family: Arial, Helvetica, sans-serif;
-                          font-size: 12px;
-                          text-align: justify;
-                        "
-                      />
-                      <span style="color: rgb(0, 0, 0); text-align: justify"
-                        >&nbsp;&nbsp;</span
-                      ><strong
-                        style="
-                          font-family: verdana, geneva, sans-serif;
+                          text-align: right;
+                          padding: 10px 5px;
+                          font-weight: bold;
+                          color: #e53c2f;
                           font-size: 16px;
                         "
-                        >Sản phảm &amp;dịch vụ kinh doanh:</strong
-                      ><br
+                      >
+                        <b
+                          >Tổng giá :
+                          <span class="price_all_cart">23.980.000 VNĐ</span></b
+                        >
+                      </td>
+                    </tr>
+                  </tfoot>
+                  <!--footer-->
+                  <tbody>
+                    <tr style="border-bottom: 1px solid #ecedef">
+                      <td
                         style="
-                          border: none;
-                          color: rgb(0, 0, 0);
-                          font-family: Arial, Helvetica, sans-serif;
-                          font-size: 12px;
-                          text-align: justify;
+                          text-align: center;
+                          padding: 5px 5px;
+                          border: 1px solid #e9e9e9;
                         "
-                      />
-                      <span style="color: rgb(0, 0, 0); text-align: justify"
-                        >- Mua bán,sửa chữa, lắp ráp máy vi tính (PC, Laptop
-                        …).</span
-                      ><br
+                      >
+                        <img
+                          src="http://stcom.vn/upload/product/v5i3465w11-4093_245x245.jpg"
+                          width="60"
+                          alt="Công ty TNHH Phát Triển Tin Học Sáng Tạo"
+                        />
+                      </td>
+                      <td
                         style="
-                          border: none;
-                          color: rgb(0, 0, 0);
-                          font-family: Arial, Helvetica, sans-serif;
-                          font-size: 12px;
-                          text-align: justify;
+                          text-align: left;
+                          padding: 5px 5px;
+                          border: 1px solid #e9e9e9;
                         "
-                      />
-                      <span style="color: rgb(0, 0, 0); text-align: justify"
-                        >- Mua bán,thiết bị mạng máy tính, thiết bị máy văn
-                        phòng.</span
-                      ><br
+                      >
+                        <h3
+                          class="name_p_cart"
+                          style="font-size: 14px; font-weight: bold"
+                        >
+                          Laptop Dell Vostro 3530 V5I3465W1
+                        </h3>
+                        <div
+                          class="price_p_cart_name"
+                          style="font-size: 15px; color: #f00"
+                        >
+                          11.990.000 VNĐ
+                        </div>
+                      </td>
+                      <td
                         style="
-                          border: none;
-                          color: rgb(0, 0, 0);
-                          font-family: Arial, Helvetica, sans-serif;
-                          font-size: 12px;
-                          text-align: justify;
+                          text-align: center;
+                          padding: 5px 5px;
+                          border: 1px solid #e9e9e9;
                         "
-                      />
-                      <span style="color: rgb(0, 0, 0); text-align: justify"
-                        >- Mua bán, sửa chữa, lắp ráp, sản xuất linh kiện máy
-                        tính, linh kiện thiết bị điện tử.</span
-                      ><br
+                      >
+                        <div class="box_number_cart">
+                          <input
+                            type="text"
+                            class="number_cart"
+                            name="product7385"
+                            readonly="readonly"
+                            value="2"
+                            maxlength="3"
+                            size="2"
+                            style="
+                              background: #fff;
+                              text-align: center;
+                              border-radius: 2px;
+                              border: none;
+                              outline: none;
+                              padding: 5px 0px;
+                            "
+                          />
+                        </div>
+                        <!--box number cart-->
+                      </td>
+                      <td
                         style="
-                          border: none;
-                          color: rgb(0, 0, 0);
-                          font-family: Arial, Helvetica, sans-serif;
-                          font-size: 12px;
-                          text-align: justify;
+                          text-align: center;
+                          padding: 5px 5px;
+                          border: 1px solid #e9e9e9;
                         "
-                      />
-                      <span style="color: rgb(0, 0, 0); text-align: justify"
-                        >- Tư vấn, thiết kế, lắp đặt, bảo trì và sửa chữa hệ
-                        thông mạng máy tính.</span
-                      ><br
-                        style="
-                          border: none;
-                          color: rgb(0, 0, 0);
-                          font-family: Arial, Helvetica, sans-serif;
-                          font-size: 12px;
-                          text-align: justify;
-                        "
-                      />
-                      <span style="color: rgb(0, 0, 0); text-align: justify"
-                        >- Đại lý ký gửi sản phẩm hàng hoá tin học, trang thiết
-                        bị văn phòng.</span
-                      ><br
-                        style="
-                          border: none;
-                          color: rgb(0, 0, 0);
-                          font-family: Arial, Helvetica, sans-serif;
-                          font-size: 12px;
-                          text-align: justify;
-                        "
-                      />
-                      <br
-                        style="
-                          border: none;
-                          color: rgb(0, 0, 0);
-                          font-family: Arial, Helvetica, sans-serif;
-                          font-size: 12px;
-                          text-align: justify;
-                        "
-                      />
-                      <span style="color: rgb(0, 0, 0); text-align: justify"
-                        >&nbsp;</span
-                      ></span
-                    ></span
-                  >
-                </p>
+                      >
+                        <div
+                          class="price_p_cart"
+                          style="
+                            text-align: center;
+                            font-size: 16px;
+                            color: #43484d;
+                          "
+                        >
+                          23.980.000 VNĐ
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                  <!--body-->
+                </table>
               </div>
-              <div class="addthis_inline_share_toolbox"></div>
+              <div class="thanhtoan_giohang">
+                <form
+                  method="post"
+                  name="frm_order"
+                  action="thanh-toan.html"
+                  enctype="multipart/form-data"
+                  id="frm_order"
+                >
+                  <div class="left_thanhtoan">
+                    <div class="title_thanhtoan">Thông tin giao hàng</div>
+                    <div class="tablelienhe" style="width: 100%">
+                      <div class="l50">
+                        <div class="box_input_contact has_notify">
+                          <i class="fa fa-user fa-contact"></i>
+                          <input
+                            name="ten_thanhtoan"
+                            type="text"
+                            class="input input_check_validate"
+                            id="ten_thanhtoan"
+                            size="50"
+                            value=""
+                            required=""
+                            placeholder="Họ và tên"
+                          />
+                        </div>
+
+                        <div class="box_input_contact has_notify">
+                          <i class="fa fa-map-marker fa-contact"></i>
+                          <input
+                            name="diachi_thanhtoan"
+                            type="text"
+                            class="input input_check_validate"
+                            size="50"
+                            id="diachi_thanhtoan"
+                            value=""
+                            required=""
+                            placeholder="Địa chỉ"
+                          />
+                        </div>
+                      </div>
+                      <!--end l50-->
+                      <div class="r50">
+                        <div class="box_input_contact has_notify">
+                          <i class="fa fa-phone fa-contact"></i>
+                          <input
+                            name="dienthoai_thanhtoan"
+                            type="text"
+                            class="input input_check_validate"
+                            id="dienthoai_thanhtoan"
+                            value=""
+                            required=""
+                            size="50"
+                            placeholder="Điện thoại"
+                          />
+                        </div>
+
+                        <div class="box_input_contact has_notify">
+                          <i class="fa fa-envelope-o fa-contact"></i>
+                          <input
+                            name="email_thanhtoan"
+                            type="email"
+                            class="input input_check_validate"
+                            id="email_thanhtoan"
+                            value=""
+                            required=""
+                            size="50"
+                            placeholder="Email"
+                          />
+                        </div>
+                      </div>
+                      <div class="clear"></div>
+                      <div class="box_input_contact">
+                        <textarea
+                          name="noidung_thanhtoan"
+                          cols="50"
+                          rows="7"
+                          class="input"
+                          style="height: 120px"
+                          placeholder="Ghi chú"
+                        ></textarea>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="right_thanhtoan">
+                    <div class="title_thanhtoan">Hình thức thanh toán</div>
+                    <div class="checkout-wrapper">
+                      <div class="payment-checkout-form">
+                        <ul class="list-group list_payment_method">
+                          <li class="list-group-item">
+                            <input
+                              class="magic-radio js_payment_method"
+                              type="radio"
+                              id="payment_cod98"
+                              name="ht_thanhtoan"
+                              checked=""
+                              value="THANH TOÁN BẰNG CHUYỂN KHOẢN"
+                              data-target=".payment_cod_wrap98"
+                            />
+                            <label for="payment_cod98">
+                              THANH TOÁN BẰNG CHUYỂN KHOẢN
+                            </label>
+                            <div
+                              class="payment_cod_wrap98 payment_collapse_wrap show"
+                              style=""
+                            >
+                              Số tài khoản : 220.66.3929 .<br />
+                              Ngân Hàng Á Châu-Chi Nhánh TP HCM <br />
+                              Chủ tài khoản : CÔNG TY TNHH PHÁT TRIỂN TIN HỌC
+                              SÁNG TẠO
+                            </div>
+                          </li>
+                          <li class="list-group-item">
+                            <input
+                              class="magic-radio js_payment_method"
+                              type="radio"
+                              id="payment_cod97"
+                              name="ht_thanhtoan"
+                              value="THANH TOÁN KHI NHẬN HÀNG"
+                              data-target=".payment_cod_wrap97"
+                            />
+                            <label for="payment_cod97">
+                              THANH TOÁN KHI NHẬN HÀNG
+                            </label>
+                            <div
+                              class="payment_cod_wrap97 payment_collapse_wrap"
+                              style=""
+                            ></div>
+                          </li>
+                        </ul>
+                      </div>
+                      <div class="box_input_contact">
+                        <input
+                          id="submit_thanhtoan"
+                          class="btn btn-primary"
+                          title="Thanh Toán"
+                          alt="Thanh Toán"
+                          align="right"
+                          type="submit"
+                          name="next"
+                          value="Thanh Toán"
+                          style="cursor: pointer"
+                        />
+                      </div>
+                      <!--box input contact-->
+                    </div>
+                  </div>
+                  <div class="clear"></div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="sp_daxem">
+            <div class="title_main"><span>Sản phẩm đã xem</span></div>
+            <div class="content_daxem">
+              <div
+                class="owl_daxem owl-carousel owl-theme"
+                style="opacity: 1; display: block"
+              >
+                <div class="owl-wrapper-outer">
+                  <div
+                    class="owl-wrapper"
+                    style="
+                      width: 520px;
+                      left: 0px;
+                      display: block;
+                      transition: 1000ms;
+                      transform: translate3d(0px, 0px, 0px);
+                    "
+                  >
+                    <div class="owl-item" style="width: 260px">
+                      <div class="product">
+                        <div class="box-product">
+                          <div class="pic-product" data-tooltip="sticky7385">
+                            <a
+                              class="d-block"
+                              href="san-pham/laptop-dell-vostro-3530-v5i3465w1-7385.html"
+                              title="Laptop Dell Vostro 3530 V5I3465W1"
+                            >
+                              <img
+                                src="thumb/245x245/2/upload/product/v5i3465w11-4093.jpg"
+                                alt="Laptop Dell Vostro 3530 V5I3465W1"
+                                class="w100 trans03"
+                              />
+                            </a>
+                            <div class="btntragop1"></div>
+                            <div class="hot-icon blink"></div>
+                            <div class="desc-product">
+                              <div>
+                                <ul>
+                                  <li>
+                                    CPU Intel Core i3-1305U (10MB, Up to
+                                    4.50GHz)
+                                  </li>
+                                  <li>RAM 8GB DDR4 2666MHz (1x8GB)</li>
+                                  <li>SSD 512GB M.2 PCIe NVMe</li>
+                                  <li>VGA Intel UHD Graphics</li>
+                                  <li>Display 15.6Inch FHD WVA Anti-Glare</li>
+                                  <li>Pin 3Cell 41WHrs</li>
+                                  <li>Color Titan Grey (Xám)</li>
+                                  <li>Weight 1.66 kg</li>
+                                  <li>OS Windows 11 Home + Office HS 2021</li>
+                                </ul>
+
+                                <p>&nbsp;</p>
+                                <div class="baohanh">Bảo hành: 12 tháng</div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="info-product">
+                            <a
+                              class="name-product text-split"
+                              href="san-pham/laptop-dell-vostro-3530-v5i3465w1-7385.html"
+                              title="Laptop Dell Vostro 3530 V5I3465W1"
+                              >Laptop Dell Vostro 3530 V5I3465W1</a
+                            >
+                            <div class="price-product">
+                              <span class="price-new">11.990.000 đ</span>
+                            </div>
+                            <div
+                              class="cart-product d-flex justify-content-between align-items-center"
+                            >
+                              <span class="status-pro sts2">Còn hàng</span>
+                              <span
+                                class="mua_giohang"
+                                rel="7385"
+                                data-confirm=""
+                                onclick="new jBox()"
+                                >Mua ngay</span
+                              >
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
