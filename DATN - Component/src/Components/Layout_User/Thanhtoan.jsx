@@ -305,7 +305,7 @@ export default function ThanhToan(){
                   className="btn btn-primary"
                   title="Thanh Toán"
                   alt="Thanh Toán"
-                  align="right"
+                 
                   type="submit"
                   name="next"
                   defaultValue="Thanh Toán"
@@ -392,7 +392,7 @@ export default function ThanhToan(){
                         className="mua_giohang"
                         rel={7385}
                         data-confirm=""
-                        onclick="new jBox()"
+                        onClick="new jBox()"
                       >
                         Mua ngay
                       </span>

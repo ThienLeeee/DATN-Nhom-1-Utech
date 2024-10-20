@@ -184,13 +184,13 @@ export default function LienHe() {
               <div className="box_input_contact">
                 <a
                   className="button transitionAll03"
-                  onclick="js_submit('frm');"
+                  onClick="js_submit('frm');"
                 >
                   Gửi
                 </a>
                 <a
                   className="button transitionAll03"
-                  onclick="document.frm.reset();"
+                  onClick="document.frm.reset();"
                 >
                   Làm lại
                 </a>
@@ -294,7 +294,7 @@ export default function LienHe() {
                           className="mua_giohang"
                           rel={7385}
                           data-confirm=""
-                          onclick="new jBox()"
+                          onClick="new jBox()"
                         >
                           Mua ngay
                         </span>
