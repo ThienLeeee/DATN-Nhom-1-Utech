@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Header() {
   return (
     <>
@@ -44,7 +46,7 @@ export default function Header() {
             <a className="logo-header d-inline-block" href="">
               <img
                 src="/public/img/logo/logo.png"
-                alt="Công ty TNHH Phát Triển Tin Học Sáng Tạo"
+                alt="Công ty TNHH Phát Triển Tin Học Utech"
                 className="mw100"
               />
             </a>
@@ -77,7 +79,14 @@ export default function Header() {
                     placeholder="Bạn cần tìm sản phẩm nào ?"
                     autoComplete="off"
                   />
-                  <button type="submit" value="" id="btn" className="nut_tim" />
+
+                  <button type="submit" value="" id="btn" className="nut_tim">
+                    <img
+                      src="/public/img/icon/magnifying-glass-solid.svg"
+                      width="22"
+                      alt=""
+                    />
+                  </button>
                 </form>
               </div>{" "}
               <div className="hotline-header">
@@ -86,19 +95,30 @@ export default function Header() {
                   028.38 333 667{" "}
                 </p>
               </div>
-              <a className="cart-header d-block" href="gio-hang.html">
-                <p>
+              <Link
+                to="/giohang"
+                className="cart-header d-block"
+                href="gio-hang.html"
+                style={{ overflow: "hidden" }}
+              >
+                <img
+                  width="32px"
+                  src="/public/img/icon/cart-shopping-solid.svg"
+                  alt=""
+                  style={{ float: "left", marginRight: 10 }}
+                />
+                <p style={{ float: "left" }}>
                   Giỏ hàng (<strong>0</strong>)
                 </p>
-              </a>
+              </Link>
             </div>
           </div>
         </div>
-        <h2 className="vcard">Công ty TNHH Phát Triển Tin Học Sáng Tạo</h2>
-        <h3 className="vcard">Công ty TNHH Phát Triển Tin Học Sáng Tạo</h3>
-        <h4 className="vcard">Công ty TNHH Phát Triển Tin Học Sáng Tạo</h4>
-        <h5 className="vcard">Công ty TNHH Phát Triển Tin Học Sáng Tạo</h5>
-        <h6 className="vcard">Công ty TNHH Phát Triển Tin Học Sáng Tạo</h6>
+        <h2 className="vcard">Công ty TNHH Phát Triển Tin Học Utech</h2>
+        <h3 className="vcard">Công ty TNHH Phát Triển Tin Học Utech</h3>
+        <h4 className="vcard">Công ty TNHH Phát Triển Tin Học Utech</h4>
+        <h5 className="vcard">Công ty TNHH Phát Triển Tin Học Utech</h5>
+        <h6 className="vcard">Công ty TNHH Phát Triển Tin Học Utech</h6>
         <div className="menu">
           <div className="wrap-content">
             <ul className="d-flex align-items-center">
@@ -115,13 +135,13 @@ export default function Header() {
                   <div className="boxshadown">
                     <ul className="box_menu lst-prd">
                       <li className="mega-dropdown">
-                        <a
+                        <Link
+                          to="/sanphamtheodm"
                           className="has-child transition"
                           title="LAPTOP"
-                          href="san-pham/laptop-11/"
                         >
                           LAPTOP{" "}
-                        </a>
+                        </Link>
                         <div className="boxMainDropdown">
                           <ul className="dropdown-prod-lv2">
                             <li>
@@ -2820,14 +2840,19 @@ export default function Header() {
                 </div>
               </li>
               <li className="li-normal">
-                <a className="" href="" title="Trang chủ">
+                <Link to="/" className="" href="" title="Trang chủ">
                   Trang chủ
-                </a>
+                </Link>
               </li>
               <li className="li-normal">
-                <a className="" href="gioi-thieu.html" title="Giới thiệu">
+                <Link
+                  to="/gioithieu"
+                  className=""
+                  href="gioi-thieu.html"
+                  title="Giới thiệu"
+                >
                   Giới thiệu
-                </a>
+                </Link>
               </li>
               <li className="li-normal">
                 <a className="" href="tra-gop.html" title="Trả góp">
@@ -2836,7 +2861,7 @@ export default function Header() {
               </li>
               <li className="li-normal">
                 <a
-                  href="https://stcom.vn#idNewsletter"
+                  href="bao-gia.html"
                   className="goto-form"
                   title="Yêu cầu báo giá"
                 >
@@ -2849,9 +2874,14 @@ export default function Header() {
                 </a>
               </li>
               <li className="li-normal">
-                <a className="" href="lien-he.html" title="Liên hệ">
+                <Link
+                  to="/lienhe"
+                  className=""
+                  href="lien-he.html"
+                  title="Liên hệ"
+                >
                   Liên hệ
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

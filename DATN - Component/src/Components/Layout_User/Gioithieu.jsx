@@ -12,24 +12,7 @@ export default function Gioithieu() {
             <span style={{ fontFamily: "tahoma, geneva, sans-serif" }}>
               <span style={{ fontSize: 20 }}>
                 <strong
-                  style={{
-                    border: 0,
-                    backgroundImage: "initial",
-                    backgroundPosition: "initial",
-                    backgroundSize: "initial",
-                    backgroundRepeat: "initial",
-                    backgroundAttachment: "initial",
-                    backgroundOrigin: "initial",
-                    backgroundClip: "initial",
-                    fontSize: 12,
-                    margin: 0,
-                    padding: 0,
-                    outline: 0,
-                    verticalAlign: "top",
-                    color: "rgb(0, 0, 0)",
-                    fontFamily: "Arial, Helvetica, sans-serif",
-                    textAlign: "justify"
-                  }}
+                  
                 >
                   GIỚI THIỆU CHUNG
                 </strong>
@@ -41,14 +24,13 @@ export default function Gioithieu() {
               <span style={{ fontSize: 20 }}>
                 <b
                   style={{
-                    fontSize: 12,
+                    fontSize: 16,
                     color: "rgb(0, 0, 0)",
                     fontFamily: "Arial, Helvetica, sans-serif",
                     textAlign: "justify"
                   }}
                 >
-                  Tên Đăng Ký :&nbsp; CÔNG TY TNHH PHÁT TRIỂN TIN HỌC SÁNG
-                  TẠO&nbsp;
+                  Tên Đăng Ký : CÔNG TY TNHH PHÁT TRIỂN TIN UTECH
                 </b>
               </span>
             </span>
@@ -58,13 +40,13 @@ export default function Gioithieu() {
               <span style={{ fontSize: 20 }}>
                 <b
                   style={{
-                    fontSize: 12,
+                    fontSize: 16,
                     color: "rgb(0, 0, 0)",
                     fontFamily: "Arial, Helvetica, sans-serif",
                     textAlign: "justify"
                   }}
                 >
-                  GPKD : 0313929826 do Sở KH&amp;ĐT TP HCM Cấp ngày 25/07/2016
+                  GPKD : 0313929826 do Sở KH ĐT TP HCM Cấp ngày 1/10/2024
                 </b>
               </span>
             </span>
@@ -74,13 +56,13 @@ export default function Gioithieu() {
               <span style={{ fontSize: 20 }}>
                 <b
                   style={{
-                    fontSize: 12,
+                    fontSize: 16,
                     color: "rgb(0, 0, 0)",
                     fontFamily: "Arial, Helvetica, sans-serif",
                     textAlign: "justify"
                   }}
                 >
-                  Số Đt : 028 38 333 667-0932 333 667
+                  Số Đt : 0822104408 - 0906733731
                 </b>
               </span>
             </span>
@@ -109,7 +91,7 @@ export default function Gioithieu() {
                       textAlign: "justify"
                     }}
                   >
-                    Sáng Tạo stcom.vn&nbsp;
+                   Utech utechcom.vn
                   </strong>
                 </span>
                 <span style={{ color: "rgb(0, 0, 0)", textAlign: "justify" }}>
@@ -150,12 +132,12 @@ export default function Gioithieu() {
                       verticalAlign: "top"
                     }}
                   >
-                    Sáng Tạo&nbsp;
+                    Utech&nbsp;
                   </strong>
                 </a>
                 <span style={{ color: "rgb(0, 0, 0)", textAlign: "justify" }}>
-                  <strong>stcom.vn&nbsp;</strong>hiện đang kinh doanh với tiêu
-                  chí "&nbsp;
+                  <strong>utechcom.vn&nbsp;</strong>hiện đang kinh doanh với tiêu
+                  chí &nbsp;
                 </span>
                 <span style={{ color: "rgb(0, 0, 255)" }}>
                   <span style={{ textAlign: "justify" }}>
@@ -165,7 +147,7 @@ export default function Gioithieu() {
                   </span>
                 </span>
                 <span style={{ color: "rgb(0, 0, 0)", textAlign: "justify" }}>
-                  &nbsp;' nhằm đảm bảo được tất cả các sản phẩm đều đến được với
+                  &nbsp; nhằm đảm bảo được tất cả các sản phẩm đều đến được với
                   tất cả người tiêu dùng cuối .
                 </span>
                 <span style={{ color: "rgb(0, 0, 0)", textAlign: "justify" }}>
@@ -204,11 +186,11 @@ export default function Gioithieu() {
                       verticalAlign: "top"
                     }}
                   >
-                    Sáng Tạo&nbsp;
+                    Utech&nbsp;
                   </strong>
                 </a>
                 <span style={{ color: "rgb(0, 0, 0)", textAlign: "justify" }}>
-                  <strong>stcom.vn</strong>, chuyên doanh các dòng sản phẩm tin
+                  <strong>utechcom.vn</strong>, chuyên doanh các dòng sản phẩm tin
                   học, linh kiện máy vi tính, laptop, máy văn phòng gồm các tiêu
                   chí về đa dạng sản phẩm hàng hoá, giá cả cực tốt phù hợp với
                   tất cả các nhu cầu mua sắm của người tiêu dùng.
@@ -256,11 +238,11 @@ export default function Gioithieu() {
                       cursor: "pointer"
                     }}
                   >
-                    Sáng Tạo
+                    Utech
                   </a>
                 </strong>
                 <span style={{ color: "rgb(0, 0, 0)", textAlign: "justify" }}>
-                  &nbsp;<strong>stcom.vn&nbsp;</strong>luôn luôn gắn liền với sự
+                  &nbsp;<strong>utechcom.vn&nbsp;</strong>luôn luôn gắn liền với sự
                   uy tín được tạo dựng bởi chính khách hàng tiêu dùng và các đối
                   tác trong và ngoài nước.
                 </span>
@@ -310,12 +292,12 @@ export default function Gioithieu() {
                       verticalAlign: "top"
                     }}
                   >
-                    Sáng Tạo
+                    Utech
                   </strong>
                 </a>
                 &nbsp;
                 <span style={{ color: "rgb(0, 0, 0)", textAlign: "justify" }}>
-                  <strong>stcom.vn&nbsp;</strong>tin rằng có đầy đủ năng lực để
+                  <strong>utechcom.vn&nbsp;</strong>tin rằng có đầy đủ năng lực để
                   mang lại sự hài lòng cho khách hàng khi mua sắm tại&nbsp;
                 </span>
                 <a
@@ -351,11 +333,11 @@ export default function Gioithieu() {
                       verticalAlign: "top"
                     }}
                   >
-                    Sáng Tạo&nbsp;
+                    Utech&nbsp;
                   </strong>
                 </a>
                 <span style={{ color: "rgb(0, 0, 0)", textAlign: "justify" }}>
-                  <strong>stcom.vn&nbsp;</strong>với phương châm: “Cung cấp sản
+                  <strong>utechcom.vn&nbsp;</strong>với phương châm: “Cung cấp sản
                   phẩm, dịch vụ tốt nhất với giá cả cạnh tranh nhất”.
                 </span>
                 <br
