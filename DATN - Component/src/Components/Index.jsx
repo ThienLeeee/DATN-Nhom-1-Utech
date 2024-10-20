@@ -3,6 +3,13 @@ import Header from './Layout_User/Header';
 import Banner from './Layout_User/Trangchu/Banner';
 import Footer from './Layout_User/Footer';
 import CategoriesListContent from './Layout_User/Trangchu/Categories-List-Content';
+import Chitietsanpham from './Layout_User/Chitietsanpham';
+import Gioithieu from './Layout_User/Gioithieu';
+import LienHe from './Layout_User/Lienhe';
+import SanPhamTheodm from './Layout_User/Sanphamtheodm';
+import ThanhToan from './Layout_User/Thanhtoan';
+
+
 
 import '/public/css/style.css'
 import '/public/css/owl/owl.carousel.css'
@@ -32,6 +39,11 @@ export default function Index() {
     <Header></Header>
     <Banner></Banner>
     <CategoriesListContent></CategoriesListContent>
+    <Chitietsanpham></Chitietsanpham>
+    <SanPhamTheodm></SanPhamTheodm>
+    <Gioithieu></Gioithieu>
+    <LienHe></LienHe>
+    <ThanhToan></ThanhToan>
     <Footer></Footer>
   </>
   )
