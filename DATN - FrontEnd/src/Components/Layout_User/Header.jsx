@@ -90,10 +90,22 @@ export default function Header() {
                 </form>
               </div>{" "}
               <div className="hotline-header">
-                <p>
-                  0932 333 667 <br />
-                  028.38 333 667{" "}
-                </p>
+                <Link
+                  to="/Dangnhap"
+                  className="login-header d-block text-center"
+                  style={{
+                    overflow: "hidden",
+                    padding: '10px 20px',      // Khoảng cách giữa chữ và viền khung
+                    border: '2px solid #000',  // Đường viền khung, bạn có thể thay đổi màu sắc (#000 là màu đen)
+                    borderRadius: '5px',       // Bo góc khung
+                    display: 'inline-block',   // Đảm bảo khung không chiếm toàn bộ chiều rộng
+                    textDecoration: 'none',    // Loại bỏ gạch chân mặc định của thẻ <a> (liên kết)
+                    color: '#000',             // Màu chữ
+                    fontWeight: 'bold',        // Độ đậm của chữ
+                  }}
+                >
+                  <p style={{ marginBottom: 0 }}>Đăng nhập</p>
+                </Link>
               </div>
               <Link
                 to="/giohang"
