@@ -7,6 +7,7 @@ import LienHe from "./Layout_User/Lienhe";
 import Chitietsanpham from "./Layout_User/Chitietsanpham";
 import SanPhamTheodm from "./Layout_User/Sanphamtheodm";
 import Giohang from "./Layout_User/Giohang";
+import Thanhtoan from "./Layout_User/Thanhtoan";
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
@@ -45,6 +46,7 @@ export default function Index() {
           <Route path="/chitietsp" element={<Chitietsanpham></Chitietsanpham>}></Route>
           <Route path="/sanphamtheodm" element={<SanPhamTheodm></SanPhamTheodm>}></Route>
           <Route path="/giohang" element={<Giohang></Giohang>}></Route>
+          <Route path="/thanhtoan" element={<Thanhtoan></Thanhtoan>}></Route>
             
       </Routes>
 

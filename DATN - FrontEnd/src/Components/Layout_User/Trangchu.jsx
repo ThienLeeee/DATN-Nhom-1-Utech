@@ -1,6 +1,43 @@
+import { useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { fetchSanpham } from "../../../service/sanphamService";
+import { fetchDanhmuc } from "../../../service/danhmucService";
 
 export default function Trangchu() {
+  const [sanPham, setSanpham] = useState([]);
+  const navigate = useNavigate();
+  useEffect(() => {
+    const loadSanpham = async () => {
+      try {
+        const sanPham = await fetchSanpham();
+        setSanpham(sanPham);
+      } catch (error) {
+        console.error("Lỗi:", error);
+      }
+    };
+    loadSanpham();
+  }, []);
+
+  const [danhMuc, setDanhmuc] = useState([]);
+
+  useEffect(() => {
+    const loadDanhmuc = async () => {
+      try {
+        const danhMuc = await fetchDanhmuc();
+        setDanhmuc(danhMuc);
+      } catch (error) {
+        console.error("Lỗi:", error);
+      }
+    };
+    loadDanhmuc();
+  }, []);
+
+  // Lọc sản phẩm theo categoryId
+  const sanPhamdm1 = sanPham.filter((sanpham) => sanpham.id_danhMuc === 1);
+  const sanPhamdm2 = sanPham.filter((sanpham) => sanpham.id_danhMuc === 2);
+
   return (
     <>
       {/* slideshow-banner-container */}
@@ -358,6 +395,7 @@ export default function Trangchu() {
         </div>
       </div>
       {/* slideshow-banner-container end*/}
+
       {/* bannerqc2 */}
       <div className="bannerqc2">
         <div className="wrap-content">
@@ -439,7 +477,7 @@ export default function Trangchu() {
       </div>
       {/* bannerqc2 end */}
 
-    {/* content */}
+      {/* content */}
       <div className="wrap-main wrap-home">
         {/* categories-list-content */}
         <div className="wrap-prolistnb">
@@ -455,83 +493,151 @@ export default function Trangchu() {
                   }}
                   role="listbox"
                 >
-                  <div
-                    className="slick-slide slick-current slick-active"
-                    data-slick-index={0}
-                    aria-hidden="false"
-                    style={{ height: 125, width: 103 }}
-                    tabIndex={-1}
-                    role="option"
-                  >
-                    <div className="item-prolistnb">
-                      <Link
-                      to="/sanphamtheodm"
-                        className="prolistnb-img d-inline-block"
-                        href="san-pham/laptop-11/"
-                        tabIndex={0}
+                  {danhMuc.length > 0 ? (
+                    danhMuc.slice(0, 5).map((danhmuc) => (
+                      <div
+                        className="slick-slide slick-current slick-active"
+                        data-slick-index={0}
+                        aria-hidden="false"
+                        style={{ height: 125, width: 103 }}
+                        tabIndex={-1}
+                        role="option"
+                        key={danhmuc.id}
                       >
-                        <img
-                          src="/public/img/categories/cate-laptop.png"
-                          alt="LAPTOP"
-                        />
-                      </Link>
+                        <div className="item-prolistnb">
+                          <Link
+                            to="/sanphamtheodm"
+                            className="prolistnb-img d-inline-block"
+                            href="#"
+                          >
+                            <img
+                              src={`/img/danhmuc/${danhmuc.hinhanh}`}
+                              alt="hinhanhdm"
+                            />
+                          </Link>
 
-                      <div className="info-prolistnb">
-                        <a
-                          className="name-prolistnb d-block"
-                          href="san-pham/laptop-11/"
-                          title="LAPTOP"
-                          tabIndex={0}
-                        >
-                          LAPTOP
-                        </a>
+                          <div className="info-prolistnb">
+                            <a
+                              className="name-prolistnb d-block"
+                              href="#"
+                              title=""
+                              tabIndex={0}
+                            >
+                              {danhmuc.tendm}
+                            </a>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-
-                  <div
-                    className="slick-slide slick-active"
-                    data-slick-index={1}
-                    aria-hidden="false"
-                    style={{ height: 125, width: 103 }}
-                    tabIndex={-1}
-                    role="option"
-                  >
-                    <div className="item-prolistnb">
-                      <a
-                        className="prolistnb-img d-inline-block"
-                        href="san-pham/may-bo-pc-14/"
-                        tabIndex={0}
-                      >
-                        <img
-                           src="/public/img/categories/cate-pc.png"
-                          alt="MÁY BỘ PC"
-                        />
-                      </a>
-                      <div className="info-prolistnb">
-                        <a
-                          className="name-prolistnb d-block"
-                          href="san-pham/may-bo-pc-14/"
-                          title="MÁY BỘ PC"
-                          tabIndex={0}
-                        >
-                          MÁY BỘ PC
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-
-               
-
-                  
-
-                  
+                    ))
+                  ) : (
+                    <p>Đang tải danh mục...</p>
+                  )}
                 </div>
               </div>
             </div>
           </div>
         </div>
         {/* categories-list-content end*/}
+
+        {/* hot-products */}
+        <div className="wrap-bestseller">
+          <div className="wrap-content">
+            <div className="boxBestseller">
+              <div className="title-bestseller">
+                <span>Sản phẩm bán chạy</span>
+              </div>
+              <div
+                className="slick-product none slick-initialized slick-slider slick-dotted"
+                role="toolbar"
+              >
+                <div
+                  aria-live="polite"
+                  className="slick-list draggable"
+                  style={{ height: 400 }}
+                >
+                  <div
+                    className="slick-track"
+                    style={{ opacity: 1, width: 1336 }}
+                    role="listbox"
+                  >
+                    <div
+                      className="product  slick-slide"
+                      data-slick-index={8}
+                      aria-hidden="true"
+                      style={{ height: 250, width: 247 }}
+                      tabIndex={-1}
+                      role="option"
+                      aria-describedby="slick-slide51"
+                    >
+                      <div className="box-product">
+                        <div className="pic-product" data-tooltip="sticky5998">
+                          <a
+                            className="d-block"
+                            href="san-pham/man-hinh-lcd-hp-m24fw-2e2y5aa-5998.html"
+                            title="MÀN HÌNH LCD HP M24FW 2E2Y5AA"
+                            tabIndex={-1}
+                          >
+                            <img
+                              src="/public/img/products/Laptop-Dell-Vostro-3530.png"
+                              alt="MÀN HÌNH LCD HP M24FW 2E2Y5AA"
+                              className="w100 trans03"
+                            />
+                          </a>
+                          <div className="hot-icon blink" />
+                          <div className="desc-product">
+                            <div>
+                              <div>Kích thước màn hình: 24 inch</div>
+                              <div>Độ phân giải: Full HD (1920×1080)</div>
+                              <div>Loại màn hình: Màn hình phẳng</div>
+                              <div>Tấm nền: IPS</div>
+                              <div>Tần số: 75Hz</div>
+                              <div>
+                                Kết nối: 1 VGA; 1 HDMI 1.4 (with HDCP support)
+                              </div>
+                              <div
+                                data-original-title=""
+                                id="mttContainer"
+                                title=""
+                              >
+                                &nbsp;
+                              </div>
+                              <div className="baohanh ">Bảo hành: 36 tháng</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="info-product">
+                          <a
+                            className="name-product text-split"
+                            href="san-pham/man-hinh-lcd-hp-m24fw-2e2y5aa-5998.html"
+                            title="MÀN HÌNH LCD HP M24FW 2E2Y5AA"
+                            tabIndex={-1}
+                          >
+                            MÀN HÌNH LCD HP M24FW 2E2Y5AA
+                          </a>
+                          <div className="price-product">
+                            <span className="price-new">Liên hệ</span>
+                          </div>
+                          <div className="cart-product d-flex justify-content-between align-items-center">
+                            <span className="status-pro sts2">Còn hàng</span>
+                            <span
+                              className="mua_giohang"
+                              rel={5998}
+                              data-confirm=""
+                              onClick="new jBox()"
+                            >
+                              Mua ngay
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* hot-products end */}
 
         {/* products 1 */}
         <div className="sub_main" id="scroll0" style={{ marginBottom: 50 }}>
@@ -578,7 +684,7 @@ export default function Trangchu() {
                   <div className="box-product">
                     <div className="pic-product" data-tooltip="sticky7385">
                       <Link
-                      to="/chitietsp"
+                        to="/chitietsp"
                         className="d-block"
                         href=""
                         title="Laptop Dell Vostro 3530 V5I3465W1"
@@ -613,7 +719,7 @@ export default function Trangchu() {
                     </div>
                     <div className="info-product">
                       <Link
-                      to="/chitietsp"
+                        to="/chitietsp"
                         className="name-product text-split"
                         href=""
                         title="Laptop Dell Vostro 3530 V5I3465W1"
@@ -712,7 +818,7 @@ export default function Trangchu() {
                         title="Máy tính để bàn PC Dell Vostro 3020T 6FM7X11"
                       >
                         <img
-                        src="/public/img/products/PC-Dell-Vostro-3020T-6FM7X11.png"
+                          src="/public/img/products/PC-Dell-Vostro-3020T-6FM7X11.png"
                           alt="Máy tính để bàn PC Dell Vostro 3020T 6FM7X11"
                           className="w100 trans03"
                         />

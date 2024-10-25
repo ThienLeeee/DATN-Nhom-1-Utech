@@ -1,4 +1,4 @@
-export default function ThanhToan(){
+export default function Thanhtoan(){
     return(
         <div className="wrap-main wrap-page">
   <form name="form_giohang" action="index.php?com=thanh-toan" method="get">

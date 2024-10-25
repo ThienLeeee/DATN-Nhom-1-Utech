@@ -23,17 +23,17 @@ export default function Header() {
             <div className="social-footer d-flex">
               <a
                 className="d-block"
-                href="https://www.facebook.com/SangTaoComputer/?ref=embed_page"
+                href=""
                 target="blank"
               >
                 <img src="img/logo facebook.png" alt="Facebook" />
               </a>
-              <a className="d-block" href="https://twitter.com/" target="blank">
+              <a className="d-block" href="" target="blank">
                 <img src="img/logo instagram.png" alt="twitter" />
               </a>
               <a
                 className="d-block"
-                href="https://www.google.com/"
+                href=""
                 target="blank"
               >
                 <img src="img/logo youtobe.png" alt="G+" />

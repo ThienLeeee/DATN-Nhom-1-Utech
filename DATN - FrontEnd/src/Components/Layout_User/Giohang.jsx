@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Giohang() {
   return (
     <div className="wrap-main wrap-page">
@@ -106,20 +108,26 @@ export default function Giohang() {
                           type="button"
                           className="btn btn-primary"
                           defaultValue="Mua tiếp"
-                          onclick="window.location='index.php'"
+                          onClick="window.location='index.php'"
                         />
+
                         <input
                           type="button"
                           className="btn btn-danger"
                           defaultValue="Xóa tất cả"
-                          onclick="clear_cart()"
+                          onClick="clear_cart()"
                         />
+
+                        <Link to="/thanhtoan">
                         <input
                           type="button"
                           className="btn btn-success"
                           defaultValue="Thanh toán"
-                          onclick="window.location='thanh-toan.html'"
+                          onClick="window.location='thanh-toan.html'"
                         />
+                        </Link>
+                        
+
                       </td>
                     </tr>
                   </tfoot>
@@ -340,7 +348,7 @@ export default function Giohang() {
                             className="mua_giohang"
                             rel={7385}
                             data-confirm=""
-                            onclick="new jBox()"
+                            onClick="new jBox()"
                           >
                             Mua ngay
                           </span>
