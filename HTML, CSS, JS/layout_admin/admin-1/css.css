@@ -1,0 +1,100 @@
+
+  body{
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  .row{
+    min-height: 100vh;
+  }
+h1{
+    text-align: center;
+    color: #0000a3;
+    padding-top: 10px;
+}
+
+h2{
+    padding-top: 10px;
+}
+
+.name-category{
+   padding: 16px 16px 4px 16px;;
+}
+.pading-button {
+    padding-bottom: 10px;
+    padding-left: 16px;
+}
+
+.button-categoty{
+    width:186px ;
+    height: 44px;
+    border-radius: 5px;
+    border: solid 1px #0000a3;
+    background-color: #0000a3;
+    color: white;
+    
+}
+.custom-table {
+    width: 100%;
+    border-collapse: collapse; /* Bỏ khoảng cách giữa các ô */
+    
+  }
+  
+  .custom-table th, .custom-table td {
+    border: 1px solid #ddd; /* Viền giữa các ô */
+    padding: 8px;           /* Khoảng cách bên trong ô */
+    text-align: center;     /* Căn giữa nội dung */
+  }
+  
+  .custom-table th {
+    background-color: #f2f2f2; /* Màu nền cho tiêu đề cột */
+    font-weight: bold;         /* In đậm tiêu đề */
+  }
+  
+  .custom-table tr:nth-child(even) {
+    background-color: #f9f9f9; /* Màu nền xen kẽ cho các hàng */
+  }
+  
+  .custom-table td:hover {
+    background-color: #ddd; /* Màu khi hover vào hàng */
+  }
+  
+  .image{
+    width:100px ;
+    height: 79px;
+  }
+  .image-user{
+    width:60px ;
+    height: 46.48px;
+  }
+  form {
+    width:auto;
+    padding-left: 16px; /* Tùy chỉnh chiều rộng form */
+}
+
+label {
+    font-weight: bold;
+}
+
+input[type="text"], input[type="file"] {
+    width: 100%;
+    padding: 8px;
+    margin-top: 4px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.add-category-button {
+    background-color: #0000a3; /* Màu nền xanh đậm */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.add-category-button:hover {
+    background-color: #000080; /* Màu khi hover */
+}
