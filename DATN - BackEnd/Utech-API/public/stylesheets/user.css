@@ -1,0 +1,6 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Thiết lập chiều cao của container để căn giữa theo chiều dọc */
+}

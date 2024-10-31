@@ -1,0 +1,147 @@
+* {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    
+}
+body{
+    /* background-image: linear-gradient(to right, #15cbe1 , #f20afc); */
+    background-image: url(../images/bg1.png);
+
+
+}
+h1{
+    text-align: center;
+    font-weight: lighter;
+}
+.form-login-container {
+    border: 1px solid white;
+    border-radius: 10px;
+    margin: auto;
+    width: 25%;
+    height: 600px;
+    margin-top: 200px;
+    background-color: white;
+    background: transparent;
+    backdrop-filter: blur(5px);
+    
+}
+.social{
+    display: flex;
+    justify-content: space-evenly;
+    height: 50px;
+    
+}
+img{
+    margin-top: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+}
+.facebook{
+    border: 1px solid white;
+    justify-content: space-evenly;
+    color: white;
+    display: flex;
+    background-color: #3d599a;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    width: 30%;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.google{
+    border: 1px solid white;
+    justify-content: space-evenly;
+    display: flex;
+    background-color: #ffffff;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    width: 30%;
+    border-radius: 10px;
+    cursor: pointer;
+    color: black;
+}
+
+
+.form-input-container{
+    
+    margin: auto;
+    width: 100%;
+    height: 220px;
+}
+.form-input{
+   
+    margin: auto;
+    width: 75%;
+    height: 75%;
+   
+}
+.input-usename{
+    width: 100%;
+    margin: auto;
+}
+.btn-container{
+    margin: auto;
+    width: 75%;
+    height: 35%;
+}
+.btn{
+    margin-right: auto;
+    width: 100%;
+    height: 30%;
+   
+}
+#btn{
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    background-color: #333333;
+    cursor: pointer;
+}
+
+input{
+    color: #f7f7f7;
+    padding: 3px;
+    border: 1px solid white;
+    border-radius: 10px;
+    width: 100%;
+    height: 50px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    /* background-color: black; */
+    background: transparent;
+    backdrop-filter: blur(5px);
+
+    
+}   
+input::placeholder{
+    color: #ffffff;
+}
+
+
+.sign-up-now{
+    display: flex;
+    justify-content: center;
+}
+#hi2{
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: underline;
+}
+#qmk{
+    text-decoration: underline;
+    cursor: pointer;
+    color: rgba(0, 0, 0, 0.443);
+}
+
+#alert-username{
+    margin-top: 5px;
+    position: absolute;
+    display: block;
+    border-radius: 5px;
+    background-color: #f7f7f7;
+    color: red;
+}
+
+#alert-password{
+    margin-top: 5px;
+    position: absolute;
+    display: block;
+    border-radius: 5px;
+    background-color: #f7f7f7;
+    color: red;
+}

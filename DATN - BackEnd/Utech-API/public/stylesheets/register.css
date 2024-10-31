@@ -1,0 +1,224 @@
+* {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    color: #f7f7f7;
+    
+}
+
+body {
+    width: 100%;
+    /* height: 1200px; */
+    /* background-image: linear-gradient(to right, #15cbe1, #f20afc); */
+    background-image: url(../images/bg1.png); 
+    background-repeat: no-repeat;
+    
+
+}
+
+h1 {
+    text-align: center;
+    font-weight: lighter;
+}
+
+/* .success-input {
+    border: 1px solid #4CAF50; 
+}
+.error-input {
+    border: 1px solid red;
+} */
+.form-register-container {
+    /* background-color: aqua; */
+    width: 100%;
+    /* height:35cm; */
+}
+
+.form-register {
+    border: 1px solid white;
+    border-radius: 10px;
+    background-color: white;
+    margin: auto;
+    width: 35%;
+    height: 800px;
+    margin-top: 200px;
+    background: transparent;
+    backdrop-filter: blur(5px);
+
+}
+
+.form-input {
+
+    margin: auto;
+    width: 75%;
+    height: auto;
+
+}
+
+.input-name {
+    width: 100%;
+}
+
+#username {
+    padding: 3px;
+    border: 1px solid white;
+    border-radius: 10px;
+    width: 95%;
+    height: 50px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    background-color: #f7f7f7;
+    background: transparent;
+    backdrop-filter: blur(5px);
+
+}
+
+#lastname:hover {
+    border: 1px solid black;
+}
+
+#firstname:hover {
+    border: 1px solid black;
+}
+
+.input-Firstname {
+    width: 100%;
+}
+
+#firstname {
+    border: 1px solid white;
+    padding: 3px;
+    border-radius: 10px;
+    width: 90%;
+    height: 50px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    background-color: #f7f7f7;
+    background: transparent;
+    backdrop-filter: blur(5px);
+}
+
+img {
+    margin-top: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+}
+
+input {
+    border: 1px solid white;
+    padding: 3px;
+    border-radius: 10px;
+    width: 95%;
+    height: 50px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    background-color: #f7f7f7;
+    background: transparent;
+    backdrop-filter: blur(5px);
+}
+input::placeholder{
+    color: #ffff;
+}
+
+
+
+.form-input-container {
+
+    margin: auto;
+    width: 100%;
+    height: 350px;
+}
+
+
+.btn-container {    
+    position: absolute;
+    top: 80%;   
+    left: 12%;
+    width: 75%;
+    height: 18%;
+}
+
+.btn {
+    width: 100%;
+}
+
+#btn {
+    cursor: pointer;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;  
+    background-color: #333333;  
+}   
+
+
+.sign-up-now {
+    display: flex;
+    justify-content: center;
+}
+
+#hi2 {
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+#qmk {
+    text-decoration: underline;
+    cursor: pointer;
+    color: rgba(0, 0, 0, 0.443);
+}
+
+#alert-username{
+    border-radius: 5px;
+    position: absolute;
+    width: 35%;
+    background-color: #f7f7f7;
+    color: red;
+    display: block;
+    margin-top: 5px;
+}
+#alert-confirm-password{
+    border-radius: 5px;
+    position: absolute;
+    width: 35%;
+    background-color: #f7f7f7;
+    color: red;
+    display: block;
+    margin-top: 5px;
+}
+#alert-email {
+    border-radius: 5px;
+    position: absolute;
+    width: 35%;
+    background-color: #f7f7f7;
+    color: red;
+    display: block;
+    margin-top: 5px;
+}
+.alert-message {
+    border-radius: 5px;
+    width: 75%;
+     background-color: #f7f7f7;
+     display: block;
+     margin-top: 5px;
+     color: red;
+ }
+/* #alert-firstname {
+    color: red;
+    display: block;
+    margin-top: 5px;
+} */
+
+
+/* #alert-birth {
+    color: red;
+    display: block;
+    margin-top: 5px;
+}
+
+#alert-pnumber {
+    color: red;
+    display: block;
+    margin-top: 5px;
+} */
+
+
+
+/* #alert-address {
+    color: red;
+    display: block;
+    margin-top: 5px;
+} */
