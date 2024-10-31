@@ -45,15 +45,15 @@ router.get('/danhMuc', async (req, res, next) => {
 })
 
 //Hiển thị 1 danh mục theo id
-router.get('/categories/:id', async (req, res, next) => {
+router.get('/danhMuc/:id', async (req, res, next) => {
   let id = req.params.id
   const db = await connectDb()
-  const categoriesCollection = db.collection('categories')
-  const category = await categoriesCollection.findOne({ id: parseInt(id) })
-  if (category) {
-    res.status(200).json(category)
+  const danhMucCollection = db.collection('danhMuc')
+  const danhmuc = await danhMucCollection.findOne({ id: parseInt(id) })
+  if (danhmuc) {
+    res.status(200).json(danhmuc)
   } else {
-    res.status(404).json({ message: 'category not found' })
+    res.status(404).json({ message: 'Không tìm thấy danh mục !' })
   }
 })
 
@@ -168,7 +168,7 @@ router.get('/sanPham', async (req, res, next) => {
 // });
 
 //Chức năng thêm sản phẩm
-router.post('/products',  upload.single('img'),async (req, res, next) => {
+router.post('/products', upload.single('img'), async (req, res, next) => {
   const db = await connectDb()
   const productsCollection = db.collection('products')
   let { name, price, categoryId, description } = req.body
@@ -185,7 +185,6 @@ router.post('/products',  upload.single('img'),async (req, res, next) => {
     res.status(200).json(newProduct)
   } else {
     res.status(404).json({ message: 'Add product not successful' })
-    
   }
 })
 
@@ -228,21 +227,42 @@ router.delete('/products/:id', async (req, res) => {
 })
 
 //Lấy sản phẩm theo mã danh mục
-router.get('/products/categoryId/:id', async (req, res, next) => {
+router.get('/sanPham/id_danhmuc/:id', async (req, res, next) => {
   const id = parseInt(req.params.id)
   const db = await connectDb()
-  const productsCollection = db.collection('products')
+  const sanPhamCollection = db.collection('sanPham')
 
   try {
-    const products = await productsCollection.find({ categoryId: id }).toArray()
-    if (products.length > 0) {
-      res.status(200).json(products)
+    const sanPham = await sanPhamCollection.find({ id_danhmuc: id }).toArray()
+    if (sanPham.length > 0) {
+      res.status(200).json(sanPham)
     } else {
-      res.status(404).json({ message: 'Product not found.' })
+      res.status(404).json({ message: 'Không tìm thấy sản phẩm !' })
     }
   } catch (error) {
     console.log('error', error)
     res.status(500).send('error')
+  }
+})
+
+//Lấy sản phẩm theo thương hiệu
+router.get('/sanPham/thuong_hieu/:thuong_hieu', async (req, res, next) => {
+  const thuong_hieu = req.params.thuong_hieu
+
+  try {
+    const db = await connectDb() // Kết nối đến database
+    const sanPhamCollection = db.collection('sanPham')
+
+    const sanPham = await sanPhamCollection
+      .find({
+        thuong_hieu: { $regex: thuong_hieu, $options: 'i' } // Tìm kiếm không phân biệt hoa thường
+      })
+      .toArray() // Chuyển đổi cursor thành mảng
+
+    res.json(sanPham)
+  } catch (error) {
+    console.error('Lỗi khi tìm kiếm sản phẩm theo thương hiệu:', error)
+    res.status(500).json({ message: 'Đã xảy ra lỗi trong quá trình tìm kiếm' })
   }
 })
 
@@ -282,15 +302,15 @@ router.get('/products/hot', authenToken, async (req, res, next) => {
 })
 
 //Hiển thị 1 sản phẩm theo id
-router.get('/products/:id', async (req, res, next) => {
+router.get('/sanPham/:id', async (req, res, next) => {
   let id = req.params.id
   const db = await connectDb()
-  const productsCollection = db.collection('products')
-  const product = await productsCollection.findOne({ id: parseInt(id) })
-  if (product) {
-    res.status(200).json(product)
+  const sanPhamCollection = db.collection('sanPham')
+  const sanPham = await sanPhamCollection.findOne({ id: parseInt(id) })
+  if (sanPham) {
+    res.status(200).json(sanPham)
   } else {
-    res.status(404).json({ message: 'Product not found' })
+    res.status(404).json({ message: 'Không tìm thấy sản phẩm' })
   }
 })
 
@@ -326,7 +346,7 @@ router.post(
   '/accounts/register',
   upload.single('img'),
   async (req, res, next) => {
-    let { username, email, password, repassword} = req.body
+    let { username, email, password, repassword } = req.body
     const db = await connectDb()
     const accountCollection = db.collection('accounts')
     let account = await accountCollection.findOne({ email: email })
@@ -341,7 +361,14 @@ router.post(
       let id = lastAccount[0] ? lastAccount[0].id + 1 : 1
       const salt = bcrypt.genSaltSync(10)
       let hashPassword = bcrypt.hashSync(password, salt)
-      let newAccount = { id: id, username, email, password: hashPassword, repassword: hashPassword, role: 0 }
+      let newAccount = {
+        id: id,
+        username,
+        email,
+        password: hashPassword,
+        repassword: hashPassword,
+        role: 0
+      }
       try {
         let result = await accountCollection.insertOne(newAccount)
         console.log(result)

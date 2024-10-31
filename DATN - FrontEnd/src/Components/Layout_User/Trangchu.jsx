@@ -1,13 +1,12 @@
 import { useEffect } from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 import { fetchSanpham } from "../../../service/sanphamService";
 import { fetchDanhmuc } from "../../../service/danhmucService";
 
 export default function Trangchu() {
   const [sanPham, setSanpham] = useState([]);
-  const navigate = useNavigate();
+
   useEffect(() => {
     const loadSanpham = async () => {
       try {
@@ -35,8 +34,9 @@ export default function Trangchu() {
   }, []);
 
   // Lọc sản phẩm theo categoryId
-  const sanPhamdm1 = sanPham.filter((sanpham) => sanpham.id_danhMuc === 1);
-  const sanPhamdm2 = sanPham.filter((sanpham) => sanpham.id_danhMuc === 2);
+  const sanPhamdm1 = sanPham.filter((sanpham) => sanpham.id_danhmuc === 1);
+  const sanPhamdm2 = sanPham.filter((sanpham) => sanpham.id_danhmuc === 2);
+  const sanPhamdm3 = sanPham.filter((sanpham) => sanpham.id_danhmuc === 3);
 
   return (
     <>
@@ -44,7 +44,342 @@ export default function Trangchu() {
       <div className="slideshow">
         <div className="wrap-content d-flex justify-content-between">
           {/* empty-site */}
-          <div className="slideshow-left"></div>
+          <div className="slideshow-left">
+            <div className="show-menu isHome">
+              <div className="boxshadown">
+                <ul className="box_menu lst-prd">
+                  {danhMuc.length > 0 ? (
+                    danhMuc.map((danhmuc) => (
+                      <li className="mega-dropdown" key={danhmuc.id}>
+                        <Link
+                          to={`/sanPham/id_danhmuc/${danhmuc.id}`}
+                          className="has-child transition"
+                          title="LAPTOP"
+                        >
+                          {danhmuc.tendm}
+                        </Link>
+                        {/* <div className="boxMainDropdown">
+                         <ul className="dropdown-prod-lv2">
+                         <li>
+                          <a
+                         className="has-child transition"
+                          title="LAPTOP DELL"
+                        href="san-pham/laptop-dell-15/"
+                       >
+                LAPTOP DELL
+              </a>
+              <ul className="dropdown-prod-lv3">
+                <li>
+                  <a
+                    className="has-child transition"
+                    title="DELL VOSTRO "
+                    href="san-pham/dell-vostro-385/"
+                  >
+                    DELL VOSTRO{" "}
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="has-child transition"
+                    title="DELL INSPIRON "
+                    href="san-pham/dell-inspiron-387/"
+                  >
+                    DELL INSPIRON{" "}
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="has-child transition"
+                    title="DELL LATITUDE"
+                    href="san-pham/dell-latitude-12/"
+                  >
+                    DELL LATITUDE
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="has-child transition"
+                    title="DELL GAMING"
+                    href="san-pham/dell-gaming-345/"
+                  >
+                    DELL GAMING
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <a
+                className="has-child transition"
+                title="LAPTOP HP"
+                href="san-pham/laptop-hp-16/"
+              >
+                LAPTOP HP
+              </a>
+              <ul className="dropdown-prod-lv3">
+                <li>
+                  <a
+                    className="has-child transition"
+                    title="HP 14s"
+                    href="san-pham/hp-14s-80/"
+                  >
+                    HP 14s
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="has-child transition"
+                    title="HP 15s"
+                    href="san-pham/hp-15s-81/"
+                  >
+                    HP 15s
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="has-child transition"
+                    title="HP 240"
+                    href="san-pham/hp-240-365/"
+                  >
+                    HP 240
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="has-child transition"
+                    title="HP PAVILION"
+                    href="san-pham/hp-pavilion-82/"
+                  >
+                    HP PAVILION
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="has-child transition"
+                    title="HP PAVILION X360"
+                    href="san-pham/hp-pavilion-x360-267/"
+                  >
+                    HP PAVILION X360
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="has-child transition"
+                    title="HP PROBOOK"
+                    href="san-pham/hp-probook-83/"
+                  >
+                    HP PROBOOK
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="has-child transition"
+                    title="HP ENVY X360"
+                    href="san-pham/hp-envy-x360-84/"
+                  >
+                    HP ENVY X360
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="has-child transition"
+                    title="HP ELITEBOOK"
+                    href="san-pham/hp-elitebook-256/"
+                  >
+                    HP ELITEBOOK
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="has-child transition"
+                    title="HP VICTUS"
+                    href="san-pham/hp-victus-344/"
+                  >
+                    HP VICTUS
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <a
+                className="has-child transition"
+                title="LAPTOP ASUS"
+                href="san-pham/laptop-asus-18/"
+              >
+                LAPTOP ASUS
+              </a>
+              <ul className="dropdown-prod-lv3">
+                <li>
+                  <a
+                    className="has-child transition"
+                    title="ASUS ExpertBook"
+                    href="san-pham/asus-expertbook-350/"
+                  >
+                    ASUS ExpertBook
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="has-child transition"
+                    title="ASUS ViVoBook"
+                    href="san-pham/asus-vivobook-228/"
+                  >
+                    ASUS ViVoBook
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="has-child transition"
+                    title="ASUS Zenbook"
+                    href="san-pham/asus-zenbook-87/"
+                  >
+                    ASUS Zenbook
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="has-child transition"
+                    title="ASUS GAMING Series"
+                    href="san-pham/asus-gaming-series-90/"
+                  >
+                    ASUS GAMING Series
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <a
+                className="has-child transition"
+                title="LAPTOP LENOVO"
+                href="san-pham/laptop-lenovo-17/"
+              >
+                LAPTOP LENOVO
+              </a>
+              <ul className="dropdown-prod-lv3">
+                <li>
+                  <a
+                    className="has-child transition"
+                    title="THINKPAD"
+                    href="san-pham/thinkpad-255/"
+                  >
+                    THINKPAD
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="has-child transition"
+                    title="LENOVO V - S Series"
+                    href="san-pham/lenovo-v-s-series-254/"
+                  >
+                    LENOVO V - S Series
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="has-child transition"
+                    title="THINKBOOK"
+                    href="san-pham/thinkbook-376/"
+                  >
+                    THINKBOOK
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="has-child transition"
+                    title="YOGA SLIM"
+                    href="san-pham/yoga-slim-443/"
+                  >
+                    YOGA SLIM
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <a
+                className="has-child transition"
+                title="LAPTOP LG"
+                href="san-pham/laptop-lg-173/"
+              >
+                LAPTOP LG
+              </a>
+              <ul className="dropdown-prod-lv3">
+                <li>
+                  <a
+                    className="has-child transition"
+                    title="LG GRAM"
+                    href="san-pham/lg-gram-323/"
+                  >
+                    LG GRAM
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <a
+                className="has-child transition"
+                title="LINH KIỆN LAPTOP"
+                href="san-pham/linh-kien-laptop-214/"
+              >
+                LINH KIỆN LAPTOP
+              </a>
+              <ul className="dropdown-prod-lv3">
+                <li>
+                  <a
+                    className="has-child transition"
+                    title="RAM LAPTOP"
+                    href="san-pham/ram-laptop-418/"
+                  >
+                    RAM LAPTOP
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="has-child transition"
+                    title="MÀN HÌNH LAPTOP"
+                    href="san-pham/man-hinh-laptop-419/"
+                  >
+                    MÀN HÌNH LAPTOP
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="has-child transition"
+                    title="PIN LAPTOP"
+                    href="san-pham/pin-laptop-420/"
+                  >
+                    PIN LAPTOP
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="has-child transition"
+                    title="ADAPTER LAPTOP"
+                    href="san-pham/adapter-laptop-421/"
+                  >
+                    ADAPTER LAPTOP
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="has-child transition"
+                    title="PHỤ KIỆN CHO LAPTOP"
+                    href="san-pham/phu-kien-cho-laptop-422/"
+                  >
+                    PHỤ KIỆN CHO LAPTOP
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div> */}
+                      </li>
+                    ))
+                  ) : (
+                    <p>Đang tải danh mục...</p>
+                  )}
+                </ul>
+              </div>
+            </div>
+          </div>
           {/* empty-site end */}
           <div className="slideshow-right d-flex justify-content-between">
             {/* slideshow  */}
@@ -647,31 +982,154 @@ export default function Trangchu() {
                 <span>LAPTOP</span>
                 <ul>
                   <li>
-                    <a href="san-pham/laptop-lg-173/" title="LAPTOP LG">
-                      LAPTOP LG
-                    </a>
-                  </li>
-                  <li>
-                    <a href="san-pham/laptop-asus-18/" title="LAPTOP ASUS">
+                    <a href="" title="LAPTOP LG">
                       LAPTOP ASUS
                     </a>
                   </li>
                   <li>
-                    <a href="san-pham/laptop-lenovo-17/" title="LAPTOP LENOVO">
+                    <a href="" title="LAPTOP ASUS">
+                      LAPTOP ACER
+                    </a>
+                  </li>
+                  <li>
+                    <a href="" title="LAPTOP LENOVO">
+                      LAPTOP MSI
+                    </a>
+                  </li>
+                  <li>
+                    <a href="" title="LAPTOP HP">
                       LAPTOP LENOVO
                     </a>
                   </li>
                   <li>
-                    <a href="san-pham/laptop-hp-16/" title="LAPTOP HP">
-                      LAPTOP HP
-                    </a>
-                  </li>
-                  <li>
-                    <a href="san-pham/laptop-dell-15/" title="LAPTOP DELL">
+                    <a href="" title="LAPTOP DELL">
                       LAPTOP DELL
                     </a>
                   </li>
                 </ul>
+
+                <Link to="/sanPham/id_danhmuc/1" className="viewmore">
+                  Xem tất cả
+                </Link>
+              </div>
+            </div>
+            <div className="hidden_tab" id="splist11" rel={11} title="LAPTOP">
+              <div className="grid-products">
+                {sanPhamdm1.length > 0 ? (
+                  sanPhamdm1.map((sanpham, index) => (
+                    <div className="product" key={index}>
+                      <div className="box-product">
+                        <div className="pic-product" data-tooltip="sticky7385">
+                          <Link
+                            to={`/chitietsp/sanPham/${sanpham.id}`}
+                            className="d-block"
+                            href=""
+                            title={`${sanpham.ten_sp}`}
+                          >
+                            <img
+                              src={`/img/sanpham/Laptop/${sanpham.hinh_anh.chinh}`}
+                              alt={`${sanpham.ten_sp}`}
+                              className="w100 trans03"
+                            />
+                          </Link>
+
+                          <div className="hot-icon blink" />
+                          <div className="desc-product">
+                            <div>
+                              <ul>
+                                <li>{sanpham.cau_hinh.cpu}</li>
+                                <li>{sanpham.cau_hinh.ram}</li>
+                                <li>{sanpham.cau_hinh.ocung}</li>
+                                <li>{sanpham.cau_hinh.vga}</li>
+                                <li>{sanpham.cau_hinh.man_hinh}</li>
+                                <li>{sanpham.cau_hinh_chi_tiet.pin}</li>
+                                <li>{sanpham.cau_hinh_chi_tiet.mau_sac}</li>
+                                <li>{sanpham.cau_hinh_chi_tiet.trong_luong}</li>
+                                <li>
+                                  {sanpham.cau_hinh_chi_tiet.he_dieu_hanh}
+                                </li>
+                              </ul>
+                              <p>&nbsp;</p>
+                              <div className="baohanh ">{sanpham.bao_hanh}</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="info-product">
+                          <Link
+                            to={`/chitietsp/sanPham/${sanpham.id}`}
+                            className="name-product text-split"
+                            href=""
+                            title={`${sanpham.ten_sp}`}
+                          >
+                            {sanpham.ten_sp}
+                          </Link>
+                          <div className="price-product">
+                            <span className="price-new">{sanpham.gia_sp}đ</span>
+                          </div>
+                          <div className="cart-product d-flex flex-wrap justify-content-between align-items-center">
+                            <span className="status-pro sts2">Còn hàng</span>
+                            <span
+                              className="mua_giohang"
+                              rel={7385}
+                              data-confirm=""
+                              onClick="new jBox()"
+                            >
+                              Mua ngay
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p>Đang tải sản phẩm Laptop...</p>
+                )}
+              </div>
+              <div className="pagination" style={{ marginTop: 10 }}>
+                <ul className="my_pagination">
+                  <li className="inactive">
+                    <span> &lt;&lt; </span>
+                  </li>
+                  <li className="actived">
+                    <a>1</a>
+                  </li>
+                  <li className="active">
+                    <a>2</a>
+                  </li>
+                  <li className="active">
+                    <span> &gt;&gt; </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* products 1 end*/}
+
+        {/* products 2 */}
+        <div className="sub_main" id="scroll0" style={{ marginBottom: 50 }}>
+          <div className="wrap-content">
+            <div className="title_main">
+              <div>
+                <span>PC</span>
+                {/* <ul>                
+                  <li>
+                    <a href="san-pham/laptop-asus-18/" title="LAPTOP ASUS">
+                      PC ASUS
+                    </a>
+                  </li>
+                 
+                  <li>
+                    <a href="san-pham/laptop-hp-16/" title="LAPTOP HP">
+                      PC HP
+                    </a>
+                  </li>
+                  <li>
+                    <a href="san-pham/laptop-dell-15/" title="LAPTOP DELL">
+                      PC DELL
+                    </a>
+                  </li>
+                </ul> */}
                 <a href="san-pham/laptop-11/" className="viewmore">
                   {" "}
                   Xem tất cả
@@ -680,69 +1138,75 @@ export default function Trangchu() {
             </div>
             <div className="hidden_tab" id="splist11" rel={11} title="LAPTOP">
               <div className="grid-products">
-                <div className="product ">
-                  <div className="box-product">
-                    <div className="pic-product" data-tooltip="sticky7385">
-                      <Link
-                        to="/chitietsp"
-                        className="d-block"
-                        href=""
-                        title="Laptop Dell Vostro 3530 V5I3465W1"
-                      >
-                        <img
-                          src="/public/img/products/Laptop-Dell-Vostro-3530.png"
-                          alt="Laptop Dell Vostro 3530 V5I3465W1"
-                          className="w100 trans03"
-                        />
-                      </Link>
-                      <div className="btntragop1" />{" "}
-                      <div className="hot-icon blink" />
-                      <div className="desc-product">
-                        <div>
-                          <ul>
-                            <li>
-                              CPU Intel Core i3-1305U (10MB, Up to 4.50GHz)
-                            </li>
-                            <li>RAM 8GB DDR4 2666MHz (1x8GB)</li>
-                            <li>SSD 512GB M.2 PCIe NVMe</li>
-                            <li>VGA Intel UHD Graphics</li>
-                            <li>Display 15.6Inch FHD WVA Anti-Glare</li>
-                            <li>Pin 3Cell 41WHrs</li>
-                            <li>Color Titan Grey (Xám)</li>
-                            <li>Weight 1.66 kg</li>
-                            <li>OS Windows 11 Home + Office HS 2021</li>
-                          </ul>
-                          <p>&nbsp;</p>
-                          <div className="baohanh ">Bảo hành: 12 tháng</div>
+                {sanPhamdm2.length > 0 ? (
+                  sanPhamdm2.map((sanpham, index) => (
+                    <div className="product" key={index}>
+                      <div className="box-product">
+                        <div className="pic-product" data-tooltip="sticky7385">
+                          <Link
+                            to={`/chitietsp/sanPham/${sanpham.id}`}
+                            className="d-block"
+                            href=""
+                            title={`${sanpham.ten_sp}`}
+                          >
+                            <img
+                              src={`/img/sanpham/PC/${sanpham.hinh_anh.chinh}`}
+                              alt={`${sanpham.ten_sp}`}
+                              className="w100 trans03"
+                            />
+                          </Link>
+
+                          <div className="hot-icon blink" />
+                          <div className="desc-product">
+                            <div>
+                              <ul>
+                                <li>{sanpham.cau_hinh.cpu}</li>
+                                <li>{sanpham.cau_hinh.ram}</li>
+                                <li>{sanpham.cau_hinh.ocung}</li>
+                                <li>{sanpham.cau_hinh.vga}</li>
+                                <li>{sanpham.cau_hinh.man_hinh}</li>
+                                <li>{sanpham.cau_hinh_chi_tiet.pin}</li>
+                                <li>{sanpham.cau_hinh_chi_tiet.mau_sac}</li>
+                                <li>{sanpham.cau_hinh_chi_tiet.trong_luong}</li>
+                                <li>
+                                  {sanpham.cau_hinh_chi_tiet.he_dieu_hanh}
+                                </li>
+                              </ul>
+                              <p>&nbsp;</p>
+                              <div className="baohanh ">Bảo hành: 12 tháng</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="info-product">
+                          <Link
+                            to="/chitietsp"
+                            className="name-product text-split"
+                            href=""
+                            title={`${sanpham.ten_sp}`}
+                          >
+                            {sanpham.ten_sp}
+                          </Link>
+                          <div className="price-product">
+                            <span className="price-new">{sanpham.gia_sp}đ</span>
+                          </div>
+                          <div className="cart-product d-flex flex-wrap justify-content-between align-items-center">
+                            <span className="status-pro sts2">Còn hàng</span>
+                            <span
+                              className="mua_giohang"
+                              rel={7385}
+                              data-confirm=""
+                              onClick="new jBox()"
+                            >
+                              Mua ngay
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div className="info-product">
-                      <Link
-                        to="/chitietsp"
-                        className="name-product text-split"
-                        href=""
-                        title="Laptop Dell Vostro 3530 V5I3465W1"
-                      >
-                        Laptop Dell Vostro 3530 V5I3465W1
-                      </Link>
-                      <div className="price-product">
-                        <span className="price-new">11.990.000 đ</span>
-                      </div>
-                      <div className="cart-product d-flex flex-wrap justify-content-between align-items-center">
-                        <span className="status-pro sts2">Còn hàng</span>
-                        <span
-                          className="mua_giohang"
-                          rel={7385}
-                          data-confirm=""
-                          onClick="new jBox()"
-                        >
-                          Mua ngay
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                  ))
+                ) : (
+                  <p>Đang tải sản phẩm PC...</p>
+                )}
               </div>
               <div className="pagination" style={{ marginTop: 150 }}>
                 <ul className="my_pagination">
@@ -765,108 +1229,106 @@ export default function Trangchu() {
         </div>
         {/* products 1 end*/}
 
-        {/* products 2*/}
-        <div className="sub_main" id="scroll1" style={{ marginBottom: 50 }}>
+        {/* products 3 */}
+        <div className="sub_main" id="scroll0" style={{ marginBottom: 50 }}>
           <div className="wrap-content">
             <div className="title_main">
               <div>
-                <span>MÁY BỘ PC</span>
+                <span>Màn hình</span>
                 <ul>
                   <li>
-                    <a href="san-pham/may-bo-hp-82/" title="MÁY BỘ HP">
-                      MÁY BỘ HP
+                    <a href="san-pham/laptop-lg-173/" title="LAPTOP LG">
+                      MÀN HÌNH LG
                     </a>
                   </li>
                   <li>
-                    <a
-                      href="san-pham/may-bo-asus-mini-31/"
-                      title="MÁY BỘ ASUS MINI"
-                    >
-                      MÁY BỘ ASUS MINI
+                    <a href="san-pham/laptop-asus-18/" title="LAPTOP ASUS">
+                      MÀN HÌNH ASUS
                     </a>
                   </li>
                   <li>
-                    <a href="san-pham/may-bo-dell-30/" title="MÁY BỘ DELL">
-                      MÁY BỘ DELL
-                    </a>
-                  </li>
-                  <li>
-                    <a href="san-pham/may-bo-lenovo-29/" title="MÁY BỘ LENOVO">
-                      MÁY BỘ LENOVO
+                    <a href="san-pham/laptop-dell-15/" title="LAPTOP DELL">
+                      MÀN HÌNH DELL
                     </a>
                   </li>
                 </ul>
-                <a href="san-pham/may-bo-pc-14/" className="viewmore">
+                <a href="san-pham/laptop-11/" className="viewmore">
                   {" "}
                   Xem tất cả
                 </a>
               </div>
             </div>
-            <div
-              className="hidden_tab"
-              id="splist14"
-              rel={14}
-              title="MÁY BỘ PC"
-            >
+            <div className="hidden_tab" id="splist11" rel={11} title="LAPTOP">
               <div className="grid-products">
-                <div className="product ">
-                  <div className="box-product">
-                    <div className="pic-product" data-tooltip="sticky7431">
-                      <a
-                        className="d-block"
-                        href=""
-                        title="Máy tính để bàn PC Dell Vostro 3020T 6FM7X11"
-                      >
-                        <img
-                          src="/public/img/products/PC-Dell-Vostro-3020T-6FM7X11.png"
-                          alt="Máy tính để bàn PC Dell Vostro 3020T 6FM7X11"
-                          className="w100 trans03"
-                        />
-                      </a>
-                      <div className="desc-product">
-                        <div>
-                          <ul>
-                            <li>
-                              CPU Intel Core i5-13400 (20MB, Up to 4.50GHz)
-                            </li>
-                            <li>RAM 8GB DDR4 3200MHz</li>
-                            <li>SSD 512GB M.2 PCIe NVMe</li>
-                            <li>VGA Intel UHD Graphics 730</li>
-                            <li>Color Black (Đen)</li>
-                            <li>Wifi ax + BT, SDcard</li>
-                            <li>Keyboard &amp; Mouse</li>
-                            <li>Weight 7.46 kg</li>
-                            <li>OS Windows 11 Home</li>
-                          </ul>
-                          <div className="baohanh ">Bảo hành: 12 tháng</div>
+                {sanPhamdm3.length > 0 ? (
+                  sanPhamdm3.map((sanpham, index) => (
+                    <div className="product" key={index}>
+                      <div className="box-product">
+                        <div className="pic-product" data-tooltip="sticky7385">
+                          <Link
+                            to={`/chitietsp/sanPham/${sanpham.id}`}
+                            className="d-block"
+                            href=""
+                            title={`${sanpham.ten_sp}`}
+                          >
+                            <img
+                              src={`/img/sanpham/${sanpham.hinh_anh.chinh}`}
+                              alt={`${sanpham.ten_sp}`}
+                              className="w100 trans03"
+                            />
+                          </Link>
+
+                          <div className="hot-icon blink" />
+                          <div className="desc-product">
+                            <div>
+                              <ul>
+                                <li>{sanpham.cau_hinh.cpu}</li>
+                                <li>{sanpham.cau_hinh.ram}</li>
+                                <li>{sanpham.cau_hinh.ocung}</li>
+                                <li>{sanpham.cau_hinh.vga}</li>
+                                <li>{sanpham.cau_hinh.man_hinh}</li>
+                                <li>{sanpham.cau_hinh_chi_tiet.pin}</li>
+                                <li>{sanpham.cau_hinh_chi_tiet.mau_sac}</li>
+                                <li>{sanpham.cau_hinh_chi_tiet.trong_luong}</li>
+                                <li>
+                                  {sanpham.cau_hinh_chi_tiet.he_dieu_hanh}
+                                </li>
+                              </ul>
+                              <p>&nbsp;</p>
+                              <div className="baohanh ">Bảo hành: 12 tháng</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="info-product">
+                          <Link
+                            to="/chitietsp"
+                            className="name-product text-split"
+                            href=""
+                            title={`${sanpham.ten_sp}`}
+                          >
+                            {sanpham.ten_sp}
+                          </Link>
+                          <div className="price-product">
+                            <span className="price-new">{sanpham.gia_sp}đ</span>
+                          </div>
+                          <div className="cart-product d-flex flex-wrap justify-content-between align-items-center">
+                            <span className="status-pro sts2">Còn hàng</span>
+                            <span
+                              className="mua_giohang"
+                              rel={7385}
+                              data-confirm=""
+                              onClick="new jBox()"
+                            >
+                              Mua ngay
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div className="info-product">
-                      <a
-                        className="name-product text-split"
-                        href=""
-                        title="Máy tính để bàn PC Dell Vostro 3020T 6FM7X11"
-                      >
-                        Máy tính để bàn PC Dell Vostro 3020T 6FM7X11
-                      </a>
-                      <div className="price-product">
-                        <span className="price-new">13.890.000 đ</span>
-                      </div>
-                      <div className="cart-product d-flex flex-wrap justify-content-between align-items-center">
-                        <span className="status-pro sts2">Còn hàng</span>
-                        <span
-                          className="mua_giohang"
-                          rel={7431}
-                          data-confirm=""
-                          onClick="new jBox()"
-                        >
-                          Mua ngay
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                  ))
+                ) : (
+                  <p>Đang tải sản phẩm Màn hình...</p>
+                )}
               </div>
               <div className="pagination" style={{ marginTop: 150 }}>
                 <ul className="my_pagination">
@@ -887,7 +1349,7 @@ export default function Trangchu() {
             </div>
           </div>
         </div>
-        {/* products 2 end*/}
+        {/* products 3 end*/}
       </div>
       {/* content */}
     </>

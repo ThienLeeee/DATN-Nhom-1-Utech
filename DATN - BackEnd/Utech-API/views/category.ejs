@@ -19,15 +19,16 @@
   </head>
 
   <body>
-    <h1>ADMIN PAGE</h1>
+   
     <div class="row">
+
       <div class="col-md-2 bg-dark text-white p-4">
         <h3 class="text-center">
           <a
             class="text-decoration-none text-white"
             href="http://localhost:3000/admin"
             ><h3 class="text-center">
-              <span class="text-danger">HPL</span><span>SHOP</span>
+              <span class="text-primary">U</span><span>TECH</span>
             </h3></a
           >
         </h3>
@@ -76,14 +77,14 @@
         </p>
         <hr />
         <div class="text-center">
-          <a href="http://localhost:3000/admin" class="btn btn-danger">Thoát</a>
+          <a href="http://localhost:3000/admin" class="btn btn-primary">Thoát</a>
         </div>
       </div>
+
       <div class="col-md-10 p-0">
-        <div
-          class="shadow bg-danger text-white d-flex justify-content-between align-content-center p-3 pb-1"
-        >
-          <p>TRANG QUẢN TRỊ WEBSITE HPLSHOP</p>
+
+        <div class="shadow bg-primary text-white d-flex justify-content-between align-content-center p-3 pb-1">
+          <p>TRANG QUẢN TRỊ WEBSITE UTECH</p>
           <div>
             <span>Admin</span
             ><img
@@ -95,7 +96,9 @@
             />
           </div>
         </div>
+
         <div class="row p-5">
+          
           <h4>Quản lý danh mục</h4>
           <div>
             <a href="/categories/add"
@@ -118,7 +121,7 @@
                 <td>
                   <a href="/categories/edit/<%=c.id%>"
                     ><button type="button" class="btn btn-light">
-                      <i class="text-danger bi-pencil-square"></i>Sửa
+                      <i class="text-primary bi-pencil-square"></i>Sửa
                     </button></a
                   >
                   <a href="/categories/delete/<%=c.id%>"
@@ -132,10 +135,12 @@
             </tbody>
           </table>
         </div>
+
       </div>
+      
     </div>
     <!-- Footer -->
-    <div class="bg-danger text-white text-center p-2">
+    <div class="bg-primary text-white text-center p-2">
       <p>@2024 by Lê Anh Thiên</p>
     </div>
     <script

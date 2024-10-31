@@ -11,6 +11,7 @@ import Thanhtoan from "./Layout_User/Thanhtoan";
 import Dangnhap from "./DK.DN/Dangnhap";
 import Dangky from "./DK.DN/Dangky";
 
+
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 import "/public/css/style.css";
@@ -35,25 +36,24 @@ import "/public/css/slick/slick.css";
 import "/public/css/slick/slick-theme.css";
 import "/public/css/slick/slick-style.css";
 
+import "/public/js/bootstrap/bootstrap.min.js"
+
+
 export default function Index() {
   return (
     <Router>
       <Header/>
       <Routes>
-        
-
           <Route path="/" element={<Trangchu></Trangchu>}></Route>
           <Route path="/gioithieu" element={<Gioithieu></Gioithieu>}></Route>
           <Route path="/lienhe" element={<LienHe></LienHe>}></Route>
-          <Route path="/chitietsp" element={<Chitietsanpham></Chitietsanpham>}></Route>
-          <Route path="/sanphamtheodm" element={<SanPhamTheodm></SanPhamTheodm>}></Route>
+          <Route path="/chitietsp/sanPham/:id" element={<Chitietsanpham></Chitietsanpham>}></Route>
+          <Route path="/sanPham/id_danhmuc/:id" element={<SanPhamTheodm></SanPhamTheodm>}></Route>
           <Route path="/giohang" element={<Giohang></Giohang>}></Route>
           <Route path="/Dangnhap" element={<Dangnhap></Dangnhap>}></Route>
           <Route path="/Dangky" element={<Dangky></Dangky>}></Route>
-          <Route path="/thanhtoan" element={<Thanhtoan></Thanhtoan>}></Route>
-            
+          <Route path="/thanhtoan" element={<Thanhtoan></Thanhtoan>}></Route>            
       </Routes>
-
       <Footer/>
     </Router>
   );
