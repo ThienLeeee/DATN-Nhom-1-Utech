@@ -251,7 +251,7 @@ export default function SanPhamTheodm() {
                           <div className="price-product">
                             <span className="price-new">
                               {" "}
-                              {sanpham.gia_sp} đ
+                              {sanpham.gia_sp}đ
                             </span>
                           </div>
                           <div className="cart-product d-flex justify-content-between align-items-center">
