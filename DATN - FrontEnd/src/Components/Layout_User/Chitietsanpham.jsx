@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchSanphamIddm } from "../../../service/sanphamService";
 import { useParams } from "react-router-dom";
+import "/public/css/thongsokt.css";
 
 export default function ChiTietSanPham() {
   const { id } = useParams();
@@ -13,6 +14,27 @@ export default function ChiTietSanPham() {
 
   if (!sanpham) {
     return <div>Loading...</div>;
+  }
+
+  let imagePath = "";
+  switch (sanpham.id_danhmuc) {
+    case 1:
+      imagePath = "Laptop";
+      break;
+    case 2:
+      imagePath = "PC";
+      break;
+    case 3:
+      imagePath = "Manhinh";
+      break;
+    case 4:
+      imagePath = "Chuot";
+      break;
+    case 5:
+      imagePath = "Banphim";
+      break;
+    default:
+      imagePath = "Khac";
   }
 
   return (
@@ -37,7 +59,7 @@ export default function ChiTietSanPham() {
                     <figure className="mz-figure mz-hover-zoom mz-ready">
                       <img
                         itemProp="image"
-                        src={`/img/sanpham/Laptop/${sanpham.hinh_anh.chinh}`}
+                        src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.chinh}`}
                         alt={sanpham.ten_sp}
                         style={{ width: 380, height: 333.2 }}
                       />
@@ -51,7 +73,8 @@ export default function ChiTietSanPham() {
                         }}
                       >
                         <img
-                          src={`/img/sanpham/Laptop/${sanpham.hinh_anh.chinh}`}
+                          src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.chinh}`}
+                          alt={sanpham.ten_sp}
                           style={{
                             position: "absolute",
                             top: 0,
@@ -60,7 +83,6 @@ export default function ChiTietSanPham() {
                             height: 330,
                             transform: "translate(-12px, -77px)",
                           }}
-                          alt="Công ty TNHH Phát Triển Tin Học Utech"
                         />
                       </div>
                       <div className="mz-loading" />
@@ -98,97 +120,95 @@ export default function ChiTietSanPham() {
                             transform: "translate3d(-95px, 0px, 0px)",
                           }}
                         >
-                            {/* anh_phu_1 */}
+                          {/* anh_phu_1 */}
                           <div className="owl-item" style={{ width: 95 }}>
                             <div className="item_owl_sub">
                               <a
-                                href={`/img/sanpham/Laptop/${sanpham.hinh_anh.phu1}`}
+                                href={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu1}`}
                                 rel="zoom-id: Zoomer"
                                 className="mz-thumb-selected mz-thumb"
                               >
                                 <img
-                                  src={`/img/sanpham/Laptop/${sanpham.hinh_anh.phu1}`}
+                                  src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu1}`}
                                   className="w100"
                                   alt={sanpham.ten_sp}
                                 />
                               </a>
                             </div>
                           </div>
-                           {/* anh_phu_1 end*/}
+                          {/* anh_phu_1 end*/}
 
-                            {/* anh_phu_2 */}
+                          {/* anh_phu_2 */}
                           <div className="owl-item" style={{ width: 95 }}>
                             <div className="item_owl_sub">
                               <a
-                                href={`/img/sanpham/Laptop/${sanpham.hinh_anh.phu2}`}
+                                href={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu2}`}
                                 rel="zoom-id: Zoomer"
                                 className="mz-thumb"
                               >
                                 <img
-                                  src={`/img/sanpham/Laptop/${sanpham.hinh_anh.phu2}`}
+                                  src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu2}`}
                                   className="w100"
                                   alt={sanpham.ten_sp}
                                 />
                               </a>
                             </div>
                           </div>
-                             {/* anh_phu_2 end */}
+                          {/* anh_phu_2 end */}
 
-                              {/* anh_phu_3 */}
+                          {/* anh_phu_3 */}
                           <div className="owl-item" style={{ width: 95 }}>
                             <div className="item_owl_sub">
                               <a
-                                href={`/img/sanpham/Laptop/${sanpham.hinh_anh.phu3}`}
+                                src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu3}`}
                                 rel="zoom-id: Zoomer"
                                 className="mz-thumb"
                               >
                                 <img
-                                  src={`/img/sanpham/Laptop/${sanpham.hinh_anh.phu3}`}
+                                  src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu3}`}
                                   className="w100"
                                   alt={sanpham.ten_sp}
                                 />
                               </a>
                             </div>
                           </div>
-                             {/* anh_phu_3 end */}
+                          {/* anh_phu_3 end */}
 
-                           {/* anh_phu_4 */}
+                          {/* anh_phu_4 */}
                           <div className="owl-item" style={{ width: 95 }}>
                             <div className="item_owl_sub">
                               <a
-                                href={`/img/sanpham/Laptop/${sanpham.hinh_anh.phu4}`}
+                                src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu4}`}
                                 rel="zoom-id: Zoomer"
                                 className="mz-thumb"
                               >
                                 <img
-                                  src={`/img/sanpham/Laptop/${sanpham.hinh_anh.phu4}`}
+                                  src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu4}`}
                                   className="w100"
                                   alt={sanpham.ten_sp}
                                 />
                               </a>
                             </div>
                           </div>
-                           {/* anh_phu_4 end */}
+                          {/* anh_phu_4 end */}
 
-                            {/* anh_phu_5 */}
+                          {/* anh_phu_5 */}
                           <div className="owl-item" style={{ width: 95 }}>
                             <div className="item_owl_sub">
                               <a
-                                href={`/img/sanpham/Laptop/${sanpham.hinh_anh.phu5}`}
+                                src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu5}`}
                                 rel="zoom-id: Zoomer"
                                 className="mz-thumb"
                               >
                                 <img
-                                  src={`/img/sanpham/Laptop/${sanpham.hinh_anh.phu5}`}
+                                  src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu5}`}
                                   className="w100"
                                   alt={sanpham.ten_sp}
                                 />
                               </a>
                             </div>
                           </div>
-                           {/* anh_phu_5 end */}
-
-                          
+                          {/* anh_phu_5 end */}
                         </div>
                       </div>
                     </div>
@@ -196,6 +216,7 @@ export default function ChiTietSanPham() {
                   </div>
                 </div>
               </div>
+
               <div className="info_detail">
                 <h1
                   style={{ display: "inline", verticalAlign: "middle" }}
@@ -214,25 +235,94 @@ export default function ChiTietSanPham() {
                     <span style={{ color: "#006fd5" }}>Còn hàng</span>
                   </strong>
                 </div>
+
                 <div className="item_info_detail">
                   <div className="mota_detail text" itemProp="description">
-                    <ul>
-                      <li>{sanpham.cau_hinh.cpu}</li>
-                      <li>{sanpham.cau_hinh.ram}</li>
-                      <li>{sanpham.cau_hinh.o_cung}</li>
-                      <li>{sanpham.cau_hinh.vga}</li>
-                      <li>{sanpham.cau_hinh.man_hinh}</li>
-                      <li>{sanpham.cau_hinh_chi_tiet.pin}</li>
-                      <li>{sanpham.cau_hinh_chi_tiet.mau_sac}</li>
-                      <li>{sanpham.cau_hinh_chi_tiet.trong_luong}</li>
-                      <li>{sanpham.cau_hinh_chi_tiet.he_dieu_hanh}</li>
-                    </ul>
+                    {sanpham.id_danhmuc === 1 && (
+                      <ul>
+                        <li>CPU: {sanpham.cau_hinh.cpu}</li>
+                        <li>RAM: {sanpham.cau_hinh.ram}</li>
+                        <li>Ổ cứng: {sanpham.cau_hinh.o_cung}</li>
+                        <li>VGA: {sanpham.cau_hinh.vga}</li>
+                        <li>Màn hình: {sanpham.cau_hinh.man_hinh}</li>
+                        <li>Pin: {sanpham.cau_hinh_chi_tiet.pin}</li>
+                        <li>Màu sắc: {sanpham.cau_hinh_chi_tiet.mau_sac}</li>
+                        <li>
+                          Trọng lượng: {sanpham.cau_hinh_chi_tiet.trong_luong}
+                        </li>
+                        <li>
+                          Hệ điều hành: {sanpham.cau_hinh_chi_tiet.he_dieu_hanh}
+                        </li>
+                      </ul>
+                    )}
+                    {sanpham.id_danhmuc === 2 && (
+                      <ul>
+                        <li>Mainboard: {sanpham.cau_hinh.mainboard}</li>
+                        <li>CPU: {sanpham.cau_hinh.cpu}</li>
+                        <li>RAM: {sanpham.cau_hinh.ram}</li>
+                        <li>VGA: {sanpham.cau_hinh.vga}</li>
+                        <li>HDD: {sanpham.cau_hinh.hdd}</li>
+                        <li>SSD: {sanpham.cau_hinh.ssd}</li>
+                        <li>PSU: {sanpham.cau_hinh.psu}</li>
+                        <li>Case: {sanpham.cau_hinh.case}</li>
+                        <li>Cooling: {sanpham.cau_hinh.cooling}</li>
+                      </ul>
+                    )}
+                    {sanpham.id_danhmuc === 3 && (
+                      <ul>
+                        <li>Kiểu màn hình: {sanpham.cau_hinh.kieu_man_hinh}</li>
+                        <li>Kích thước: {sanpham.cau_hinh.kich_thuoc}</li>
+                        <li>
+                          Tương thích VESA: {sanpham.cau_hinh.tuong_thich_vesa}
+                        </li>
+                        <li>Cổng kết nối: {sanpham.cau_hinh.cong_ket_noi}</li>
+                        <li>Tần số quét: {sanpham.cau_hinh.tan_so_quet}</li>
+                        <li>Độ phân giải: {sanpham.cau_hinh.do_phan_giai}</li>
+                        <li>Tấm nền: {sanpham.cau_hinh.tam_nen}</li>
+                        <li>
+                          Không gian màu: {sanpham.cau_hinh.khong_gian_mau}
+                        </li>
+                        <li>
+                          Phụ kiện trong hộp:{" "}
+                          {sanpham.cau_hinh.phu_kien_trong_hop || "N/A"}
+                        </li>
+                        <li>
+                          Thời gian phản hồi:{" "}
+                          {sanpham.cau_hinh.thoi_gian_phan_hoi}
+                        </li>
+                        <li>Độ sáng: {sanpham.cau_hinh.do_sang}</li>
+                      </ul>
+                    )}
+                    {sanpham.id_danhmuc === 4 && (
+                      <ul>
+                        <li>Màu sắc: {sanpham.cau_hinh.mau_sac}</li>
+                        <li>Kết nối: {sanpham.cau_hinh.ket_noi}</li>
+                        <li>LED: {sanpham.cau_hinh.led}</li>
+                        <li>Cảm biến: {sanpham.cau_hinh.cam_bien}</li>
+                        <li>Số nút: {sanpham.cau_hinh.so_nut}</li>
+                        <li>Tuổi thọ: {sanpham.cau_hinh.tuoi_tho}</li>
+                        <li>DPI: {sanpham.cau_hinh.DPI}</li>
+                        <li>IPS: {sanpham.cau_hinh.IPS}</li>
+                        <li>Trọng lượng: {sanpham.cau_hinh.trong_luong}</li>
+                      </ul>
+                    )}
+                    {sanpham.id_danhmuc === 5 && (
+                      <ul>
+                        <li>Kết nối: {sanpham.cau_hinh.ket_noi}</li>
+                        <li>Switch: {sanpham.cau_hinh.switch}</li>
+                        <li>Keycap: {sanpham.cau_hinh.keycap}</li>
+                        <li>Tương thích: {sanpham.cau_hinh.tuong_thich}</li>
+                        <li>Kích thước: {sanpham.cau_hinh.kich_thuoc}</li>
+                        <li>Trọng lượng: {sanpham.cau_hinh.trong_luong}</li>
+                      </ul>
+                    )}
                     <p>&nbsp;</p>
                   </div>
                   <div className="baohanh_detail">
                     <strong>Bảo hành: </strong>12 tháng
                   </div>
                 </div>
+
                 <div
                   className="item_info_detail gia_detail"
                   itemProp="offers"
@@ -255,6 +345,7 @@ export default function ChiTietSanPham() {
                   <div className="addthis_inline_share_toolbox" />
                 </div>
               </div>
+
               <div className="chucnang_detail">
                 <div className="yentam">
                   <div
@@ -489,9 +580,11 @@ export default function ChiTietSanPham() {
                   <a href="#thongsokythuat" className="item_tab active">
                     Thông số kỹ thuật
                   </a>
+
                   <div className="clear" />
+
                   <div id="thongsokythuat" className="content_tab active">
-                    <div className="text">
+                    <div className="table-product-details">
                       <table
                         border={0}
                         cellPadding={0}
@@ -504,2785 +597,220 @@ export default function ChiTietSanPham() {
                           fontSize: 14,
                         }}
                       >
-                        <tbody style={{ boxSizing: "border-box" }}>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              colSpan={2}
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                background: "rgb(211, 223, 238)",
-                                height: 17,
-                                width: 541,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <strong
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span
-                                    style={{
-                                      boxSizing: "border-box",
-                                      padding: 0,
-                                      marginTop: 0,
-                                    }}
-                                  >
-                                    <span style={{ color: "#335a89" }}>
-                                      Bộ vi xử lý (CPU)
-                                    </span>
-                                  </span>
-                                </strong>
-                                &nbsp;
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                width: 318,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Tên bộ vi xử lý
-                                  </span>
-                                </span>
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                  marginRight: "-5.4pt",
-                                }}
-                              >
-                                Intel
-                                <sup style={{ boxSizing: "border-box" }}>®</sup>
-                                &nbsp;Core™&nbsp;
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#ff0000" }}>
-                                    <strong
-                                      style={{
-                                        boxSizing: "border-box",
-                                        padding: 0,
-                                        marginTop: 0,
-                                      }}
-                                    >
-                                      i3-1305U&nbsp;
-                                    </strong>
-                                  </span>
-                                </span>
-                                Processor
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                width: 318,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                Tốc độ, số nhân số luồng
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                  marginBottom: "0in",
-                                }}
-                              >
-                                Up to 4.50GHz, 5 Cores, 6 Threads
-                                <br style={{ boxSizing: "border-box" }} />
-                                P-Cores: 1 Cores, 2 Threads, 1.60GHz Base,
-                                4.50GHz Turbo
-                                <br style={{ boxSizing: "border-box" }} />
-                                E-Cores: 4 Cores, 4 Threads, 1.30GHz Base,
-                                3.30GHz Turbo
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                width: 318,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Bộ nhớ đệm
-                                  </span>
-                                </span>
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                L1: 80K, L2: 1280K, L3: 10MB
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              colSpan={2}
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                background: "rgb(211, 223, 238)",
-                                height: 17,
-                                width: 541,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <strong
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span
-                                    style={{
-                                      boxSizing: "border-box",
-                                      padding: 0,
-                                      marginTop: 0,
-                                    }}
-                                  >
-                                    <span style={{ color: "#335a89" }}>
-                                      Bộ nhớ trong (
-                                      <a
-                                        href="https://www.ankhang.vn/ram-laptop_dm15.html"
-                                        style={{
-                                          boxSizing: "border-box",
-                                          color: "rgb(34, 34, 34)",
-                                          textDecorationLine: "none",
-                                          transition: "all 0.4s ease 0s",
-                                        }}
-                                        target="_blank"
-                                        title="Ram laptop, ram 4GB  DDr3, Ram notebook"
-                                      >
-                                        <span
-                                          style={{
-                                            boxSizing: "border-box",
-                                            padding: 0,
-                                            marginTop: 0,
-                                          }}
-                                        >
-                                          <span style={{ color: "#335a89" }}>
-                                            RAM Laptop
-                                          </span>
-                                        </span>
-                                      </a>
-                                      )
-                                    </span>
-                                  </span>
-                                </strong>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 213,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Dung lượng
-                                  </span>
-                                </span>
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <div
-                                  style={{
-                                    boxSizing: "border-box",
-                                    lineHeight: 3,
-                                  }}
-                                >
-                                  <span
-                                    style={{
-                                      boxSizing: "border-box",
-                                      padding: 0,
-                                      marginTop: 0,
-                                    }}
-                                  >
-                                    <span style={{ color: "#ff0000" }}>
-                                      <strong
-                                        style={{
-                                          boxSizing: "border-box",
-                                          padding: 0,
-                                          marginTop: 0,
-                                        }}
-                                      >
-                                        8GB DDR4
-                                      </strong>
-                                    </span>
-                                  </span>
-                                  &nbsp;2666MHz (1x8GB)
-                                </div>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 213,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Số khe cắm
-                                  </span>
-                                </span>
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                  marginBottom: "0in",
-                                }}
-                              >
-                                2&nbsp;x&nbsp;DDR4 2666MHz Slots &lt;Đã sử dụng
-                                1&gt;
-                                <br style={{ boxSizing: "border-box" }} />
-                                Max 64GB
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              colSpan={2}
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                background: "rgb(211, 223, 238)",
-                                height: 17,
-                                width: 541,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <strong
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span
-                                    style={{
-                                      boxSizing: "border-box",
-                                      padding: 0,
-                                      marginTop: 0,
-                                    }}
-                                  >
-                                    <span style={{ color: "#335a89" }}>
-                                      Dung lượng lưu trữ&nbsp;(
-                                      <a
-                                        href="https://www.ankhang.vn/o-cung-laptop-ssd.html"
-                                        style={{
-                                          boxSizing: "border-box",
-                                          color: "rgb(34, 34, 34)",
-                                          textDecorationLine: "none",
-                                          transition: "all 0.4s ease 0s",
-                                        }}
-                                        target="_blank"
-                                        title="O cung laptop, HDD laptop, ổ cứng laptop"
-                                      >
-                                        <span
-                                          style={{
-                                            boxSizing: "border-box",
-                                            padding: 0,
-                                            marginTop: 0,
-                                          }}
-                                        >
-                                          <span style={{ color: "#335a89" }}>
-                                            SSD Laptop
-                                          </span>
-                                        </span>
-                                      </a>
-                                      )
-                                    </span>
-                                  </span>
-                                </strong>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 213,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Dung lượng
-                                  </span>
-                                </span>
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#ff0000" }}>
-                                    <strong
-                                      style={{
-                                        boxSizing: "border-box",
-                                        padding: 0,
-                                        marginTop: 0,
-                                      }}
-                                    >
-                                      256GB SSD
-                                    </strong>
-                                  </span>
-                                </span>
-                                &nbsp;M.2 PCIe NVMe
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 213,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Tốc độ vòng quay
-                                  </span>
-                                </span>
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                &nbsp;
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 213,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Khả năng lưu trữ
-                                  </span>
-                                </span>
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                1 x M.2 2230/2280 slot for solid-state
-                                drive&nbsp;&lt;Đã sử dụng, có thể nhấc ra thay
-                                thế&gt;
-                                <br style={{ boxSizing: "border-box" }} />
-                                No HDD
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              colSpan={2}
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                background: "rgb(211, 223, 238)",
-                                height: 17,
-                                width: 541,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <strong
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span
-                                    style={{
-                                      boxSizing: "border-box",
-                                      padding: 0,
-                                      marginTop: 0,
-                                    }}
-                                  >
-                                    <span style={{ color: "#335a89" }}>
-                                      Ổ đĩa quang (ODD)
-                                    </span>
-                                  </span>
-                                </strong>
-                                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 213,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                &nbsp;
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                None&nbsp;
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              colSpan={2}
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                background: "rgb(211, 223, 238)",
-                                height: 17,
-                                width: 541,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <strong
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span
-                                    style={{
-                                      boxSizing: "border-box",
-                                      padding: 0,
-                                      marginTop: 0,
-                                    }}
-                                  >
-                                    <span style={{ color: "#335a89" }}>
-                                      Hiển thị
-                                    </span>
-                                  </span>
-                                </strong>
-                                <strong
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span
-                                    style={{
-                                      boxSizing: "border-box",
-                                      padding: 0,
-                                      marginTop: 0,
-                                    }}
-                                  >
-                                    <span style={{ color: "#2a4592" }}>
-                                      &nbsp;(
-                                      <span
-                                        style={{
-                                          boxSizing: "border-box",
-                                          padding: 0,
-                                          marginTop: 0,
-                                        }}
-                                      >
-                                        Màn hình Laptop
-                                      </span>
-                                    </span>
-                                  </span>
-                                </strong>
-                                <strong
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span
-                                    style={{
-                                      boxSizing: "border-box",
-                                      padding: 0,
-                                      marginTop: 0,
-                                    }}
-                                  >
-                                    <span style={{ color: "#335a89" }}>)</span>
-                                  </span>
-                                </strong>
-                                &nbsp;
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 213,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Màn hình
-                                  </span>
-                                </span>
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#ff0000" }}>
-                                    <strong
-                                      style={{
-                                        boxSizing: "border-box",
-                                        padding: 0,
-                                        marginTop: 0,
-                                      }}
-                                    >
-                                      14.0Inch FHD&nbsp;WVA&nbsp;
-                                    </strong>
-                                  </span>
-                                </span>
-                                Anti-Glare LED Backlit Narrow
-                                Border&nbsp;Non-Touch
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 213,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Độ phân giải
-                                  </span>
-                                </span>
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                FHD (1920 x 1080)
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              colSpan={2}
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                background: "rgb(211, 223, 238)",
-                                height: 17,
-                                width: 541,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <strong
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span
-                                    style={{
-                                      boxSizing: "border-box",
-                                      padding: 0,
-                                      marginTop: 0,
-                                    }}
-                                  >
-                                    <span style={{ color: "#335a89" }}>
-                                      Đồ Họa (VGA)
-                                    </span>
-                                  </span>
-                                </strong>
-                                &nbsp;
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 213,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Bộ xử lý
-                                  </span>
-                                </span>
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <strong
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span
-                                    style={{
-                                      boxSizing: "border-box",
-                                      padding: 0,
-                                      marginTop: 0,
-                                    }}
-                                  >
-                                    <span style={{ color: "#ff0000" }}>
-                                      Intel
-                                      <sup style={{ boxSizing: "border-box" }}>
-                                        ®
-                                      </sup>
-                                      &nbsp;UHD Graphics
-                                    </span>
-                                  </span>
-                                </strong>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 213,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Công nghệ
-                                  </span>
-                                </span>
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                &nbsp;
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              colSpan={2}
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                background: "rgb(211, 223, 238)",
-                                height: 17,
-                                width: 541,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <strong
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span
-                                    style={{
-                                      boxSizing: "border-box",
-                                      padding: 0,
-                                      marginTop: 0,
-                                    }}
-                                  >
-                                    <span style={{ color: "#335a89" }}>
-                                      Kết nối (Network)
-                                    </span>
-                                  </span>
-                                </strong>
-                                &nbsp;
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 213,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Wireless
-                                  </span>
-                                </span>
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                WiFi&nbsp;802.11ac 1x1
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 213,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>Lan</span>
-                                </span>
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                  marginBottom: "0in",
-                                }}
-                              >
-                                1 x RJ45 Ethernet port
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 213,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Bluetooth
-                                  </span>
-                                </span>
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                Bluetooth 5.0
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 213,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    3G/ Wimax (4G)
-                                  </span>
-                                </span>
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                &nbsp;
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              colSpan={2}
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                color: "rgb(51, 90, 137)",
-                                background: "rgb(211, 223, 238)",
-                                height: 17,
-                                width: 541,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <strong
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <a
-                                    href="https://www.ankhang.vn/ban-phim-rieng.html"
-                                    style={{
-                                      boxSizing: "border-box",
-                                      color: "rgb(34, 34, 34)",
-                                      textDecorationLine: "none",
-                                      transition: "all 0.4s ease 0s",
-                                    }}
-                                    target="_blank"
-                                  >
-                                    <span
-                                      style={{
-                                        boxSizing: "border-box",
-                                        padding: 0,
-                                        marginTop: 0,
-                                      }}
-                                    >
-                                      <span style={{ color: "#335a89" }}>
-                                        Bàn Phím Laptop
-                                      </span>
-                                    </span>
-                                  </a>
-                                </strong>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 213,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Kiểu bàn phím
-                                  </span>
-                                </span>
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                Carbon Black English International
-                                Keyboard&nbsp;(Không led phím, k bàn phím phụ)
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              colSpan={2}
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                background: "rgb(211, 223, 238)",
-                                height: 17,
-                                width: 541,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <strong
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span
-                                    style={{
-                                      boxSizing: "border-box",
-                                      padding: 0,
-                                      marginTop: 0,
-                                    }}
-                                  >
-                                    <span style={{ color: "#335a89" }}>
-                                      Mouse (
-                                      <a
-                                        href="https://www.ankhang.vn/chuot-rieng.html"
-                                        style={{
-                                          boxSizing: "border-box",
-                                          color: "rgb(34, 34, 34)",
-                                          textDecorationLine: "none",
-                                          transition: "all 0.4s ease 0s",
-                                        }}
-                                        target="_blank"
-                                      >
-                                        <span
-                                          style={{
-                                            boxSizing: "border-box",
-                                            padding: 0,
-                                            marginTop: 0,
-                                          }}
-                                        >
-                                          <span style={{ color: "#335a89" }}>
-                                            Chuột Laptop
-                                          </span>
-                                        </span>
-                                      </a>
-                                    </span>
-                                  </span>
-                                </strong>
-                                <strong
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span
-                                    style={{
-                                      boxSizing: "border-box",
-                                      padding: 0,
-                                      marginTop: 0,
-                                    }}
-                                  >
-                                    <span style={{ color: "#335a89" }}>)</span>
-                                  </span>
-                                </strong>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 213,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                &nbsp;
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                Cảm ứng đa điểm
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              colSpan={2}
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                background: "rgb(211, 223, 238)",
-                                height: 17,
-                                width: 541,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <strong
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span
-                                    style={{
-                                      boxSizing: "border-box",
-                                      padding: 0,
-                                      marginTop: 0,
-                                    }}
-                                  >
-                                    <span style={{ color: "#335a89" }}>
-                                      Giao tiếp mở rộng
-                                    </span>
-                                  </span>
-                                </strong>
-                                &nbsp;
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 213,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Kết nối USB
-                                  </span>
-                                </span>
-                              </div>
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                &nbsp;
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                1 x USB 3.2 Gen 1 port
-                                <br style={{ boxSizing: "border-box" }} />
-                                1 x USB 2.0 port
-                                <br style={{ boxSizing: "border-box" }} />1 x
-                                USB 3.2 Gen 1 Type-C
-                                <sup style={{ boxSizing: "border-box" }}>®</sup>
-                                &nbsp;port&nbsp;
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#ffff00" }}></span>
-                                </span>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 213,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Kết nối HDMI/ VGA
-                                  </span>
-                                </span>
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                1 x HDMI 1.4 port
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 213,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Khe cắm thẻ nhớ
-                                  </span>
-                                </span>
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                1 x SD-card slot
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 213,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Tai nghe
-                                  </span>
-                                </span>
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                1 x Universal audio port
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 213,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Camera&nbsp;
-                                  </span>
-                                </span>
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                720p at 30 fps HD RGB camera, single integrated
-                                microphone&nbsp;
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#ffff00" }}></span>
-                                </span>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 213,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Audio and Speakers
-                                  </span>
-                                </span>
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                Stereo speakers, 2W x 2 = 4W total
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              colSpan={2}
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                background: "rgb(211, 223, 238)",
-                                height: 17,
-                                width: 541,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#335a89" }}>
-                                    <strong
-                                      style={{
-                                        boxSizing: "border-box",
-                                        padding: 0,
-                                        marginTop: 0,
-                                      }}
-                                    >
-                                      Pin Laptop
-                                    </strong>
-                                  </span>
-                                </span>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 213,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Dung lượng pin
-                                  </span>
-                                </span>
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <strong
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  3Cell 41WHrs
-                                </strong>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 213,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Thời gian sử dụng
-                                  </span>
-                                </span>
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                &nbsp;
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              colSpan={2}
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                background: "rgb(211, 223, 238)",
-                                height: 17,
-                                width: 541,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <strong
-                                    style={{
-                                      boxSizing: "border-box",
-                                      padding: 0,
-                                      marginTop: 0,
-                                    }}
-                                  >
-                                    <span
-                                      style={{
-                                        boxSizing: "border-box",
-                                        padding: 0,
-                                        marginTop: 0,
-                                      }}
-                                    >
-                                      <span style={{ color: "#335a89" }}>
-                                        Sạc Pin Laptop
-                                      </span>
-                                    </span>
-                                  </strong>
-                                </span>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 213,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                &nbsp;
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 213,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                Đi kèm
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              colSpan={2}
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                background: "rgb(211, 223, 238)",
-                                height: 17,
-                                width: 541,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <strong
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span
-                                    style={{
-                                      boxSizing: "border-box",
-                                      padding: 0,
-                                      marginTop: 0,
-                                    }}
-                                  >
-                                    <span style={{ color: "#335a89" }}>
-                                      Hệ điều hành (Operating System)
-                                    </span>
-                                  </span>
-                                </strong>
-                                &nbsp;
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 213,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Hệ điều hành đi kèm
-                                  </span>
-                                </span>
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#ff0000" }}>
-                                    <strong
-                                      style={{
-                                        boxSizing: "border-box",
-                                        padding: 0,
-                                        marginTop: 0,
-                                      }}
-                                    >
-                                      Ubuntu
-                                    </strong>
-                                  </span>
-                                </span>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 213,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Hệ điều hành tương thích
-                                  </span>
-                                </span>
-                              </div>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                height: 17,
-                                width: 328,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  boxSizing: "border-box",
-                                  lineHeight: 3,
-                                }}
-                              >
-                                Windows&nbsp;11
-                              </div>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              colSpan={2}
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                width: 541,
-                                background: "rgb(211, 223, 238)",
-                                height: 17,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <p
-                                style={{
-                                  boxSizing: "border-box",
-                                  padding: 0,
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <strong
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span
-                                    style={{
-                                      boxSizing: "border-box",
-                                      padding: 0,
-                                      marginTop: 0,
-                                    }}
-                                  >
-                                    <span style={{ color: "#335a89" }}>
-                                      Thông tin khác
-                                    </span>
-                                  </span>
-                                </strong>
-                              </p>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                width: 213,
-                                height: 17,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <p
-                                style={{
-                                  boxSizing: "border-box",
-                                  padding: 0,
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Trọng Lượng
-                                  </span>
-                                </span>
-                              </p>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                width: 328,
-                                height: 17,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <p
-                                style={{
-                                  boxSizing: "border-box",
-                                  padding: 0,
-                                  lineHeight: 3,
-                                }}
-                              >
-                                1,46 kg
-                              </p>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                width: 213,
-                                height: 17,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <p
-                                style={{
-                                  boxSizing: "border-box",
-                                  padding: 0,
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Màu sắc
-                                  </span>
-                                </span>
-                              </p>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                width: 328,
-                                height: 17,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <p
-                                style={{
-                                  boxSizing: "border-box",
-                                  padding: 0,
-                                  lineHeight: 3,
-                                }}
-                              >
-                                Titan Grey&nbsp;(Xám)
-                              </p>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                width: 213,
-                                height: 17,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <p
-                                style={{
-                                  boxSizing: "border-box",
-                                  padding: 0,
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    <span
-                                      style={{
-                                        boxSizing: "border-box",
-                                        padding: 0,
-                                        marginTop: 0,
-                                      }}
-                                    >
-                                      Thiết kế
-                                    </span>
-                                  </span>
-                                </span>
-                              </p>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                width: 328,
-                                height: 17,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <p
-                                style={{
-                                  boxSizing: "border-box",
-                                  padding: 0,
-                                  lineHeight: 3,
-                                }}
-                              >
-                                1. Chiều cao: 18,62 mm – 19,48 mm (0,73 inch –
-                                0,77 inch)
-                                <br style={{ boxSizing: "border-box" }} />
-                                2. Chiều rộng: 323,67 mm (12,74 inch)
-                                <br style={{ boxSizing: "border-box" }} />
-                                3. Chiều sâu: 220,26 mm (8,67 inch)
-                              </p>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                width: 213,
-                                height: 17,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <p
-                                style={{
-                                  boxSizing: "border-box",
-                                  padding: 0,
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Chất liệu vỏ
-                                  </span>
-                                </span>
-                              </p>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                width: 328,
-                                height: 17,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <p
-                                style={{
-                                  boxSizing: "border-box",
-                                  padding: 0,
-                                  lineHeight: 3,
-                                }}
-                              >
-                                Nhựa (mặt A, C, D)
-                              </p>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                width: 213,
-                                height: 17,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <p
-                                style={{
-                                  boxSizing: "border-box",
-                                  padding: 0,
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Bảo mật
-                                  </span>
-                                </span>
-                              </p>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                width: 328,
-                                height: 17,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <p
-                                style={{
-                                  boxSizing: "border-box",
-                                  padding: 0,
-                                  lineHeight: 3,
-                                }}
-                              >
-                                Mật khẩu
-                              </p>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                width: 213,
-                                height: 17,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <p
-                                style={{
-                                  boxSizing: "border-box",
-                                  padding: 0,
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    <span
-                                      style={{
-                                        boxSizing: "border-box",
-                                        padding: 0,
-                                        marginTop: 0,
-                                      }}
-                                    >
-                                      Phụ kiện đi kèm
-                                    </span>
-                                  </span>
-                                </span>
-                              </p>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                width: 328,
-                                height: 17,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <p
-                                style={{
-                                  boxSizing: "border-box",
-                                  padding: 0,
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    65W AC Adapter, tài liệu, sách
-                                  </span>
-                                </span>
-                              </p>
-                            </td>
-                          </tr>
-                          <tr style={{ boxSizing: "border-box", height: 17 }}>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                width: 213,
-                                height: 17,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <p
-                                style={{
-                                  boxSizing: "border-box",
-                                  padding: 0,
-                                  lineHeight: 3,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    boxSizing: "border-box",
-                                    padding: 0,
-                                    marginTop: 0,
-                                  }}
-                                >
-                                  <span style={{ color: "#000000" }}>
-                                    Xuất xứ
-                                  </span>
-                                </span>
-                              </p>
-                            </td>
-                            <td
-                              style={{
-                                boxSizing: "border-box",
-                                border: "1px solid rgb(204, 204, 204)",
-                                padding: "0in 5.4pt",
-                                width: 328,
-                                height: 17,
-                                verticalAlign: "bottom",
-                              }}
-                            >
-                              <p
-                                style={{
-                                  boxSizing: "border-box",
-                                  padding: 0,
-                                  lineHeight: 3,
-                                }}
-                              >
-                                China (H+K)
-                              </p>
-                            </td>
-                          </tr>
+                        <tbody >
+                        
+                          {sanpham.id_danhmuc === 1 && (
+                            <>
+                              <tbody>
+                                <tr>
+                                  <td>CPU</td>
+                                  <td>{sanpham.cau_hinh.cpu}</td>
+                                </tr>
+                                <tr>
+                                  <td>RAM</td>
+                                  <td>{sanpham.cau_hinh.ram}</td>
+                                </tr>
+                                <tr>
+                                  <td>Ổ cứng</td>
+                                  <td>{sanpham.cau_hinh.o_cung}</td>
+                                </tr>
+                                <tr>
+                                  <td>VGA</td>
+                                  <td>{sanpham.cau_hinh.vga}</td>
+                                </tr>
+                                <tr>
+                                  <td>Màn hình</td>
+                                  <td>{sanpham.cau_hinh.man_hinh}</td>
+                                </tr>
+                                <tr>
+                                  <td>Pin</td>
+                                  <td>{sanpham.cau_hinh_chi_tiet.pin}</td>
+                                </tr>
+                                <tr>
+                                  <td>Màu sắc</td>
+                                  <td>{sanpham.cau_hinh_chi_tiet.mau_sac}</td>
+                                </tr>
+                                <tr>
+                                  <td>Trọng lượng</td>
+                                  <td>
+                                    {sanpham.cau_hinh_chi_tiet.trong_luong}
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>Hệ điều hành</td>
+                                  <td>
+                                    {sanpham.cau_hinh_chi_tiet.he_dieu_hanh}
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </>
+                          )}
+
+                          {sanpham.id_danhmuc === 2 && (
+                            <>
+                              <tbody>
+                                <tr>
+                                  <td>Mainboard</td>
+                                  <td>{sanpham.cau_hinh.mainboard}</td>
+                                </tr>
+                                <tr>
+                                  <td>HDD</td>
+                                  <td>{sanpham.cau_hinh.hdd}</td>
+                                </tr>
+                                <tr>
+                                  <td>SSD</td>
+                                  <td>{sanpham.cau_hinh.ssd}</td>
+                                </tr>
+                                <tr>
+                                  <td>PSU</td>
+                                  <td>{sanpham.cau_hinh.psu}</td>
+                                </tr>
+                                <tr>
+                                  <td>Case</td>
+                                  <td>{sanpham.cau_hinh.case}</td>
+                                </tr>
+                                <tr>
+                                  <td>Cooling</td>
+                                  <td>{sanpham.cau_hinh.cooling}</td>
+                                </tr>
+                              </tbody>
+                            </>
+                          )}
+
+                          {sanpham.id_danhmuc === 3 && (
+                            <>
+                              <tbody>
+                                <tr>
+                                  <td>Kiểu màn hình</td>
+                                  <td>{sanpham.cau_hinh.kieu_man_hinh}</td>
+                                </tr>
+                                <tr>
+                                  <td>Kích thước</td>
+                                  <td>{sanpham.cau_hinh.kich_thuoc}</td>
+                                </tr>
+                                <tr>
+                                  <td>Tương thích VESA</td>
+                                  <td>{sanpham.cau_hinh.tuong_thich_vesa}</td>
+                                </tr>
+                                <tr>
+                                  <td>Cổng kết nối</td>
+                                  <td>{sanpham.cau_hinh.cong_ket_noi}</td>
+                                </tr>
+                                <tr>
+                                  <td>Tần số quét</td>
+                                  <td>{sanpham.cau_hinh.tan_so_quet}</td>
+                                </tr>
+                                <tr>
+                                  <td>Độ phân giải</td>
+                                  <td>{sanpham.cau_hinh.do_phan_giai}</td>
+                                </tr>
+                                <tr>
+                                  <td>Tấm nền</td>
+                                  <td>{sanpham.cau_hinh.tam_nen}</td>
+                                </tr>
+                                <tr>
+                                  <td>Không gian màu</td>
+                                  <td>{sanpham.cau_hinh.khong_gian_mau}</td>
+                                </tr>
+                                <tr>
+                                  <td>Phụ kiện trong hộp</td>
+                                  <td>
+                                    {sanpham.cau_hinh.phu_kien_trong_hop ||
+                                      "N/A"}
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>Thời gian phản hồi</td>
+                                  <td>{sanpham.cau_hinh.thoi_gian_phan_hoi}</td>
+                                </tr>
+                                <tr>
+                                  <td>Độ sáng</td>
+                                  <td>{sanpham.cau_hinh.do_sang}</td>
+                                </tr>
+                              </tbody>
+                            </>
+                          )}
+
+                          {sanpham.id_danhmuc === 4 && (
+                            <>
+                             
+                              <tbody>
+                                <tr>
+                                  <td>Màu sắc</td>
+                                  <td>{sanpham.cau_hinh.mau_sac}</td>
+                                </tr>
+                                <tr>
+                                  <td>Kết nối</td>
+                                  <td>{sanpham.cau_hinh.ket_noi}</td>
+                                </tr>
+                                <tr>
+                                  <td>LED</td>
+                                  <td>{sanpham.cau_hinh.led}</td>
+                                </tr>
+                                <tr>
+                                  <td>Cảm biến</td>
+                                  <td>{sanpham.cau_hinh.cam_bien}</td>
+                                </tr>
+                                <tr>
+                                  <td>Số nút</td>
+                                  <td>{sanpham.cau_hinh.so_nut}</td>
+                                </tr>
+                                <tr>
+                                  <td>Tuổi thọ</td>
+                                  <td>{sanpham.cau_hinh.tuoi_tho}</td>
+                                </tr>
+                                <tr>
+                                  <td>DPI</td>
+                                  <td>{sanpham.cau_hinh.DPI}</td>
+                                </tr>
+                                <tr>
+                                  <td>IPS</td>
+                                  <td>{sanpham.cau_hinh.IPS}</td>
+                                </tr>
+                                <tr>
+                                  <td>Trọng lượng</td>
+                                  <td>{sanpham.cau_hinh.trong_luong}</td>
+                                </tr>
+                              </tbody>
+                            </>
+                          )}
+
+                          {sanpham.id_danhmuc === 5 && (
+                            <>
+                             
+                              <tbody>
+                                <tr>
+                                  <td>Kết nối</td>
+                                  <td>{sanpham.cau_hinh.ket_noi}</td>
+                                </tr>
+                                <tr>
+                                  <td>Switch</td>
+                                  <td>{sanpham.cau_hinh.switch}</td>
+                                </tr>
+                                <tr>
+                                  <td>Keycap</td>
+                                  <td>{sanpham.cau_hinh.keycap}</td>
+                                </tr>
+                                <tr>
+                                  <td>Tương thích</td>
+                                  <td>{sanpham.cau_hinh.tuong_thich}</td>
+                                </tr>
+                                <tr>
+                                  <td>Kích thước</td>
+                                  <td>{sanpham.cau_hinh.kich_thuoc}</td>
+                                </tr>
+                                <tr>
+                                  <td>Trọng lượng</td>
+                                  <td>{sanpham.cau_hinh.trong_luong}</td>
+                                </tr>
+                              </tbody>
+                            </>
+                          )}
                         </tbody>
                       </table>
                     </div>
                   </div>
-                  <a href="#dacdiemnoibat" className="item_tab active">
-                    Đặc điểm nổi bật
-                  </a>
+
                   <div className="clear" />
                   <div id="dacdiemnoibat" className="content_tab active">
                     <div className="text" />
@@ -3364,202 +892,7 @@ export default function ChiTietSanPham() {
                     </div>
                     <div className="clear" />
                   </div>
-                  <div className="item_sanpham">
-                    <div className="img_sp">
-                      <a
-                        href="san-pham/laptop-dell-inspiron-3530-71043887-9345.html"
-                        title="Laptop Dell Inspiron 3530 71043887"
-                      >
-                        <img
-                          src="img/Laptop Dell Inspiron 3530 71043887.jpg"
-                          alt="Laptop Dell Inspiron 3530 71043887"
-                          className="mw100 trans03"
-                        />
-                      </a>
-                    </div>
-                    <div className="nd_sp">
-                      <h2>
-                        <a
-                          href="san-pham/laptop-dell-inspiron-3530-71043887-9345.html"
-                          title="Laptop Dell Inspiron 3530 71043887"
-                        >
-                          Laptop Dell Inspiron 3530 71043887
-                        </a>
-                      </h2>
-                      <div className="gia_sp">
-                        <span>15,990,000 VNĐ</span>
-                      </div>
-                    </div>
-                    <div className="clear" />
-                  </div>
-                  <div className="item_sanpham">
-                    <div className="img_sp">
-                      <a
-                        href="san-pham/laptop-dell-inspiron-3530-71043885-9344.html"
-                        title="Laptop Dell Inspiron 3530 71043885"
-                      >
-                        <img
-                          src="img/Laptop Dell Inspiron 3530 71043887.jpg"
-                          alt="Laptop Dell Inspiron 3530 71043885"
-                          className="mw100 trans03"
-                        />
-                      </a>
-                    </div>
-                    <div className="nd_sp">
-                      <h2>
-                        <a
-                          href="san-pham/laptop-dell-inspiron-3530-71043885-9344.html"
-                          title="Laptop Dell Inspiron 3530 71043885"
-                        >
-                          Laptop Dell Inspiron 3530 71043885
-                        </a>
-                      </h2>
-                      <div className="gia_sp">
-                        <span>17,290,000 VNĐ</span>
-                      </div>
-                    </div>
-                    <div className="clear" />
-                  </div>
-                  <div className="item_sanpham">
-                    <div className="img_sp">
-                      <a
-                        href="san-pham/laptop-asus-expertbook-b1-b1402cvank0246-9303.html"
-                        title="Laptop Asus ExpertBook B1 B1402CVA-NK0246"
-                      >
-                        <img
-                          src="img/Laptop Dell Inspiron 3530 71043885.jpg"
-                          alt="Laptop Asus ExpertBook B1 B1402CVA-NK0246"
-                          className="mw100 trans03"
-                        />
-                      </a>
-                    </div>
-                    <div className="nd_sp">
-                      <h2>
-                        <a
-                          href="san-pham/laptop-asus-expertbook-b1-b1402cvank0246-9303.html"
-                          title="Laptop Asus ExpertBook B1 B1402CVA-NK0246"
-                        >
-                          Laptop Asus ExpertBook B1 B1402CVA-NK0246
-                        </a>
-                      </h2>
-                      <div className="gia_sp">
-                        <span>13,190,000 VNĐ</span>
-                      </div>
-                    </div>
-                    <div className="clear" />
-                  </div>
-                  <div className="item_sanpham">
-                    <div className="img_sp">
-                      <a
-                        href="san-pham/laptop-asus-expertbook-b1-b1402cvank0952w-9302.html"
-                        title="Laptop Asus ExpertBook B1 B1402CVA-NK0952W"
-                      >
-                        <img
-                          src="img/Laptop Asus ExpertBook B1 B1402CVA-NK0952W.jpg"
-                          alt="Laptop Asus ExpertBook B1 B1402CVA-NK0952W"
-                          className="mw100 trans03"
-                        />
-                      </a>
-                    </div>
-                    <div className="nd_sp">
-                      <h2>
-                        <a
-                          href="san-pham/laptop-asus-expertbook-b1-b1402cvank0952w-9302.html"
-                          title="Laptop Asus ExpertBook B1 B1402CVA-NK0952W"
-                        >
-                          Laptop Asus ExpertBook B1 B1402CVA-NK0952W
-                        </a>
-                      </h2>
-                      <div className="gia_sp">
-                        <span>13,850,000 VNĐ</span>
-                      </div>
-                    </div>
-                    <div className="clear" />
-                  </div>
-                  <div className="item_sanpham">
-                    <div className="img_sp">
-                      <a
-                        href="san-pham/laptop-hp-elitebook-640-g11-a7lg9pt-9301.html"
-                        title="Laptop HP Elitebook 640 G11 A7LG9PT"
-                      >
-                        <img
-                          src="img/Laptop Dell Inspiron 3530 71043887.jpg"
-                          alt="Laptop HP Elitebook 640 G11 A7LG9PT"
-                          className="mw100 trans03"
-                        />
-                      </a>
-                    </div>
-                    <div className="nd_sp">
-                      <h2>
-                        <a
-                          href="san-pham/laptop-hp-elitebook-640-g11-a7lg9pt-9301.html"
-                          title="Laptop HP Elitebook 640 G11 A7LG9PT"
-                        >
-                          Laptop HP Elitebook 640 G11 A7LG9PT
-                        </a>
-                      </h2>
-                      <div className="gia_sp">
-                        <span>24,290,000 VNĐ</span>
-                      </div>
-                    </div>
-                    <div className="clear" />
-                  </div>
-                  <div className="item_sanpham">
-                    <div className="img_sp">
-                      <a
-                        href="san-pham/laptop-hp-elitebook-640-g11-a7lb4pt-9300.html"
-                        title="Laptop HP Elitebook 640 G11 A7LB4PT"
-                      >
-                        <img
-                          src="img/Laptop Dell Inspiron 3530 71043885.jpg"
-                          alt="Laptop HP Elitebook 640 G11 A7LB4PT"
-                          className="mw100 trans03"
-                        />
-                      </a>
-                    </div>
-                    <div className="nd_sp">
-                      <h2>
-                        <a
-                          href="san-pham/laptop-hp-elitebook-640-g11-a7lb4pt-9300.html"
-                          title="Laptop HP Elitebook 640 G11 A7LB4PT"
-                        >
-                          Laptop HP Elitebook 640 G11 A7LB4PT
-                        </a>
-                      </h2>
-                      <div className="gia_sp">
-                        <span>29,690,000 VNĐ</span>
-                      </div>
-                    </div>
-                    <div className="clear" />
-                  </div>
-                  <div className="item_sanpham">
-                    <div className="img_sp">
-                      <a
-                        href="san-pham/laptop-hp-elitebook-640-g11-a7lb1pt-9299.html"
-                        title="Laptop HP Elitebook 640 G11 A7LB1PT"
-                      >
-                        <img
-                          src="img/Laptop Asus ExpertBook B1 B1402CVA-NK0952W.jpg"
-                          alt="Laptop HP Elitebook 640 G11 A7LB1PT"
-                          className="mw100 trans03"
-                        />
-                      </a>
-                    </div>
-                    <div className="nd_sp">
-                      <h2>
-                        <a
-                          href="san-pham/laptop-hp-elitebook-640-g11-a7lb1pt-9299.html"
-                          title="Laptop HP Elitebook 640 G11 A7LB1PT"
-                        >
-                          Laptop HP Elitebook 640 G11 A7LB1PT
-                        </a>
-                      </h2>
-                      <div className="gia_sp">
-                        <span>23,590,000 VNĐ</span>
-                      </div>
-                    </div>
-                    <div className="clear" />
-                  </div>
+                  
                 </div>
               </div>
             </div>
@@ -3604,7 +937,7 @@ export default function ChiTietSanPham() {
                           <div className="hot-icon blink" />
                           <div className="desc-product">
                             <div>
-                              <ul>
+                              {/* <ul>
                                 <li>{sanpham.cau_hinh.cpu}</li>
                                 <li>{sanpham.cau_hinh.ram}</li>
                                 <li>{sanpham.cau_hinh.ocung}</li>
@@ -3616,7 +949,7 @@ export default function ChiTietSanPham() {
                                 <li>
                                   {sanpham.cau_hinh_chi_tiet.he_dieu_hanh}
                                 </li>
-                              </ul>
+                              </ul> */}
                               <p>&nbsp;</p>
                               <div className="baohanh">Bảo hành: 12 tháng</div>
                             </div>
