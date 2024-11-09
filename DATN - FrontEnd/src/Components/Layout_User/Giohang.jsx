@@ -1,6 +1,38 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 export default function Giohang() {
+  const [cartItem, setCartItem] = useState(null);
+
+  useEffect(() => {
+    const item = localStorage.getItem("cartItem");
+    if (item) {
+      setCartItem(JSON.parse(item));
+    }
+  }, []);
+
+  
+  let imagePath = "";
+  switch (sanpham.id_danhmuc) {
+    case 1:
+      imagePath = "Laptop";
+      break;
+    case 2:
+      imagePath = "PC";
+      break;
+    case 3:
+      imagePath = "Manhinh";
+      break;
+    case 4:
+      imagePath = "Chuot";
+      break;
+    case 5:
+      imagePath = "Banphim";
+      break;
+    default:
+      imagePath = "Khac";
+  }
+
   return (
     <div className="wrap-main wrap-page">
       <link href="css/giohang.css" rel="stylesheet" type="text/css" />
@@ -13,6 +45,7 @@ export default function Giohang() {
             <form name="form1" method="post">
               <input type="hidden" name="pid" />
               <input type="hidden" name="command" />
+
               <div className="contain_table_giohang">
                 <table
                   style={{
@@ -95,7 +128,7 @@ export default function Giohang() {
                       >
                         <b>
                           Tổng giá :
-                          <span className="price_all_cart">23.980.000 VNĐ</span>
+                          <span className="price_all_cart"></span>
                         </b>
                       </td>
                     </tr>
@@ -119,154 +152,162 @@ export default function Giohang() {
                         />
 
                         <Link to="/thanhtoan">
-                        <input
-                          type="button"
-                          className="btn btn-success"
-                          defaultValue="Thanh toán"
-                          onClick="window.location='thanh-toan.html'"
-                        />
+                          <input
+                            type="button"
+                            className="btn btn-success"
+                            defaultValue="Thanh toán"
+                            onClick="window.location='thanh-toan.html'"
+                          />
                         </Link>
-                        
-
                       </td>
                     </tr>
                   </tfoot>
                   {/*footer*/}
+
                   <tbody>
-                    <tr style={{ borderBottom: "1px solid #ecedef" }}>
-                      <td
-                        style={{
-                          textAlign: "center",
-                          padding: "5px 5px",
-                          border: "1px solid #e9e9e9",
-                        }}
-                      >
-                        <img
-                          src="http://stcom.vn/upload/product/v5i3465w11-4093_245x245.jpg"
-                          width={60}
-                          alt="Công ty TNHH Phát Triển Tin Học Sáng Tạo"
-                        />
-                      </td>
-                      <td
-                        style={{
-                          textAlign: "left",
-                          padding: "5px 5px",
-                          border: "1px solid #e9e9e9",
-                        }}
-                      >
-                        <h3
-                          className="name_p_cart"
-                          style={{ fontSize: 14, fontWeight: "bold" }}
-                        >
-                          Laptop Dell Vostro 3530 V5I3465W1
-                        </h3>
-                        <div
-                          className="price_p_cart_name"
-                          style={{ fontSize: 15, color: "#f00" }}
-                        >
-                          11.990.000 VNĐ
-                        </div>
-                      </td>
-                      <td
-                        style={{
-                          textAlign: "center",
-                          padding: "5px 5px",
-                          border: "1px solid #e9e9e9",
-                        }}
-                      >
-                        <div className="box_number_cart">
-                          <button
-                            className="minius_cart"
-                            style={{
-                              width: 20,
-                              height: 20,
-                              backgroundColor: "#e1e8ee",
-                              borderRadius: 3,
-                              border: "none",
-                              cursor: "pointer",
-                            }}
-                            data-action="-"
-                            data-id={7385}
-                          >
-                            <img src="img/icon trừ.jpg" alt="minius cart" />
-                          </button>
-                          <input
-                            type="text"
-                            className="number_cart"
-                            name="product7385"
-                            defaultValue={2}
-                            maxLength={3}
-                            size={2}
-                            style={{
-                              background: "#fff",
-                              textAlign: "center",
-                              borderRadius: 2,
-                              border: "none",
-                              outline: "none",
-                              padding: "5px 0px",
-                            }}
-                          />
-                          <button
-                            className="plus_cart"
-                            style={{
-                              width: 20,
-                              height: 20,
-                              backgroundColor: "#e1e8ee",
-                              borderRadius: 6,
-                              border: "none",
-                              cursor: "pointer",
-                            }}
-                            data-action="+"
-                            data-id={7385}
-                          >
-                            <img src="img/icon dấu cộng.jpg" alt="plus cart" />
-                          </button>
-                        </div>
-                        {/*box number cart*/}
-                      </td>
-                      <td
-                        style={{
-                          textAlign: "center",
-                          padding: "5px 5px",
-                          border: "1px solid #e9e9e9",
-                        }}
-                      >
-                        <div
-                          className="price_p_cart"
+                    {cartItem ? (
+                      <tr style={{ borderBottom: "1px solid #ecedef" }}>
+                        <td
                           style={{
                             textAlign: "center",
-                            fontSize: 16,
-                            color: "#43484d",
+                            padding: "5px 5px",
+                            border: "1px solid #e9e9e9",
                           }}
                         >
-                          23.980.000 VNĐ
-                        </div>
-                      </td>
-                      <td
-                        style={{
-                          textAlign: "center",
-                          padding: "5px 5px",
-                          border: "1px solid #e9e9e9",
-                        }}
-                      >
-                        <a href="javascript:del(7385)">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width={16}
-                            height={16}
-                            fill="currentColor"
-                            className="bi bi-x-lg"
-                            viewBox="0 0 16 16"
+                          <img
+                            src={cartItem.hinh_anh?.chinh}
+                            width={60}
+                            alt={cartItem.ten_sp}
+                          />
+                        </td>
+
+                        <td
+                          style={{
+                            textAlign: "left",
+                            padding: "5px 5px",
+                            border: "1px solid #e9e9e9",
+                          }}
+                        >
+                          <h3
+                            className="name_p_cart"
+                            style={{ fontSize: 14, fontWeight: "bold" }}
                           >
-                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
-                          </svg>
-                        </a>
-                      </td>
-                    </tr>
+                            {cartItem.ten_sp}
+                          </h3>
+                          <div
+                            className="price_p_cart_name"
+                            style={{ fontSize: 15, color: "#f00" }}
+                          >
+                            {cartItem.ten_sp}
+                          </div>
+                        </td>
+                        <td
+                          style={{
+                            textAlign: "center",
+                            padding: "5px 5px",
+                            border: "1px solid #e9e9e9",
+                          }}
+                        >
+                          <div className="box_number_cart">
+                            <button
+                              className="minius_cart"
+                              style={{
+                                width: 20,
+                                height: 20,
+                                backgroundColor: "#e1e8ee",
+                                borderRadius: 3,
+                                border: "none",
+                                cursor: "pointer",
+                              }}
+                              data-action="-"
+                              data-id={7385}
+                            >
+                              <img src="img/icon trừ.jpg" alt="minius cart" />
+                            </button>
+                            <input
+                              type="text"
+                              className="number_cart"
+                              name="product7385"
+                              defaultValue={2}
+                              maxLength={3}
+                              size={2}
+                              style={{
+                                background: "#fff",
+                                textAlign: "center",
+                                borderRadius: 2,
+                                border: "none",
+                                outline: "none",
+                                padding: "5px 0px",
+                              }}
+                            />
+                            <button
+                              className="plus_cart"
+                              style={{
+                                width: 20,
+                                height: 20,
+                                backgroundColor: "#e1e8ee",
+                                borderRadius: 6,
+                                border: "none",
+                                cursor: "pointer",
+                              }}
+                              data-action="+"
+                              data-id={7385}
+                            >
+                              <img
+                                src="img/icon dấu cộng.jpg"
+                                alt="plus cart"
+                              />
+                            </button>
+                          </div>
+                          {/*box number cart*/}
+                        </td>
+                        <td
+                          style={{
+                            textAlign: "center",
+                            padding: "5px 5px",
+                            border: "1px solid #e9e9e9",
+                          }}
+                        >
+                          <div
+                            className="price_p_cart"
+                            style={{
+                              textAlign: "center",
+                              fontSize: 16,
+                              color: "#43484d",
+                            }}
+                          >
+                           
+                          </div>
+                        </td>
+                        <td
+                          style={{
+                            textAlign: "center",
+                            padding: "5px 5px",
+                            border: "1px solid #e9e9e9",
+                          }}
+                        >
+                          <a href="javascript:del(7385)">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width={16}
+                              height={16}
+                              fill="currentColor"
+                              className="bi bi-x-lg"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
+                            </svg>
+                          </a>
+                        </td>
+                      </tr>
+                    ) : (
+                      <p>Không có sản phẩm trong giỏ hàng</p>
+                    )}
                   </tbody>
                   {/*body*/}
                 </table>
               </div>
+
               {/*end contain table gio hang*/}
             </form>
           </div>
@@ -278,7 +319,7 @@ export default function Giohang() {
         <div className="title_main">
           <span>Sản phẩm đã xem</span>
         </div>
-        <div className="content_daxem">
+        {/* <div className="content_daxem">
           <div
             className="owl_daxem owl-carousel owl-theme"
             style={{ opacity: 1, display: "block" }}
@@ -360,7 +401,7 @@ export default function Giohang() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

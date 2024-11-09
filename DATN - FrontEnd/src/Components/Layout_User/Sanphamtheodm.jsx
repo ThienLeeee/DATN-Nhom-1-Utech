@@ -206,69 +206,214 @@ export default function SanPhamTheodm() {
             <div id="results1">
               <div className="grid-products">
                 {sanPham.length > 0 ? (
-                  sanPham.map((sanpham) => (
-                    <div className="product" key={sanpham.id}>
-                      <div className="box-product">
-                        <div className="pic-product" data-tooltip="sticky9346">
-                          <Link
-                            className="d-block"
-                            to={`/chitietsp/sanPham/${sanpham.id}`}
-                            title={sanpham.ten_sp}
+                  sanPham.map((sanpham) => {
+                    // Xác định thư mục hình ảnh dựa trên id_danhmuc
+                    let imagePath = "";
+                    switch (sanpham.id_danhmuc) {
+                      case 1:
+                        imagePath = "Laptop";
+                        break;
+                      case 2:
+                        imagePath = "PC";
+                        break;
+                      case 3:
+                        imagePath = "Manhinh";
+                        break;
+                      case 4:
+                        imagePath = "Chuot";
+                        break;
+                      case 5:
+                        imagePath = "Banphim";
+                        break;
+                      default:
+                        imagePath = "Khac"; // Thư mục mặc định nếu có danh mục khác
+                    }
+
+                    return (
+                      <div className="product" key={sanpham.id}>
+                        <div className="box-product">
+                          <div
+                            className="pic-product"
+                            data-tooltip="sticky9346"
                           >
-                            <img
-                              src={`/img/sanpham/Laptop/${sanpham.hinh_anh.chinh}`}
-                              alt={sanpham.ten_sp}
-                              className="w100 trans03"
-                            />
-                          </Link>
-                          <div className="desc-product">
-                            <div>
-                              <ul>
-                                <li>{sanpham.cau_hinh.cpu}</li>
-                                <li>{sanpham.cau_hinh.ram}</li>
-                                <li>{sanpham.cau_hinh.ocung}</li>
-                                <li>{sanpham.cau_hinh.vga}</li>
-                                <li>{sanpham.cau_hinh.man_hinh}</li>
-                                <li>{sanpham.cau_hinh_chi_tiet.pin}</li>
-                                <li>{sanpham.cau_hinh_chi_tiet.mau_sac}</li>
-                                <li>{sanpham.cau_hinh_chi_tiet.trong_luong}</li>
-                                <li>
-                                  {sanpham.cau_hinh_chi_tiet.he_dieu_hanh}
-                                </li>
-                              </ul>
-                              <div className="baohanh">Bảo hành: 12 tháng</div>
+                            <Link
+                              className="d-block"
+                              to={`/chitietsp/sanPham/${sanpham.id}`}
+                              title={sanpham.ten_sp}
+                            >
+                              <img
+                                src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.chinh}`}
+                                alt={sanpham.ten_sp}
+                                className="w100 trans03"
+                              />
+                            </Link>
+                            <div className="desc-product">
+                              <div>
+                                <ul>
+                                  {/* Hiển thị cấu hình dựa vào id_danhmuc */}
+                                  {sanpham.id_danhmuc === 1 && (
+                                    <>
+                                      <li>CPU: {sanpham.cau_hinh.cpu}</li>
+                                      <li>RAM: {sanpham.cau_hinh.ram}</li>
+                                      <li>Ổ cứng: {sanpham.cau_hinh.ocung}</li>
+                                      <li>VGA: {sanpham.cau_hinh.vga}</li>
+                                      <li>
+                                        Màn hình: {sanpham.cau_hinh.man_hinh}
+                                      </li>
+                                      <li>
+                                        Pin: {sanpham.cau_hinh_chi_tiet.pin}
+                                      </li>
+                                      <li>
+                                        Màu sắc:{" "}
+                                        {sanpham.cau_hinh_chi_tiet.mau_sac}
+                                      </li>
+                                      <li>
+                                        Trọng lượng:{" "}
+                                        {sanpham.cau_hinh_chi_tiet.trong_luong}
+                                      </li>
+                                      <li>
+                                        Hệ điều hành:{" "}
+                                        {sanpham.cau_hinh_chi_tiet.he_dieu_hanh}
+                                      </li>
+                                    </>
+                                  )}
+                                  {sanpham.id_danhmuc === 2 && (
+                                    <>
+                                      <li>
+                                        Mainboard: {sanpham.cau_hinh.mainboard}
+                                      </li>
+                                      <li>CPU: {sanpham.cau_hinh.cpu}</li>
+                                      <li>RAM: {sanpham.cau_hinh.ram}</li>
+                                      <li>VGA: {sanpham.cau_hinh.vga}</li>
+                                      <li>HDD: {sanpham.cau_hinh.hdd}</li>
+                                      <li>SSD: {sanpham.cau_hinh.ssd}</li>
+                                      <li>PSU: {sanpham.cau_hinh.psu}</li>
+                                      <li>Case: {sanpham.cau_hinh.case}</li>
+                                      <li>
+                                        Cooling: {sanpham.cau_hinh.cooling}
+                                      </li>
+                                    </>
+                                  )}
+                                  {sanpham.id_danhmuc === 3 && (
+                                    <>
+                                      <li>
+                                        Kiểu màn hình:{" "}
+                                        {sanpham.cau_hinh.kieu_man_hinh}
+                                      </li>
+                                      <li>
+                                        Kích thước:{" "}
+                                        {sanpham.cau_hinh.kich_thuoc}
+                                      </li>
+                                      <li>
+                                        Tương thích VESA:{" "}
+                                        {sanpham.cau_hinh.tuong_thich_vesa}
+                                      </li>
+                                      <li>
+                                        Cổng kết nối:{" "}
+                                        {sanpham.cau_hinh.cong_ket_noi}
+                                      </li>
+                                      <li>
+                                        Tần số quét:{" "}
+                                        {sanpham.cau_hinh.tan_so_quet}
+                                      </li>
+                                      <li>
+                                        Độ phân giải:{" "}
+                                        {sanpham.cau_hinh.do_phan_giai}
+                                      </li>
+                                      <li>
+                                        Tấm nền: {sanpham.cau_hinh.tam_nen}
+                                      </li>
+                                      <li>
+                                        Không gian màu:{" "}
+                                        {sanpham.cau_hinh.khong_gian_mau}
+                                      </li>
+                                      <li>
+                                        Phụ kiện trong hộp:{" "}
+                                        {sanpham.cau_hinh.phu_kien_trong_hop ||
+                                          "N/A"}
+                                      </li>
+                                      <li>
+                                        Thời gian phản hồi:{" "}
+                                        {sanpham.cau_hinh.thoi_gian_phan_hoi}
+                                      </li>
+                                      <li>
+                                        Độ sáng: {sanpham.cau_hinh.do_sang}
+                                      </li>
+                                    </>
+                                  )}
+                                  {sanpham.id_danhmuc === 4 && (
+                                    <>
+                                      
+                                      <li>Màu sắc: {sanpham.cau_hinh.mau_sac}</li>
+                                      <li>Kết nối: {sanpham.cau_hinh.ket_noi}</li>
+                                      <li>LED: {sanpham.cau_hinh.led}</li>
+                                      <li>Cảm biến: {sanpham.cau_hinh.cam_bien}</li>
+                                      <li>Số nút: {sanpham.cau_hinh.so_nut}</li>
+                                      <li>Tuổi thọ: {sanpham.cau_hinhtuoi_tho}</li>
+                                      <li>DPI: {sanpham.cau_hinh.DPI}</li>
+                                      <li>IPS: {sanpham.cau_hinhIPS}</li>
+                                      <li>
+                                        Trọng lượng: {sanpham.cau_hinh.trong_luong}
+                                      </li>
+                                    </>
+                                  )}
+                                  {sanpham.id_danhmuc === 5 && (
+                                    <>
+                                      <li>
+                                        Kết nối: {sanpham.cau_hinh.ket_noi}
+                                      </li>
+                                      <li>Switch: {sanpham.cau_hinh.switch}</li>
+                                      <li>Keycap: {sanpham.cau_hinh.keycap}</li>
+                                      <li>
+                                        Tương thích:{" "}
+                                        {sanpham.cau_hinh.tuong_thich}
+                                      </li>
+                                      <li>
+                                        Kích thước:{" "}
+                                        {sanpham.cau_hinh.kich_thuoc}
+                                      </li>
+                                      <li>
+                                        Trọng lượng:{" "}
+                                        {sanpham.cau_hinh.trong_luong}
+                                      </li>
+                                    </>
+                                  )}
+                                </ul>
+                                <div className="baohanh">
+                                  Bảo hành: {sanpham.bao_hanh}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="info-product">
+                            <Link
+                              className="name-product text-split"
+                              to={`/chitietsp/sanPham/${sanpham.id}`}
+                              title={sanpham.ten_sp}
+                            >
+                              {sanpham.ten_sp}
+                            </Link>
+                            <div className="price-product">
+                              <span className="price-new">
+                                {sanpham.gia_sp} đ
+                              </span>
+                            </div>
+                            <div className="cart-product d-flex justify-content-between align-items-center">
+                              <span className="status-pro sts2">Còn hàng</span>
+                              <span
+                                className="mua_giohang"
+                                rel={sanpham.id}
+                                data-confirm=""
+                                onClick="new jBox()"
+                              >
+                                Mua ngay
+                              </span>
                             </div>
                           </div>
                         </div>
-                        <div className="info-product">
-                          <Link
-                            className="name-product text-split"
-                            to={`/chitietsp/sanPham/${sanpham.id}`}
-                            title={sanpham.ten_sp}
-                          >
-                            {sanpham.ten_sp}
-                          </Link>
-                          <div className="price-product">
-                            <span className="price-new">
-                              {" "}
-                              {sanpham.gia_sp} đ
-                            </span>
-                          </div>
-                          <div className="cart-product d-flex justify-content-between align-items-center">
-                            <span className="status-pro sts2">Còn hàng</span>
-                            <span
-                              className="mua_giohang"
-                              rel={9346}
-                              data-confirm=""
-                              onClick="new jBox()"
-                            >
-                              Mua ngay
-                            </span>
-                          </div>
-                        </div>
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
                 ) : (
                   <p>Đang tải sản phẩm...</p>
                 )}

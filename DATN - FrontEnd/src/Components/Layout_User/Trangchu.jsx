@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { fetchSanpham } from "../../../service/sanphamService";
 import { fetchDanhmuc } from "../../../service/danhmucService";
+import { useNavigate } from "react-router-dom";
 
 export default function Trangchu() {
   const [sanPham, setSanpham] = useState([]);
@@ -32,6 +33,11 @@ export default function Trangchu() {
     };
     loadDanhmuc();
   }, []);
+  const navigate = useNavigate();
+  const handleAddToCart = (sanPham) => {
+    localStorage.setItem("cartItem", JSON.stringify(sanPham));
+    navigate("/giohang"); // Chuyển hướng sang Giohang.jsx
+  };
 
   // Lọc sản phẩm theo categoryId
   const sanPhamdm1 = sanPham.filter((sanpham) => sanpham.id_danhmuc === 1);
@@ -58,6 +64,7 @@ export default function Trangchu() {
                         >
                           {danhmuc.tendm}
                         </Link>
+
                         {/* <div className="boxMainDropdown">
                          <ul className="dropdown-prod-lv2">
                          <li>
@@ -841,7 +848,7 @@ export default function Trangchu() {
                       >
                         <div className="item-prolistnb">
                           <Link
-                            to="/sanphamtheodm"
+                            to={`/sanPham/id_danhmuc/${danhmuc.id}`}
                             className="prolistnb-img d-inline-block"
                             href="#"
                           >
@@ -979,7 +986,7 @@ export default function Trangchu() {
           <div className="wrap-content">
             <div className="title_main">
               <div>
-                <span>LAPTOP</span>
+                <span style={{}}>LAPTOP</span>
                 <ul>
                   <li>
                     <a href="" title="LAPTOP LG">
@@ -1072,7 +1079,7 @@ export default function Trangchu() {
                               className="mua_giohang"
                               rel={7385}
                               data-confirm=""
-                              onClick="new jBox()"
+                              onClick={() => handleAddToCart(sanPham)}
                             >
                               Mua ngay
                             </span>
@@ -1085,7 +1092,7 @@ export default function Trangchu() {
                   <p>Đang tải sản phẩm Laptop...</p>
                 )}
               </div>
-              <div className="pagination" style={{ marginTop: 10 }}>
+              <div className="pagination" style={{ marginTop: 0 }}>
                 <ul className="my_pagination">
                   <li className="inactive">
                     <span> &lt;&lt; </span>
@@ -1112,25 +1119,20 @@ export default function Trangchu() {
             <div className="title_main">
               <div>
                 <span>PC</span>
-                {/* <ul>                
+                <ul>
                   <li>
                     <a href="san-pham/laptop-asus-18/" title="LAPTOP ASUS">
-                      PC ASUS
+                      PC INTEL
                     </a>
                   </li>
-                 
+
                   <li>
                     <a href="san-pham/laptop-hp-16/" title="LAPTOP HP">
-                      PC HP
+                      PC AMD
                     </a>
                   </li>
-                  <li>
-                    <a href="san-pham/laptop-dell-15/" title="LAPTOP DELL">
-                      PC DELL
-                    </a>
-                  </li>
-                </ul> */}
-                <a href="san-pham/laptop-11/" className="viewmore">
+                </ul>
+                <a href="/sanPham/id_danhmuc/2" className="viewmore">
                   {" "}
                   Xem tất cả
                 </a>
@@ -1160,20 +1162,18 @@ export default function Trangchu() {
                           <div className="desc-product">
                             <div>
                               <ul>
-                                <li>{sanpham.cau_hinh.cpu}</li>
-                                <li>{sanpham.cau_hinh.ram}</li>
-                                <li>{sanpham.cau_hinh.ocung}</li>
-                                <li>{sanpham.cau_hinh.vga}</li>
-                                <li>{sanpham.cau_hinh.man_hinh}</li>
-                                <li>{sanpham.cau_hinh_chi_tiet.pin}</li>
-                                <li>{sanpham.cau_hinh_chi_tiet.mau_sac}</li>
-                                <li>{sanpham.cau_hinh_chi_tiet.trong_luong}</li>
-                                <li>
-                                  {sanpham.cau_hinh_chi_tiet.he_dieu_hanh}
-                                </li>
+                                <li>Mainboard: {sanpham.cau_hinh.mainboard}</li>
+                                <li>CPU: {sanpham.cau_hinh.cpu}</li>
+                                <li>RAM: {sanpham.cau_hinh.ram}</li>
+                                <li>VGA: {sanpham.cau_hinh.vga}</li>
+                                <li>HDD: {sanpham.cau_hinh.hdd}</li>
+                                <li>SSD: {sanpham.cau_hinh.ssd}</li>
+                                <li>PSU: {sanpham.cau_hinh.psu}</li>
+                                <li>Case: {sanpham.cau_hinh.case}</li>
+                                <li>Cooling: {sanpham.cau_hinh.cooling}</li>
                               </ul>
                               <p>&nbsp;</p>
-                              <div className="baohanh ">Bảo hành: 12 tháng</div>
+                              <div className="baohanh ">{sanpham.bao_hanh}</div>
                             </div>
                           </div>
                         </div>
@@ -1208,7 +1208,7 @@ export default function Trangchu() {
                   <p>Đang tải sản phẩm PC...</p>
                 )}
               </div>
-              <div className="pagination" style={{ marginTop: 150 }}>
+              <div className="pagination" style={{ marginTop: 0 }}>
                 <ul className="my_pagination">
                   <li className="inactive">
                     <span> &lt;&lt; </span>
@@ -1227,7 +1227,7 @@ export default function Trangchu() {
             </div>
           </div>
         </div>
-        {/* products 1 end*/}
+        {/* products 2 end*/}
 
         {/* products 3 */}
         <div className="sub_main" id="scroll0" style={{ marginBottom: 50 }}>
@@ -1252,7 +1252,7 @@ export default function Trangchu() {
                     </a>
                   </li>
                 </ul>
-                <a href="san-pham/laptop-11/" className="viewmore">
+                <a href="/sanPham/id_danhmuc/3" className="viewmore">
                   {" "}
                   Xem tất cả
                 </a>
@@ -1272,7 +1272,7 @@ export default function Trangchu() {
                             title={`${sanpham.ten_sp}`}
                           >
                             <img
-                              src={`/img/sanpham/${sanpham.hinh_anh.chinh}`}
+                              src={`/img/sanpham/Manhinh/${sanpham.hinh_anh.chinh}`}
                               alt={`${sanpham.ten_sp}`}
                               className="w100 trans03"
                             />
@@ -1282,17 +1282,40 @@ export default function Trangchu() {
                           <div className="desc-product">
                             <div>
                               <ul>
-                                <li>{sanpham.cau_hinh.cpu}</li>
-                                <li>{sanpham.cau_hinh.ram}</li>
-                                <li>{sanpham.cau_hinh.ocung}</li>
-                                <li>{sanpham.cau_hinh.vga}</li>
-                                <li>{sanpham.cau_hinh.man_hinh}</li>
-                                <li>{sanpham.cau_hinh_chi_tiet.pin}</li>
-                                <li>{sanpham.cau_hinh_chi_tiet.mau_sac}</li>
-                                <li>{sanpham.cau_hinh_chi_tiet.trong_luong}</li>
                                 <li>
-                                  {sanpham.cau_hinh_chi_tiet.he_dieu_hanh}
+                                  Kiểu màn hình:{" "}
+                                  {sanpham.cau_hinh.kieu_man_hinh}
                                 </li>
+                                <li>
+                                  Kích thước: {sanpham.cau_hinh.kich_thuoc}
+                                </li>
+                                <li>
+                                  Tương thích VESA:{" "}
+                                  {sanpham.cau_hinh.tuong_thich_vesa}
+                                </li>
+                                <li>
+                                  Cổng kết nối: {sanpham.cau_hinh.cong_ket_noi}
+                                </li>
+                                <li>
+                                  Tần số quét: {sanpham.cau_hinh.tan_so_quet}
+                                </li>
+                                <li>
+                                  Độ phân giải: {sanpham.cau_hinh.do_phan_giai}
+                                </li>
+                                <li>Tấm nền: {sanpham.cau_hinh.tam_nen}</li>
+                                <li>
+                                  Không gian màu:{" "}
+                                  {sanpham.cau_hinh.khong_gian_mau}
+                                </li>
+                                <li>
+                                  Phụ kiện trong hộp:{" "}
+                                  {sanpham.cau_hinh.phu_kien_trong_hop || "N/A"}
+                                </li>
+                                <li>
+                                  Thời gian phản hồi:{" "}
+                                  {sanpham.cau_hinh.thoi_gian_phan_hoi}
+                                </li>
+                                <li>Độ sáng: {sanpham.cau_hinh.do_sang}</li>
                               </ul>
                               <p>&nbsp;</p>
                               <div className="baohanh ">Bảo hành: 12 tháng</div>
@@ -1330,7 +1353,7 @@ export default function Trangchu() {
                   <p>Đang tải sản phẩm Màn hình...</p>
                 )}
               </div>
-              <div className="pagination" style={{ marginTop: 150 }}>
+              <div className="pagination" style={{ marginTop: 0 }}>
                 <ul className="my_pagination">
                   <li className="inactive">
                     <span> &lt;&lt; </span>
