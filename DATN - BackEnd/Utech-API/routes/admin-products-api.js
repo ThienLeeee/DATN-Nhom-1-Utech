@@ -57,7 +57,7 @@ router.post('/add', upload.single('img'), async(req, res,next) => {
   let lastProduct = await productsCollection.find().sort({id:-1}).limit(1).toArray();
   let id = lastProduct[0] ? lastProduct[0].id + 1 :1;
   let newProduct={id,name,price,categoryId,img,description};
-  await productsCollection.insertOne(newProduct);
+  await productsCollection.insertOne(newProduct);z
   res.redirect('/products')
 })
 

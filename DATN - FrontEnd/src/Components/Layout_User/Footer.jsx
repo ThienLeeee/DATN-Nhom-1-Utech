@@ -25,7 +25,7 @@ export default function Footer() {
                   <div className="item_doitac">
                     <a href="" target="_blank">
                       <img
-                        src="thumb/117x44/2/upload/hinhanh/369668295409533vi0.jpg"
+                        src="/public/img/logo/logo dell.jpg"
                         alt="Dell"
                         className="w100"
                       />
@@ -36,7 +36,7 @@ export default function Footer() {
                   <div className="item_doitac">
                     <a href="" target="_blank">
                       <img
-                        src="thumb/117x44/2/upload/hinhanh/128975532111742vi0.jpg"
+                         src="/public/img/logo/logo hp.jpg"
                         alt="hp"
                         className="w100"
                       />
@@ -47,7 +47,7 @@ export default function Footer() {
                   <div className="item_doitac">
                     <a href="" target="_blank">
                       <img
-                        src="thumb/117x44/2/upload/hinhanh/737614865493391vi0.jpg"
+                       src="/public/img/logo/logo wd.jpg"
                         alt="western"
                         className="w100"
                       />
@@ -58,7 +58,7 @@ export default function Footer() {
                   <div className="item_doitac">
                     <a href="" target="_blank">
                       <img
-                        src="thumb/117x44/2/upload/hinhanh/302591859345001vi0.png"
+                        src="/public/img/logo/logo seategat.png"
                         alt="seagate"
                         className="w100"
                       />
@@ -69,7 +69,7 @@ export default function Footer() {
                   <div className="item_doitac">
                     <a href="" target="_blank">
                       <img
-                        src="thumb/117x44/2/upload/hinhanh/442197214970690vi0.gif"
+                        src="/public/img/logo/logo asus.png"
                         alt="asus"
                         className="w100"
                       />
@@ -80,7 +80,7 @@ export default function Footer() {
                   <div className="item_doitac">
                     <a href="" target="_blank">
                       <img
-                        src="thumb/117x44/2/upload/hinhanh/017011365980349vi0.jpg"
+                         src="/public/img/logo/logo msi.jpg"
                         alt="msi"
                         className="w100"
                       />
@@ -91,7 +91,7 @@ export default function Footer() {
                   <div className="item_doitac">
                     <a href="" target="_blank">
                       <img
-                        src="thumb/117x44/2/upload/hinhanh/011223301028670vi0.jpg"
+                     src="/public/img/logo/logo philips.jpg"
                         alt="philips"
                         className="w100"
                       />
@@ -102,7 +102,7 @@ export default function Footer() {
                   <div className="item_doitac">
                     <a href="" target="_blank">
                       <img
-                        src="thumb/117x44/2/upload/hinhanh/932096826170540vi0.gif"
+                      src="/public/img/logo/logo toshiba.png"
                         alt="toshiba"
                         className="w100"
                       />
@@ -113,7 +113,7 @@ export default function Footer() {
                   <div className="item_doitac">
                     <a href="" target="_blank">
                       <img
-                        src="thumb/117x44/2/upload/hinhanh/215806087479856vi0.jpg"
+                        src="/public/img/logo/logo lenovo.jpg"
                         alt="lenovo"
                         className="w100"
                       />
@@ -237,30 +237,21 @@ export default function Footer() {
                     href="https://www.facebook.com/SangTaoComputer/?ref=embed_page"
                     target="blank"
                   >
-                    <img
-                      src="thumb/38x38/1/upload/hinhanh/socialft01-9096.png"
-                      alt="Facebook"
-                    />
+                    <img src="/public/img/logo/logo facebook.png" alt="Facebook" />
                   </a>
                   <a
                     className="d-block"
                     href="https://twitter.com/"
                     target="blank"
                   >
-                    <img
-                      src="thumb/38x38/1/upload/hinhanh/socialft02-7006.png"
-                      alt="twitter"
-                    />
+                     <img src="/public/img/logo/logo instagram.png" alt="Facebook" />
                   </a>
                   <a
                     className="d-block"
                     href="https://www.google.com/"
                     target="blank"
                   >
-                    <img
-                      src="thumb/38x38/1/upload/hinhanh/socialft04-8857.png"
-                      alt="G+"
-                    />
+                     <img src="/public/img/logo/logo youtobe.png" alt="Facebook" />
                   </a>
                 </div>
               </div>
@@ -308,25 +299,13 @@ export default function Footer() {
                 <div className="footer-title">Hình thức thanh toán</div>
                 <div className="grid-httt">
                   <a className="d-block" href="" target="_blank">
-                    <img
-                      src="thumb/67x25/1/upload/hinhanh/280641884422082vi0.JPG"
-                      alt="visa"
-                      className="mw100"
-                    />
+                  <img src="/public/img/logo/logo visa.jpg" alt="Facebook" />
                   </a>
                   <a className="d-block" href="" target="_blank">
-                    <img
-                      src="thumb/67x25/1/upload/hinhanh/441316666648801vi.JPG"
-                      alt="bank.net"
-                      className="mw100"
-                    />
+                  <img src="/public/img/logo/logo banknet.jpg" alt="Facebook" />
                   </a>
                   <a className="d-block" href="" target="_blank">
-                    <img
-                      src="thumb/67x25/1/upload/hinhanh/869502861807538vi.JPG"
-                      alt="master card"
-                      className="mw100"
-                    />
+                  <img src="/public/img/logo/logo mastercart.jpg" alt="Facebook" />
                   </a>
                 </div>
               </div>

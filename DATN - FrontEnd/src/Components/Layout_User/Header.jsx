@@ -26,17 +26,17 @@ export default function Header() {
                 href=""
                 target="blank"
               >
-                <img src="img/logo facebook.png" alt="Facebook" />
+                <img src="/public/img/logo/logo facebook.png" alt="Facebook" />
               </a>
               <a className="d-block" href="" target="blank">
-                <img src="img/logo instagram.png" alt="twitter" />
+              <img src="/public/img/logo/logo instagram.png" alt="Instagram" />
               </a>
               <a
                 className="d-block"
                 href=""
                 target="blank"
               >
-                <img src="img/logo youtobe.png" alt="G+" />
+                <img src="/public/img/logo/logo youtobe.png" alt="G+" />
               </a>
             </div>
           </div>
@@ -109,13 +109,13 @@ export default function Header() {
               </div>
               <Link
                 to="/giohang"
-                className="cart-header d-block"
+                className="cart-header d-block d-flex "
                 href="gio-hang.html"
                 style={{ overflow: "hidden" }}
               >
                 <img
                   width="32px"
-                  src="/public/img/icon/cart-shopping-solid.svg"
+                  src="/public/img/icon/bag_icon.png"
                   alt=""
                   style={{ float: "left", marginRight: 10 }}
                 />
@@ -2867,9 +2867,9 @@ export default function Header() {
                 </Link>
               </li>
               <li className="li-normal">
-                <a className="" href="tra-gop.html" title="Trả góp">
+                <Link className="" to="/tragop" title="Trả góp">
                   Trả góp
-                </a>
+                </Link>
               </li>
               <li className="li-normal">
                 <a

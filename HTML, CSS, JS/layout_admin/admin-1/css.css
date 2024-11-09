@@ -1,9 +1,9 @@
 
-  body{
+  /* body{
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-  }
+  } */
   .row{
     min-height: 100vh;
   }
@@ -20,20 +20,27 @@ h2{
 .name-category{
    padding: 16px 16px 4px 16px;;
 }
-.pading-button {
-    padding-bottom: 10px;
-    padding-left: 16px;
+.padding-button {
+  padding-bottom: 10px;
+  padding-left: 16px; /* Consider changing to padding: 10px 16px; for uniform padding */
 }
 
-.button-categoty{
-    width:186px ;
-    height: 44px;
-    border-radius: 5px;
-    border: solid 1px #0000a3;
-    background-color: #0000a3;
-    color: white;
-    
+.button-category {
+  width: 186px;
+  height: 44px;
+  border-radius: 5px;
+  border: solid 1px #0000a3;
+  background-color: #0000a3;
+  color: white;
+  font-size: 16px; /* Added for better readability */
+  cursor: pointer; /* Change cursor to pointer on hover */
+  transition: background-color 0.3s ease; /* Smooth transition effect */
 }
+
+.button-category:hover {
+  background-color: #0033cc; /* Darker shade for hover effect */
+}
+
 .custom-table {
     width: 100%;
     border-collapse: collapse; /* Bỏ khoảng cách giữa các ô */
