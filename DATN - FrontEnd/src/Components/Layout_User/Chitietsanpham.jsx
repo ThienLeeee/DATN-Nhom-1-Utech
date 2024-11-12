@@ -1,16 +1,66 @@
 import { useEffect, useState } from "react";
 import { fetchSanphamIddm } from "../../../service/sanphamService";
 import { useParams } from "react-router-dom";
-import "/public/css/thongsokt.css";
+import { useNavigate } from "react-router-dom";
+import "/public/css/chitietsp.css";
 
 export default function ChiTietSanPham() {
   const { id } = useParams();
   const [sanpham, setSanpham] = useState(null);
+  const [popupVisible, setPopupVisible] = useState(false); // Quản lý popup
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Giả sử bạn có một hàm để lấy dữ liệu sản phẩm theo ID
     fetchSanphamIddm(id).then((sanphamData) => setSanpham(sanphamData));
   }, [id]);
+
+  const handleAddToCart = (sanPhamMoi) => {
+    let cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
+    const itemIndex = cartItems.findIndex((item) => item.id === sanPhamMoi.id);
+
+    if (itemIndex > -1) {
+      cartItems[itemIndex].quantity += 1;
+    } else {
+      // Chuyển đổi giá thành số để lưu vào giỏ hàng
+      const priceAsNumber = parseInt(sanPhamMoi.gia_sp.replace(/\./g, ""));
+      cartItems.push({ ...sanPhamMoi, gia_sp: priceAsNumber, quantity: 1 });
+    }
+
+    localStorage.setItem("cartItem", JSON.stringify(cartItems));
+    setPopupVisible(true); // Hiển thị popup khi thêm vào giỏ hàng
+  };
+
+  const handleBuyNow = (sanPhamMoi) => {
+    let cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
+    const itemIndex = cartItems.findIndex((item) => item.id === sanPhamMoi.id);
+  
+    if (itemIndex > -1) {
+      cartItems[itemIndex].quantity += 1;
+    } else {
+      const priceAsNumber = parseInt(sanPhamMoi.gia_sp.replace(/\./g, ''));
+      cartItems.push({ ...sanPhamMoi, gia_sp: priceAsNumber, quantity: 1 });
+    }
+  
+    localStorage.setItem("cartItem", JSON.stringify(cartItems));
+  
+    // Điều hướng đến giỏ hàng ngay lập tức
+    navigate("/giohang");
+  };
+  
+
+  const handleClosePopup = () => {
+    setPopupVisible(false); // Đóng popup
+  };
+
+  const handleContinueShopping = () => {
+    setPopupVisible(false); // Đóng popup và tiếp tục mua hàng
+  };
+
+  const handleViewCart = () => {
+    setPopupVisible(false); // Đóng popup và đi đến giỏ hàng
+    navigate("/giohang");
+  };
 
   if (!sanpham) {
     return <div>Loading...</div>;
@@ -316,7 +366,7 @@ export default function ChiTietSanPham() {
                         <li>Trọng lượng: {sanpham.cau_hinh.trong_luong}</li>
                       </ul>
                     )}
-                    <p>&nbsp;</p>
+                    <p></p>
                   </div>
                   <div className="baohanh_detail">
                     <strong>Bảo hành: </strong>12 tháng
@@ -545,15 +595,41 @@ export default function ChiTietSanPham() {
                   </div>
                 </div>
                 <a
-                  href=""
                   className="themgiohang add_giohang"
                   rel={7385}
                   data-confirm=""
-                  onClick="new jBox()"
+                  onClick={() => handleAddToCart(sanpham)}
                 >
                   Thêm vào giỏ hàng
                 </a>
-                <a href="" className="muangay mua_giohang" rel={7385}>
+
+                {/* Popup thông báo */}
+                {popupVisible && (
+                  <div className="popup">
+                    <div className="popup-content">
+                      <button
+                        className="popup-close"
+                        onClick={handleClosePopup}
+                      >
+                        &times;
+                      </button>
+                      <h3>Sản phẩm đã được thêm vào giỏ hàng </h3>
+                      <div className="popup-buttons">
+                        <button onClick={handleContinueShopping}>
+                          Tiếp tục mua hàng
+                        </button>
+                        <button onClick={handleViewCart}>Xem giỏ hàng</button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <a
+                  onClick={() => handleBuyNow(sanpham)}
+                  className="muangay mua_giohang"
+                  rel={7385}
+                  style={{ cursor: "pointer" }}
+                >
                   Mua ngay
                 </a>
                 <div className="hotline_hotro">
@@ -597,8 +673,7 @@ export default function ChiTietSanPham() {
                           fontSize: 14,
                         }}
                       >
-                        <tbody >
-                        
+                        <tbody>
                           {sanpham.id_danhmuc === 1 && (
                             <>
                               <tbody>
@@ -733,7 +808,6 @@ export default function ChiTietSanPham() {
 
                           {sanpham.id_danhmuc === 4 && (
                             <>
-                             
                               <tbody>
                                 <tr>
                                   <td>Màu sắc</td>
@@ -777,7 +851,6 @@ export default function ChiTietSanPham() {
 
                           {sanpham.id_danhmuc === 5 && (
                             <>
-                             
                               <tbody>
                                 <tr>
                                   <td>Kết nối</td>
@@ -892,7 +965,6 @@ export default function ChiTietSanPham() {
                     </div>
                     <div className="clear" />
                   </div>
-                  
                 </div>
               </div>
             </div>
@@ -975,7 +1047,7 @@ export default function ChiTietSanPham() {
                               className="mua_giohang"
                               rel={7385}
                               data-confirm=""
-                              onClick="new jBox()"
+                              onClick={() => handleAddToCart(sanpham)}
                             >
                               Mua ngay
                             </span>

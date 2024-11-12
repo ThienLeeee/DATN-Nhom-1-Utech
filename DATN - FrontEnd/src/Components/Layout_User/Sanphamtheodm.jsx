@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { fetchSanPhamTheoDm } from "../../../service/sanphamService";
 import { fetchDanhMucById } from "../../../service/danhmucService";
-
+import { useNavigate } from "react-router-dom";
 export default function SanPhamTheodm() {
   const [sanPham, setSanpham] = useState([]);
-
   const [tenDanhMuc, setTenDanhMuc] = useState("");
+  const navigate = useNavigate();
 
   const { id } = useParams();
 
@@ -33,7 +33,21 @@ export default function SanPhamTheodm() {
     };
     loadTenDanhMuc();
   }, [id]);
-
+  const handleAddToCart = (sanPhamMoi) => {
+    let cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
+    const itemIndex = cartItems.findIndex((item) => item.id === sanPhamMoi.id);
+  
+    if (itemIndex > -1) {
+      cartItems[itemIndex].quantity += 1;
+    } else {
+      // Chuyển đổi giá thành số để lưu vào giỏ hàng
+      const priceAsNumber = parseInt(sanPhamMoi.gia_sp.replace(/\./g, ''));
+      cartItems.push({ ...sanPhamMoi, gia_sp: priceAsNumber, quantity: 1 });
+    }
+  
+    localStorage.setItem("cartItem", JSON.stringify(cartItems));
+    navigate("/giohang");
+  };
   // Tìm kiếm tên danh mục tương ứng với ID hiện tại
 
   return (
@@ -343,17 +357,25 @@ export default function SanPhamTheodm() {
                                   )}
                                   {sanpham.id_danhmuc === 4 && (
                                     <>
-                                      
-                                      <li>Màu sắc: {sanpham.cau_hinh.mau_sac}</li>
-                                      <li>Kết nối: {sanpham.cau_hinh.ket_noi}</li>
+                                      <li>
+                                        Màu sắc: {sanpham.cau_hinh.mau_sac}
+                                      </li>
+                                      <li>
+                                        Kết nối: {sanpham.cau_hinh.ket_noi}
+                                      </li>
                                       <li>LED: {sanpham.cau_hinh.led}</li>
-                                      <li>Cảm biến: {sanpham.cau_hinh.cam_bien}</li>
+                                      <li>
+                                        Cảm biến: {sanpham.cau_hinh.cam_bien}
+                                      </li>
                                       <li>Số nút: {sanpham.cau_hinh.so_nut}</li>
-                                      <li>Tuổi thọ: {sanpham.cau_hinhtuoi_tho}</li>
+                                      <li>
+                                        Tuổi thọ: {sanpham.cau_hinhtuoi_tho}
+                                      </li>
                                       <li>DPI: {sanpham.cau_hinh.DPI}</li>
                                       <li>IPS: {sanpham.cau_hinhIPS}</li>
                                       <li>
-                                        Trọng lượng: {sanpham.cau_hinh.trong_luong}
+                                        Trọng lượng:{" "}
+                                        {sanpham.cau_hinh.trong_luong}
                                       </li>
                                     </>
                                   )}
@@ -404,7 +426,7 @@ export default function SanPhamTheodm() {
                                 className="mua_giohang"
                                 rel={sanpham.id}
                                 data-confirm=""
-                                onClick="new jBox()"
+                                onClick={() => handleAddToCart(sanpham)}
                               >
                                 Mua ngay
                               </span>
