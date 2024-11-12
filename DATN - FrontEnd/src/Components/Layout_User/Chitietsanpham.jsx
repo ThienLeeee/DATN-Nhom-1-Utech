@@ -892,7 +892,8 @@ export default function ChiTietSanPham() {
                     Bình luận/ Đánh giá sản phẩm
                   </a>
                   <div className="clear" />
-                  <div id="binhluan" className="content_tab active">
+                  
+                  {/* <div id="binhluan" className="content_tab active">
                     <div className="text">
                       <div
                         className="fb-comments fb_iframe_widget fb_iframe_widget_fluid_desktop"
