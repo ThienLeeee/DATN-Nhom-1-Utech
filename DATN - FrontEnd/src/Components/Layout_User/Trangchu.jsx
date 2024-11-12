@@ -7,12 +7,14 @@ import { useNavigate } from "react-router-dom";
 
 export default function Trangchu() {
   const [sanPham, setSanpham] = useState([]);
+  const [danhMuc, setDanhmuc] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadSanpham = async () => {
       try {
-        const sanPham = await fetchSanpham();
-        setSanpham(sanPham);
+        const sanPhamData = await fetchSanpham();
+        setSanpham(sanPhamData);
       } catch (error) {
         console.error("Lỗi:", error);
       }
@@ -20,24 +22,35 @@ export default function Trangchu() {
     loadSanpham();
   }, []);
 
-  const [danhMuc, setDanhmuc] = useState([]);
-
   useEffect(() => {
     const loadDanhmuc = async () => {
       try {
-        const danhMuc = await fetchDanhmuc();
-        setDanhmuc(danhMuc);
+        const danhMucData = await fetchDanhmuc();
+        setDanhmuc(danhMucData);
       } catch (error) {
         console.error("Lỗi:", error);
       }
     };
     loadDanhmuc();
   }, []);
-  const navigate = useNavigate();
-  const handleAddToCart = (sanPham) => {
-    localStorage.setItem("cartItem", JSON.stringify(sanPham));
-    navigate("/giohang"); // Chuyển hướng sang Giohang.jsx
+
+  const handleAddToCart = (sanPhamMoi) => {
+    let cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
+    const itemIndex = cartItems.findIndex((item) => item.id === sanPhamMoi.id);
+  
+    if (itemIndex > -1) {
+      cartItems[itemIndex].quantity += 1;
+    } else {
+      // Chuyển đổi giá thành số để lưu vào giỏ hàng
+      const priceAsNumber = parseInt(sanPhamMoi.gia_sp.replace(/\./g, ''));
+      cartItems.push({ ...sanPhamMoi, gia_sp: priceAsNumber, quantity: 1 });
+    }
+  
+    localStorage.setItem("cartItem", JSON.stringify(cartItems));
+    navigate("/giohang");
   };
+  
+  
 
   // Lọc sản phẩm theo categoryId
   const sanPhamdm1 = sanPham.filter((sanpham) => sanpham.id_danhmuc === 1);
@@ -1079,7 +1092,7 @@ export default function Trangchu() {
                               className="mua_giohang"
                               rel={7385}
                               data-confirm=""
-                              onClick={() => handleAddToCart(sanPham)}
+                              onClick={() => handleAddToCart(sanpham)}
                             >
                               Mua ngay
                             </span>
@@ -1195,7 +1208,8 @@ export default function Trangchu() {
                               className="mua_giohang"
                               rel={7385}
                               data-confirm=""
-                              onClick="new jBox()"
+                              onClick={() => handleAddToCart(sanpham)}
+                              
                             >
                               Mua ngay
                             </span>
@@ -1340,7 +1354,7 @@ export default function Trangchu() {
                               className="mua_giohang"
                               rel={7385}
                               data-confirm=""
-                              onClick="new jBox()"
+                              onClick={() => handleAddToCart(sanpham)}
                             >
                               Mua ngay
                             </span>

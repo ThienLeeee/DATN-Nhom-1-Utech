@@ -1,0 +1,214 @@
+/* General Table Styling */
+.table-product-details {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.table-product-details th,
+.table-product-details td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.table-product-details th {
+    background-color: #007bff;
+    color: white;
+    font-size: 16px;
+}
+
+.table-product-details td {
+    background-color: #ffffff;
+    color: #333;
+}
+
+.table-product-details tr:nth-child(even) td {
+    background-color: #f2f2f2;
+}
+
+.table-product-details tr:hover td {
+    background-color: #e1e1e1;
+}
+
+/* Specific Column Styling */
+.table-product-details td {
+    font-size: 14px;
+}
+
+/* Styling for the headings */
+.table-product-details th {
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table-product-details .category-header {
+    background-color: #d3d8e0;
+    font-weight: bold;
+    font-size: 16px;
+    text-align: center;
+    color: #335a89;
+    padding: 10px 0;
+    margin-top: 10px;
+}
+
+.table-product-details td span {
+    font-weight: normal;
+    color: #333;
+}
+
+/* Popup container */
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0; /* Bắt đầu từ mờ */
+    animation: fadeIn 0.5s ease-in-out forwards; /* Thêm hiệu ứng fade-in */
+  }
+  
+  /* Hiệu ứng fade */
+  @keyframes fadeIn {
+    0% {
+      opacity: 0; /* Bắt đầu từ mờ */
+    }
+    100% {
+      opacity: 1; /* Kết thúc ở trạng thái rõ ràng */
+    }
+  }
+  
+  /* Popup content */
+  .popup-content {
+    position: relative;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    width: 370px;
+    text-align: center;
+    opacity: 0; /* Bắt đầu từ mờ */
+    animation: fadeInContent 0.5s ease-in-out forwards; /* Thêm hiệu ứng fade-in cho nội dung */
+  }
+  
+  /* Hiệu ứng fade cho nội dung */
+  @keyframes fadeInContent {
+    0% {
+      opacity: 0; /* Bắt đầu từ mờ */
+    }
+    100% {
+      opacity: 1; /* Kết thúc ở trạng thái rõ ràng */
+    }
+  }
+  
+  /* Popup container */
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0; /* Bắt đầu từ mờ */
+    animation: fadeIn 0.5s ease-in-out forwards; /* Thêm hiệu ứng fade-in */
+  }
+  
+  /* Hiệu ứng fade khi popup xuất hiện */
+  @keyframes fadeIn {
+    0% {
+      opacity: 0; /* Bắt đầu từ mờ */
+    }
+    100% {
+      opacity: 1; /* Kết thúc ở trạng thái rõ ràng */
+    }
+  }
+  
+  /* Hiệu ứng fade khi popup bị ẩn */
+  @keyframes fadeOut {
+    0% {
+      opacity: 1; /* Bắt đầu từ trạng thái rõ ràng */
+    }
+    100% {
+      opacity: 0; /* Kết thúc ở trạng thái mờ */
+    }
+  }
+  
+  /* Popup content */
+  .popup-content {
+    position: relative;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    width: 370px;
+    text-align: center;
+    opacity: 0; /* Bắt đầu từ mờ */
+    animation: fadeInContent 0.5s ease-in-out forwards; /* Thêm hiệu ứng fade-in cho nội dung */
+  }
+  
+  /* Hiệu ứng fade cho nội dung */
+  @keyframes fadeInContent {
+    0% {
+      opacity: 0; /* Bắt đầu từ mờ */
+    }
+    100% {
+      opacity: 1; /* Kết thúc ở trạng thái rõ ràng */
+    }
+  }
+  
+  /* Dấu X - Nút đóng */
+  .popup-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    background-color: red;
+    border-radius: 10px;
+    width: 20px;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    z-index: 1010; /* Đảm bảo dấu X nằm trên các phần tử khác */
+  }
+  
+  /* Các nút tiếp tục và xem giỏ hàng */
+  .popup-buttons {
+    display: flex; /* Sử dụng flexbox để căn chỉnh các nút ngang */
+    justify-content: space-between; /* Đảm bảo 2 nút có khoảng cách đều nhau */
+    width: 100%; /* Chiều rộng của khu vực chứa nút */
+    margin-top: 20px;
+  }
+  
+  .popup-buttons button {
+    width: 49%; /* Đảm bảo mỗi nút chiếm 48% chiều rộng của container */
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .popup-buttons button:first-child {
+    background-color: #f0f0f0; /* Màu nền cho nút "Tiếp tục mua hàng" */
+  }
+  
+  .popup-buttons button:last-child {
+    background-color: #0000a3; /* Màu nền cho nút "Xem giỏ hàng" */
+    color: white;
+  }
+  
+  .popup-buttons button:hover {
+    opacity: 0.8;
+  }
+  
+  
+  
