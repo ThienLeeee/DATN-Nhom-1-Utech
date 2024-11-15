@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import "/public/css/chitietsp.css";
 
 export default function ChiTietSanPham() {
+  
   const { id } = useParams();
   const [sanpham, setSanpham] = useState(null);
   const [popupVisible, setPopupVisible] = useState(false); // Quản lý popup
@@ -892,8 +893,7 @@ export default function ChiTietSanPham() {
                     Bình luận/ Đánh giá sản phẩm
                   </a>
                   <div className="clear" />
-                  
-                  {/* <div id="binhluan" className="content_tab active">
+                  <div id="binhluan" className="content_tab active">
                     <div className="text">
                       <div
                         className="fb-comments fb_iframe_widget fb_iframe_widget_fluid_desktop"

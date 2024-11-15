@@ -73,7 +73,7 @@ export default function Trangchu() {
                         <Link
                           to={`/sanPham/id_danhmuc/${danhmuc.id}`}
                           className="has-child transition"
-                          title="LAPTOP"
+                          title="DANH MỤC"
                         >
                           {danhmuc.tendm}
                         </Link>

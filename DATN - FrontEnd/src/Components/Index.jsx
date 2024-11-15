@@ -49,7 +49,7 @@ export default function Index() {
           <Route path="/lienhe" element={<LienHe></LienHe>}></Route>
           <Route path="/chitietsp/sanPham/:id" element={<Chitietsanpham></Chitietsanpham>}></Route>
           <Route path="/sanPham/id_danhmuc/:id" element={<SanPhamTheodm></SanPhamTheodm>}></Route>
-          <Route path="/giohang" element={<Giohang></Giohang>}></Route>
+          <Route path="/giohang"  element={<Giohang></Giohang>}></Route>
           <Route path="/Dangnhap" element={<Dangnhap></Dangnhap>}></Route>
           <Route path="/Dangky" element={<Dangky></Dangky>}></Route>
           <Route path="/thanhtoan" element={<Thanhtoan></Thanhtoan>}></Route>            
