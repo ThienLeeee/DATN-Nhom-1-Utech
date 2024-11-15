@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import "/public/css/chitietsp.css";
 
 export default function ChiTietSanPham() {
+  
   const { id } = useParams();
   const [sanpham, setSanpham] = useState(null);
   const [popupVisible, setPopupVisible] = useState(false); // Quản lý popup
