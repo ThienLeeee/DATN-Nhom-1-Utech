@@ -57,6 +57,24 @@ router.get('/danhMuc/:id', async (req, res, next) => {
   }
 })
 
+//lock
+router.put('/danhMuc/lock/:id', async (req, res) => {
+  const { id } = req.params;
+  const db = await connectDb();
+  const danhMucCollection = db.collection('danhMuc');
+  const category = await danhMucCollection.findOne({ id: parseInt(id) });
+
+  if (category) {
+    const updatedCategory = await danhMucCollection.updateOne(
+      { id: parseInt(id) },
+      { $set: { locked: !category.locked } }
+    );
+    res.status(200).json(updatedCategory);
+  } else {
+    res.status(404).json({ message: 'Danh mục không tồn tại!' });
+  }
+});
+
 //Chức năng thêm danh mục
 // router.post('/categories', upload.single('img'), async(req, res,next) => {
 //   const db = await connectDb();
@@ -75,63 +93,89 @@ router.get('/danhMuc/:id', async (req, res, next) => {
 // })
 
 //Chức năng thêm danh mục
-router.post('/categories', async (req, res, next) => {
-  const db = await connectDb()
-  const categoriesCollection = db.collection('categories')
-  let { name } = req.body
-  let img = ''
-  let lastCategory = await categoriesCollection
-    .find()
-    .sort({ id: -1 })
-    .limit(1)
-    .toArray()
-  let id = lastCategory[0] ? lastCategory[0].id + 1 : 1
-  let newCategory = { id, name, img }
-  await categoriesCollection.insertOne(newCategory)
-  if (newCategory) {
-    res.status(200).json(newCategory)
-  } else {
-    res.status(404).json({ message: 'Add category not successful' })
+router.post('/danhMuc', upload.single('hinhanh'), async (req, res) => {
+  const db = await connectDb();
+  const categoriesCollection = db.collection('danhMuc');
+  // Extract data from the request body
+  const { tendm } = req.body;
+  const fileName = req.file ? req.file.filename : null;
+  // Kiểm tra nếu thiếu tên danh mục
+  if (!tendm) {
+    return res.status(400).json({ message: 'Tên danh mục là bắt buộc.' });
   }
-})
+  try {
+    // Lấy danh mục có `id` lớn nhất để tăng `id` lên 1 cho danh mục mới
+    const lastCategory = await categoriesCollection
+      .find()
+      .sort({ id: -1 })
+      .limit(1)
+      .toArray();
+    const id = lastCategory[0] ? lastCategory[0].id + 1 : 1;
+    // Tạo đối tượng danh mục mới
+    const newCategory = { id, tendm, hinhanh: fileName };
+    // Thêm danh mục vào cơ sở dữ liệu
+    await categoriesCollection.insertOne(newCategory);
+    // Phản hồi thành công
+    res.status(200).json(newCategory);
+  } catch (error) {
+    res.status(500).json({ message: 'Thêm danh mục không thành công', error });
+  }
+});
+
 
 //Sửa danh mục
-router.put('/categories/:id', async (req, res, next) => {
-  let id = req.params.id //id là string
-  const db = await connectDb()
-  const categoriesCollection = db.collection('categories')
-  let { name } = req.body
-  if (req.file) {
-    var img = req.file.originalname
-  } else {
-    //Lấy danh mục từ id để lấy img cũ ra
-    let category = await categoriesCollection.findOne({ id: parseInt(id) })
-    var img = category.img
-  }
-  let editCategory = { name, img }
-  category = await categoriesCollection.updateOne(
-    { id: parseInt(id) },
-    { $set: editCategory }
-  )
-  if (category) {
-    res.status(200).json(editCategory)
-  } else {
-    res.status(404).json({ message: 'Sửa ko thành công' })
-  }
-})
+router.put("/danhMuc/:id", upload.single("hinhanh"), async (req, res) => {
+  const id = req.params.id; // id là string
+  const db = await connectDb();
+  const danhMucCollection = db.collection('danhMuc');
+let {tendm}=req.body;
+let hinhanh = {};
+if (req.file) {
+    hinhanh = req.file.originalname; // Lưu tên hình ảnh mới
+} else {
+    let category = await danhMucCollection.findOne({ id: parseInt(id) });
+    hinhanh= category.hinhanh; // Giữ lại hình ảnh cũ nếu không có hình ảnh mới
+}
+let editCategory={
+  tendm,
+  hinhanh
+};
+const result = await danhMucCollection.updateOne(
+  { id: parseInt(id) },
+  { $set: editCategory }
+);
+if (result.matchedCount === 0) {
+  return res.status(404).json({ message: 'Không tìm thấy sản phẩm để cập nhật.' });
+}
+
+if (result.modifiedCount > 0) {
+  res.status(200).json(editCategory);
+} else {
+  res.status(404).json({ message: 'Sửa sản phẩm không thành công hoặc không có thay đổi nào.' });
+}
+});
 
 //xóa danh mục
-router.delete('/categories/:id', async (req, res) => {
-  let id = req.params.id
-  const db = await connectDb()
-  const categoriesCollection = db.collection('categories')
-  let category = await categoriesCollection.deleteOne({ id: parseInt(id) })
-  if (category) {
-    res.status(200).json({ message: 'Xóa thành công' })
-  } else {
-    res.status(404).json({ message: 'Xóa ko thành công' })
+// Assuming `connectDb` is a function that connects to your MongoDB
+router.delete('/danhMuc/:id', async (req, res) => {
+  const id = parseInt(req.params.id); // Make sure id is parsed as an integer
+  const db = await connectDb();
+  const categoriesCollection = db.collection('danhMuc');
+  try {
+    const result = await categoriesCollection.deleteOne({ id });
+    if (result.deletedCount > 0) {
+      res.status(200).json({ message: 'Xóa thành công' });
+    } else {
+      res.status(404).json({ message: 'Danh mục không tồn tại' });
+    }
+  } catch (error) {
+    console.error("Lỗi:", error);
+    res.status(500).json({ message: 'Lỗi khi xóa danh mục' });
   }
-})
+});
+
+module.exports = router;
+
 
 //show sp
 router.get('/sanPham', async (req, res, next) => {
@@ -146,79 +190,270 @@ router.get('/sanPham', async (req, res, next) => {
 })
 
 //show 12 sp
-// router.get('/products',async (req, res, next) => {
+// router.get('/sanPham',async (req, res, next) => {
 //   const db = await connectDb();
-//   const productsCollection = db.collection('products');
+//   const sanPhamCollection = db.collection('sanPham');
 
-//   // Limit query to retrieve only 12 products
+//   // Limit query to retrieve only 12 sanPham
 //   const limit = parseInt(req.query.limit) || 50; // Default to 8 if no limit specified
 
 //   try {
-//     const products = await productsCollection.find().limit(limit).toArray();
+//     const sanPham = await sanPhamCollection.find().limit(limit).toArray();
 
-//     if (products.length > 0) {
-//       res.status(200).json(products);
+//     if (sanPham.length > 0) {
+//       res.status(200).json(sanPham);
 //     } else {
-//       res.status(204).json({ message: 'No products found' }); // Use 204 for no content
+//       res.status(204).json({ message: 'No sanPham found' }); // Use 204 for no content
 //     }
 //   } catch (error) {
 //     console.error(error);
-//     res.status(500).json({ message: 'Error retrieving products' });
+//     res.status(500).json({ message: 'Error retrieving sanPham' });
 //   }
 // });
+const getImagePath = (id_danhmuc) => {
+  switch (id_danhmuc) {
+    case 1:
+      return "Laptop";
+    case 2:
+      return "PC";
+    case 3:
+      return "Manhinh";
+    case 4:
+      return "Chuot";
+    case 5:
+      return "Banphim";
+    default:
+      return "Khac"; // Default folder for other categories
+  }
+};
 
-//Chức năng thêm sản phẩm
-router.post('/products', upload.single('img'), async (req, res, next) => {
-  const db = await connectDb()
-  const productsCollection = db.collection('products')
-  let { name, price, categoryId, description } = req.body
-  let img = req.file
-  let lastProduct = await productsCollection
+// Chức năng thêm sản phẩm
+router.post('/sanPham', upload.single('hinh_anh'), async (req, res, next) => {
+  const db = await connectDb();
+  const sanPhamCollection = db.collection('sanPham');
+  let { ma_san_pham, ten_sp, gia_sp, bao_hanh, thuong_hieu, id_danhmuc, cau_hinh } = req.body;
+  try {
+    cau_hinh = JSON.parse(cau_hinh);  // Chuyển cau_hinh thành đối tượng nếu nó là chuỗi JSON
+  } catch (error) {
+    return res.status(400).json({ message: 'Cấu hình sản phẩm không hợp lệ.' });
+  }
+  // Parse id_danhmuc as an integer and determine the folder based on category ID
+  const categoryId = parseInt(id_danhmuc);
+  const folder = getImagePath(categoryId);
+  // Construct hinh_anh object to include the single uploaded image with folder path
+  let hinh_anh = {
+    chinh: req.file ? `${req.file.originalname}` : ''
+  };
+  // Find the last product to generate a new ID
+  let lastProduct = await sanPhamCollection
     .find()
     .sort({ id: -1 })
     .limit(1)
-    .toArray()
-  let id = lastProduct[0] ? lastProduct[0].id + 1 : 1
-  let newProduct = { id, name, price, categoryId, img, description }
-  await productsCollection.insertOne(newProduct)
-  if (newProduct) {
-    res.status(200).json(newProduct)
-  } else {
-    res.status(404).json({ message: 'Add product not successful' })
+    .toArray();
+  let id = lastProduct[0] ? lastProduct[0].id + 1 : 1;
+  // tùy chỉnh cấu hình 
+  let customCauHinh;
+  switch (categoryId) {
+    case 1: // Laptop
+      customCauHinh = {
+        cpu: cau_hinh.cpu,
+        ram: cau_hinh.ram,
+        o_cung:cau_hinh.o_cung,
+        vga: cau_hinh.vga,
+        man_hinh: cau_hinh.man_hinh,
+        // Thêm các cấu hình khác cho Laptop
+      };
+      break;
+    case 2: // PC
+      customCauHinh = {
+        cpu: cau_hinh.cpu,
+        ram: cau_hinh.ram,
+        vga: cau_hinh.vga,
+       
+        // Thêm các cấu hình khác cho PC
+      };
+      break;
+    case 3: // Màn hình
+      customCauHinh = {
+        kieu_man_hinh:cau_hinh.kieu_man_hinh,
+        kich_thuoc: cau_hinh.kich_thuoc,
+        tuong_thich_vesa: cau_hinh.tuong_thich_vesa,
+        cong_ket_noi: cau_hinh.cong_ket_noi,
+        do_phan_giai: cau_hinh.do_phan_giai,
+        tan_so_quet: cau_hinh.tan_so_quet,
+        tam_nen: cau_hinh.tam_nen,
+        khong_gian_mau: cau_hinh.khong_gian_mau,
+        phu_kien_trong_hop: cau_hinh.phu_kien_trong_hop,
+        thoi_gian_phan_hoi: cau_hinh.thoi_gian_phan_hoi,
+        do_sang: cau_hinh.do_sang,
+        // Thêm các cấu hình khác cho màn hình
+      };
+      break;
+    case 4: // Chuột
+      customCauHinh = {
+        mau_sac: cau_hinh.mau_sac,
+        ket_noi: cau_hinh.ket_noi,
+        led: cau_hinh.led,
+        cam_bien: cau_hinh.cam_bien,
+        so_nut: cau_hinh.so_nut,
+        tuoi_tho: cau_hinh.tuoi_tho,
+        DPI: cau_hinh.DPI,
+        IPS: cau_hinh.IPS,
+        trong_luong: cau_hinh.trong_luong,
+        // Thêm các cấu hình khác cho chuột
+      };
+      break;
+    case 5: // Bàn phím
+      customCauHinh = {
+        ket_noi: cau_hinh.ket_noi,
+        switch: cau_hinh.switch,
+        led: cau_hinh.led,
+        kich_thuoc: cau_hinh.kich_thuoc,
+        trong_luong: cau_hinh.trong_luong,
+        // Thêm các cấu hình khác cho bàn phím
+      };
+      break;
+    default:
+      customCauHinh = cau_hinh; // Dùng cấu hình mặc định nếu không có trường hợp nào khớp
+      break;
   }
-})
+  // Create the new product object
+  let newProduct = { 
+    id, 
+    ma_san_pham, 
+    ten_sp, 
+    gia_sp, 
+    bao_hanh, 
+    thuong_hieu, 
+    id_danhmuc: categoryId, 
+    cau_hinh: customCauHinh, 
+    hinh_anh 
+  };
+  // Insert the new product into the database
+  await sanPhamCollection.insertOne(newProduct);
+  if (newProduct) {
+    res.status(200).json(newProduct);
+  } else {
+    res.status(404).json({ message: 'Add product not successful' });
+  }
+});
 
 //sửa sp
-router.put('/products/:id', upload.single('img'), async (req, res, next) => {
-  let id = req.params.id //id là string
-  const db = await connectDb()
-  const productsCollection = db.collection('products')
-  let { name, price, categoryId, description } = req.body
+router.put('/sanPham/:id', upload.single('hinh_anh'), async (req, res, next) => {
+  const id = req.params.id; // id là string
+  const db = await connectDb();
+  const sanPhamCollection = db.collection('sanPham');
+  let { ma_san_pham, ten_sp, gia_sp, bao_hanh, thuong_hieu, id_danhmuc, cau_hinh } = req.body;
+  // Kiểm tra cấu hình sản phẩm
+  if (typeof cau_hinh !== 'string') {
+      return res.status(400).json({ message: 'Cấu hình sản phẩm không hợp lệ.' });
+  }
+  // Xử lý cấu hình sản phẩm
+  try {
+      cau_hinh = JSON.parse(cau_hinh);
+  } catch (error) {
+      return res.status(400).json({ message: 'Cấu hình sản phẩm không hợp lệ.' });
+  }
+  // Lấy hình ảnh mới hoặc giữ hình ảnh cũ
+  let hinh_anh = {};
   if (req.file) {
-    var img = req.file.originalname
+      hinh_anh.chinh = req.file.originalname; // Lưu tên hình ảnh mới
   } else {
-    //lấy sản phẩm từ id để lấy img cũ ra
-    let product = await productsCollection.findOne({ id: parseInt(id) })
-    var img = product.img
+      let product = await sanPhamCollection.findOne({ id: parseInt(id) });
+      hinh_anh.chinh = product.hinh_anh.chinh; // Giữ lại hình ảnh cũ nếu không có hình ảnh mới
   }
-  let editProduct = { name, price, categoryId, img, description }
-  product = await productsCollection.updateOne(
-    { id: parseInt(id) },
-    { $set: editProduct }
-  )
-  if (product) {
-    res.status(200).json(editProduct)
+  const categoryId = parseInt(id_danhmuc);
+  let customCauHinh;
+  // Tùy chỉnh cấu hình
+  switch (categoryId) {
+      case 1: // Laptop
+          customCauHinh = {
+              cpu: cau_hinh.cpu,
+              ram: cau_hinh.ram,
+              o_cung: cau_hinh.o_cung,
+              vga: cau_hinh.vga,
+              man_hinh: cau_hinh.man_hinh,
+          };
+          break;
+      case 2: // PC
+          customCauHinh = {
+              cpu: cau_hinh.cpu,
+              ram: cau_hinh.ram,
+              vga: cau_hinh.vga,
+          };
+          break;
+      case 3: // Màn hình
+          customCauHinh = {
+              kieu_man_hinh: cau_hinh.kieu_man_hinh,
+              kich_thuoc: cau_hinh.kich_thuoc,
+              tuong_thich_vesa: cau_hinh.tuong_thich_vesa,
+              cong_ket_noi: cau_hinh.cong_ket_noi,
+              do_phan_giai: cau_hinh.do_phan_giai,
+              tan_so_quet: cau_hinh.tan_so_quet,
+              tam_nen: cau_hinh.tam_nen,
+              khong_gian_mau: cau_hinh.khong_gian_mau,
+              phu_kien_trong_hop: cau_hinh.phu_kien_trong_hop,
+              thoi_gian_phan_hoi: cau_hinh.thoi_gian_phan_hoi,
+              do_sang: cau_hinh.do_sang,
+          };
+          break;
+      case 4: // Chuột
+          customCauHinh = {
+              mau_sac: cau_hinh.mau_sac,
+              ket_noi: cau_hinh.ket_noi,
+              led: cau_hinh.led,
+              cam_bien: cau_hinh.cam_bien,
+              so_nut: cau_hinh.so_nut,
+              tuoi_tho: cau_hinh.tuoi_tho,
+              DPI: cau_hinh.DPI,
+              IPS: cau_hinh.IPS,
+              trong_luong: cau_hinh.trong_luong,
+          };
+          break;
+      case 5: // Bàn phím
+          customCauHinh = {
+              ket_noi: cau_hinh.ket_noi,
+              switch: cau_hinh.switch,
+              led: cau_hinh.led,
+              kich_thuoc: cau_hinh.kich_thuoc,
+              trong_luong: cau_hinh.trong_luong,
+          };
+          break;
+      default:
+          customCauHinh = cau_hinh; // Dùng cấu hình mặc định nếu không có trường hợp nào khớp
+          break;
+  }
+  // Tạo đối tượng sản phẩm cần cập nhật
+  let editProduct = { 
+      ma_san_pham, 
+      ten_sp, 
+      gia_sp, 
+      bao_hanh, 
+      thuong_hieu, 
+      id_danhmuc: categoryId, 
+      cau_hinh: customCauHinh, 
+      hinh_anh 
+  };
+  // Cập nhật sản phẩm trong cơ sở dữ liệu
+  const result = await sanPhamCollection.updateOne(
+      { id: parseInt(id) },
+      { $set: editProduct }
+  );
+  if (result.matchedCount === 0) {
+      return res.status(404).json({ message: 'Không tìm thấy sản phẩm để cập nhật.' });
+  }
+  if (result.modifiedCount > 0) {
+      res.status(200).json(editProduct);
   } else {
-    res.status(404).json({ message: 'Sửa ko thành công' })
+      res.status(404).json({ message: 'Sửa sản phẩm không thành công hoặc không có thay đổi nào.' });
   }
-})
-
+});
 //xóa sản phẩm
-router.delete('/products/:id', async (req, res) => {
+router.delete('/sanPham/:id', async (req, res) => {
   let id = req.params.id
   const db = await connectDb()
-  const productsCollection = db.collection('products')
-  let product = await productsCollection.deleteOne({ id: parseInt(id) })
+  const sanPhamCollection = db.collection('sanPham')
+  let product = await sanPhamCollection.deleteOne({ id: parseInt(id) })
   if (product) {
     res.status(200).json({ message: 'Xóa thành công' })
   } else {
@@ -267,19 +502,19 @@ router.get('/sanPham/thuong_hieu/:thuong_hieu', async (req, res, next) => {
 })
 
 //Lấy sản phẩm theo tên danh mục
-router.get('/products/categoryname/:name', async (req, res, next) => {
+router.get('/sanPham/categoryname/:name', async (req, res, next) => {
   const name = req.params.name
   const db = await connectDb()
-  const productsCollection = db.collection('products')
+  const sanPhamCollection = db.collection('sanPham')
   const categoriesCollection = db.collection('categories')
   try {
     let category = await categoriesCollection.findOne({ name: name })
     let cateId = category.id
-    const products = await productsCollection
+    const sanPham = await sanPhamCollection
       .find({ categoryId: cateId.id })
       .toArray()
-    if (products.length > 0) {
-      res.status(200).json(products)
+    if (sanPham.length > 0) {
+      res.status(200).json(sanPham)
     } else {
       res.status(404).json({ message: 'Product not found.' })
     }
@@ -290,9 +525,9 @@ router.get('/products/categoryname/:name', async (req, res, next) => {
 })
 
 //Lấy sản phẩm "nóng"
-router.get('/products/hot', authenToken, async (req, res, next) => {
+router.get('/sanPham/hot', authenToken, async (req, res, next) => {
   const db = await connectDb()
-  const productCollection = db.collection('products')
+  const productCollection = db.collection('sanPham')
   const product = await productCollection.find({ hot: 1 }).toArray()
   if (product) {
     res.status(200).json(product)
@@ -315,24 +550,39 @@ router.get('/sanPham/:id', async (req, res, next) => {
 })
 
 //Tìm kiếm sản phẩm
-router.get('/products/search/:name', async (req, res) => {
-  let name = req.params.name
-  const db = await connectDb()
-  const productCollection = db.collection('products')
-  const product = await productCollection
-    .find({ name: { $regex: name, $options: 'i' } })
-    .toArray()
-  if (product) {
-    res.status(200).json(product)
-  } else {
-    res.status(404).json({ message: "Product 'CHÁY' not found " })
+router.put('/user/:id', async (req, res) => {
+  const id = parseInt(req.params.id); // Lấy id từ URL
+  const db = await connectDb();
+  const userCollection = db.collection('user');
+  
+  const { ma_san_pham, hoten, ngaysinh, gioitinh, sdt, email, diachi } = req.body;
+  const editUser = { ma_san_pham, hoten, ngaysinh, gioitinh, sdt, email, diachi };
+
+  try {
+    const result = await userCollection.updateOne(
+      { id }, 
+      { $set: editUser }
+    );
+    
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: 'Không tìm thấy người dùng để cập nhật.' });
+    }
+
+    if (result.modifiedCount > 0) {
+      res.status(200).json({ message: 'Cập nhật thành công', user: editUser });
+    } else {
+      res.status(200).json({ message: 'Không có thay đổi nào.' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Đã xảy ra lỗi khi cập nhật', error });
   }
-})
+});
+
 
 //show tài khoản
-router.get('/accounts', async (req, res, next) => {
+router.get('/user', async (req, res, next) => {
   const db = await connectDb()
-  const accountsCollection = db.collection('accounts')
+  const accountsCollection = db.collection('user')
   const accounts = await accountsCollection.find().toArray()
   if (accounts) {
     res.status(200).json(accounts)
@@ -340,6 +590,59 @@ router.get('/accounts', async (req, res, next) => {
     res.status(404).json({ message: 'Account not found' })
   }
 })
+
+// API tìm kiếm người dùng theo id_user
+router.get('/user/:id', async (req, res, next) => {
+  let  id  = req.params.id; // Lấy id từ URL
+  const db = await connectDb()
+  const userCollection = db.collection('user')
+  const nguoidung= await userCollection.findOne({ id: parseInt(id) })
+  if (nguoidung) {
+    res.status(200).json(nguoidung)
+  } else {
+    res.status(404).json({ message: 'Không tìm thấy sản phẩm' })
+  }
+});
+
+module.exports = router;
+
+// API sửa người dùng theo id_user
+router.put('/user/:id', async (req, res, next) => {
+  const id = req.params.id; // Lấy id từ URL
+  const db = await connectDb();
+  const userCollection = db.collection('user')
+  let{ma_san_pham,hoten,ngaysinh,gioitinh,sdt,email,diachi}=req.body
+  let editUser={
+    ma_san_pham,hoten,ngaysinh,gioitinh,sdt,email,diachi
+  }
+   // Cập nhật sản phẩm trong cơ sở dữ liệu
+   const result = await sanPhamCollection.updateOne(
+    { id: parseInt(id) },
+    { $set: editProduct }
+   );
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: 'Không tìm thấy người dùngđể cập nhật.' });
+    }
+    if (result.modifiedCount > 0) {
+      res.status(200).json(editProduct);
+    } else {
+      res.status(404).json({ message: 'Sửa người dùng không thành công hoặc không có thay đổi nào.' });
+    }
+});
+
+// API xóa người dùng theo id_user
+router.delete('/user/:id', async (req, res) => {
+  let id = req.params.id
+  const db = await connectDb()
+  const userCollection = db.collection('user')
+  let nguoidung = await userCollection.deleteOne({ id: parseInt(id) })
+  if (nguoidung) {
+    res.status(200).json({ message: 'Xóa thành công' })
+  } else {
+    res.status(404).json({ message: 'Xóa ko thành công' })
+  }
+})
+
 
 //API đăng ký tài khoản
 router.post(
