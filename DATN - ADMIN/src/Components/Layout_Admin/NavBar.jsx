@@ -14,7 +14,7 @@ export default function NavBar(){
           <p>
             <i className="bi bi-pie-chart-fill me-2" />
             <Link
-              to="/admin-thonge"
+              to="/admin-thongke"
               className="text-decoration-none text-white"
               
             >

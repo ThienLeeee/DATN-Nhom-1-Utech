@@ -10,7 +10,7 @@ export default function Header() {
             className="rounded m-1 border border-1 border-white"
             width="30px"
             height="30px"
-            src="/images/admin.png"
+            src="/img/logo/logo.png"
             alt=""
           />
         </div>

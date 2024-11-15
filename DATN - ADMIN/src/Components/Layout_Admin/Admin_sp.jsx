@@ -1,40 +1,145 @@
-
-import { useEffect } from "react";
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
 import { fetchSanpham } from "../../../service/sanphamService.js";
 import { Link } from "react-router-dom";
-
-
+import Swal from 'sweetalert2';
 export default function Admin_sp() {
-
   const [sanPham, setSanpham] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [filteredCategoryId, setFilteredCategoryId] = useState(null);
+const [lockedCategories, setLockedCategories] = useState(true);
+const [searchKeyword, setSearchKeyword] = useState('');
+
+const filteredItems = sanPham.filter((item) => {
+  const isCategoryMatched = !filteredCategoryId || item.id_danhmuc === filteredCategoryId;
+  const isNotLocked = !lockedCategories.includes(item.id_danhmuc);
+  const isNameMatched = item.ten_sp.toLowerCase().includes(searchKeyword.toLowerCase());
+  return isCategoryMatched && isNotLocked && isNameMatched;
+});
+
+
+useEffect(() => {
+  const fetchLockedCategories = async () => {
+    const response = await fetch("http://localhost:3000/api/danhMuc");
+    const categories = await response.json();
+    const locked = categories.filter((category) => category.locked).map((category) => category.id);
+    setLockedCategories(locked);
+  };
+  fetchLockedCategories();
+}, []);
+
+// Combine your filtering logic into one filteredItems declaration
+// const filteredItems = sanPham.filter((item) => {
+//   const isCategoryMatched = !filteredCategoryId || item.id_danhmuc === filteredCategoryId;
+//   const isNotLocked = !lockedCategories.includes(item.id_danhmuc);
+//   return isCategoryMatched && isNotLocked;
+// });
+
+ // Filter products by selected category ID
+  // const filteredItems = filteredCategoryId
+    // ? sanPham.filter((item) => item.id_danhmuc === filteredCategoryId)
+    // : sanPham;
+   
+
   useEffect(() => {
     const loadSanpham = async () => {
       try {
-        const sanPham = await fetchSanpham();
-        setSanpham(sanPham);
+        const sanPhamData = await fetchSanpham();
+        setSanpham(sanPhamData);
       } catch (error) {
         console.error("Lỗi:", error);
       }
     };
     loadSanpham();
-  }, [currentPage]);
+  }, []);
 
-  const totalPages = Math.ceil(sanPham.length / itemsPerPage);
+ 
 
-  // Lấy các sản phẩm của trang hiện tại
-  const currentItems = sanPham.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+const handleDelete = async (id) => {
+  Swal.fire({
+    title: 'Bạn có chắc chắn muốn xóa sản phẩm này?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Xóa',
+    cancelButtonText: 'Hủy',
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        const response = await fetch(`http://localhost:3000/api/sanPham/${id}`, {
+          method: 'DELETE',
+        });
+        if (response.ok) {
+          setSanpham(sanPham.filter((item) => item.id !== id));
+          Swal.fire('Đã xóa!', 'Sản phẩm đã được xóa thành công.', 'success');
+        } else {
+          Swal.fire('Lỗi!', 'Xóa không thành công.', 'error');
+        }
+      } catch (error) {
+        console.error("Lỗi:", error);
+        Swal.fire('Lỗi!', 'Đã xảy ra lỗi khi xóa sản phẩm.', 'error');
+      }
+    }
+  });
+};
 
-  // Hàm chuyển trang
-  const goToPage = (page) => {
-    setCurrentPage(page);
-  };
+
+  
+// Định nghĩa cấu hình cho từng danh mục
+const categoryConfigurations = {
+  1: [ // Laptop
+    { name: 'cpu', label: 'CPU' },
+    { name: 'ram', label: 'RAM' },
+    { name: 'o_cung', label: 'Ổ CỨNG' },
+    { name: 'vga', label: 'VGA' },
+    { name: 'man_hinh', label: 'MÀN HÌNH' },
+  ],
+  2: [ // PC
+    { name: 'cpu', label: 'CPU' },
+    { name: 'ram', label: 'RAM' },
+    { name: 'vga', label: 'VGA' },
+  ],
+  3: [ // Màn Hình
+    { name: 'kieu_man_hinh', label: 'KIỂU MÀN HÌNH' },
+    { name: 'kich_thuoc', label: 'KÍCH THƯỚC' },
+    { name: 'tuong_thich_vesa', label: 'TƯƠNG THÍCH VESA' },
+    { name: 'tan_so_quet', label: 'TẦN SỐ QUÉT' },
+    { name: 'do_phan_giai', label: 'ĐỘ PHÂN GIẢI' },
+    { name: 'tam_nen', label: 'TẤM NỀN' },
+    { name: 'khong_gian_mau', label: 'KHÔNG GIAN MÀU' },
+    { name: 'phu_kien_trong_hop', label: 'PHỤ KIỆN TRONG HỘP' },
+    { name: 'thoi_gian_phan_hoi', label: 'THỜI GIAN PHẢN HỒI' },
+    { name: 'do_sang', label: 'ĐỘ SÁNG' },
+  ],
+  4: [ // Chuột
+    { name: 'mau_sac', label: 'MÀU SẮC' },
+    { name: 'ket_noi', label: 'KẾT NỐI' },
+    { name: 'led', label: 'LED' },
+    { name: 'cam_bien', label: 'CẢM BIẾN' },
+    { name: 'so_nut', label: 'SỐ NÚT' },
+    { name: 'tuoi_tho', label: 'TUỔI THỌ' },
+    { name: 'DPI', label: 'DPI' },
+  ],
+  5: [ // Bàn phím
+    { name: 'mau_sac', label: 'MÀU SẮC' },
+    { name: 'ket_noi', label: 'KẾT NỐI' },
+    { name: 'led', label: 'LED' },
+    { name: 'so_nut', label: 'SỐ NÚT' },
+    { name: 'tuoi_tho', label: 'TUỔI THỌ' },
+    { name: 'DPI', label: 'DPI' },
+    { name: 'IPS', label: 'IPS' },
+    { name: 'trong_luong', label: 'TRỌNG LƯỢNG' },
+  ],
+};
+const renderConfig = (cau_hinh, id_danhmuc) => {
+  const configFields = categoryConfigurations[id_danhmuc] || [];
+  return configFields.map((field) => (
+    cau_hinh[field.name] && (
+      <div key={field.name}>
+        <strong>{field.label}:</strong> {cau_hinh[field.name]}
+      </div>
+    )
+  ));
+};
+
+  // Function to get the image path based on the category ID
   const getImagePath = (categoryId) => {
     switch (categoryId) {
       case 1:
@@ -48,257 +153,109 @@ export default function Admin_sp() {
       case 5:
         return "Banphim";
       default:
-        return "Khac"; // Default folder for other categories
+        return "Khac";
     }
   };
-  return (
+
+ 
+    return (
     <>
-      <h4>Quản lý sản phẩm</h4>
+        <h1 className="text-center" >Quản lý sản phẩm</h1>
+      
       <div>
         <Link to="/products/add">
-        <button className="btn btn-primary">Thêm sản phẩm</button>
+          <button className="btn btn-primary">Thêm sản phẩm</button>
         </Link>
       </div>
-   
+
+      {/* Dropdown or buttons for selecting the category to filter by */}
+      <div className="d-flex justify-content-between">
+      <div className="my-3 d-flex align-items-center">
+        <label className="me-2 fw-bold">Chọn danh mục: </label>
+        <select className="form-select" style={{ width: 'auto' }} onChange={(e) => setFilteredCategoryId(Number(e.target.value))}>
+          <option value="">Tất cả</option>
+          <option value="1">Laptop</option>
+          <option value="2">PC</option>
+          <option value="3">Màn hình</option>
+          <option value="4">Chuột</option>
+          <option value="5">Bàn phím</option>
+        </select>
+      </div>
+      <div className="my-3 d-flex align-items-center">
+      <label className="me-2 fw-bold">Tìm kiếm: </label>
+      <input
+        type="text"
+        className="form-control"
+        style={{ width: 'auto' }}
+        placeholder="Nhập tên sản phẩm..."
+        value={searchKeyword}
+        onChange={(e) => setSearchKeyword(e.target.value)}
+      />
+    </div>
+      </div>
+     
       <table className="table table-bordered m-2">
         <thead className="table-dark">
           <tr>
-            <th scope="col">ID</th>
-            <th scope="col">Mã sản phẩm</th>
-            <th scope="col">Tên sản phẩm</th>
-            <th scope="col">Hình ảnh</th>
-            <th scope="col">Giá</th>
-            <th scope="col">Danh mục</th>
-            <th scope="col">Cấu hình</th>
-            <th scope="col">Bảo hành</th>
-            <th scope="col">Thao tác</th>
+            <th className="text-center align-middle " scope="col">ID</th>
+            <th className="text-center align-middle " scope="col">Mã sản phẩm</th>
+            <th className="text-center align-middle " scope="col">Tên sản phẩm</th>
+            <th className="text-center align-middle " scope="col">Hình ảnh</th>
+            <th className="text-center align-middle " scope="col">Giá</th>
+            <th className="text-center align-middle " scope="col">Danh mục</th>
+            <th className="text-center align-middle " scope="col">Cấu hình</th>
+            <th className="text-center align-middle " scope="col">Bảo hành</th>
+            <th className="text-center align-middle " scope="col">Thao tác</th>
           </tr>
         </thead>
         
         <tbody>
-      {currentItems.length > 0 ? (
-        
-        currentItems.map((sanpham,index)=>{
-          const imagePath = getImagePath(sanpham.id_danhmuc);
-          return( <tr key={index}>
-            <td>{sanpham.id}</td>
-            <td>{sanpham.ma_san_pham}</td>
-            <td>{sanpham.ten_sp}</td>
-            <td>
-            <img
-                           src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.chinh}`}
-                           style={{ width: "150px", height: "auto" }} 
-                           alt={sanpham.ten_sp}
-                             className="w100 trans03"
-                             />
-            </td>
-            <td>{sanpham.gia_sp}</td>
-            <td>{sanpham.id_danhmuc}</td>
-            {/* <td>
-              CPU: {sanpham.cau_hinh.cpu}
-              <br />
-              RAM: {sanpham.cau_hinh.ram}
-              <br />
-              Ổ CỨNG: {sanpham.cau_hinh.o_cung}
-              <br />
-              VGA: {sanpham.cau_hinh.vga}
-              <br />
-              MÀN HÌNH: {sanpham.cau_hinh.man_hinh}
-  
-            </td> */}
-            <td>
-    {sanpham.cau_hinh.cpu && (
-      <>
-        <strong>CPU:</strong> {sanpham.cau_hinh.cpu}
-        <br />
-      </>
-    )}
-    {sanpham.cau_hinh.ram && (
-      <>
-        <strong>RAM:</strong> {sanpham.cau_hinh.ram}
-        <br />
-      </>
-    )}
-    {sanpham.cau_hinh.o_cung && (
-      <>
-        <strong>Ổ CỨNG:</strong> {sanpham.cau_hinh.o_cung}
-        <br />
-      </>
-    )}
-    {sanpham.cau_hinh.vga && (
-      <>
-        <strong>VGA:</strong> {sanpham.cau_hinh.vga}
-        <br />
-      </>
-    )}
-    {sanpham.cau_hinh.man_hinh && (
-      <>
-        <strong>MÀN HÌNH:</strong> {sanpham.cau_hinh.man_hinh}
-        <br />
-      </>
-    )}
-    {sanpham.cau_hinh.mau_sac && (
-      <>
-        <strong>MÀU SẮC:</strong> {sanpham.cau_hinh.mau_sac}
-        <br />
-      </>
-    )}
-    {sanpham.cau_hinh.ket_noi && (
-      <>
-        <strong>KẾT NỐI:</strong> {sanpham.cau_hinh.ket_noi}
-        <br />
-      </>
-    )}
-    {sanpham.cau_hinh.led && (
-      <>
-        <strong>LED:</strong> {sanpham.cau_hinh.led}
-        <br />
-      </>
-    )}
-    {sanpham.cau_hinh.cam_bien && (
-      <>
-        <strong>CẢM BIẾN:</strong> {sanpham.cau_hinh.cam_bien}
-        <br />
-      </>
-    )}
-    {sanpham.cau_hinh.so_nut && (
-      <>
-        <strong>SỐ NÚT:</strong> {sanpham.cau_hinh.so_nut}
-        <br />
-      </>
-    )}
-    {sanpham.cau_hinh.tuoi_tho && (
-      <>
-        <strong>TUỔI THỌ:</strong> {sanpham.cau_hinh.tuoi_tho}
-        <br />
-      </>
-    )}
-    {sanpham.cau_hinh.DPI && (
-      <>
-        <strong>DPI:</strong> {sanpham.cau_hinh.DPI}
-        <br />
-      </>
-    )}
-    {sanpham.cau_hinh.IPS && (
-      <>
-        <strong>IPS:</strong> {sanpham.cau_hinh.IPS}
-        <br />
-      </>
-    )}
-    {sanpham.cau_hinh.trong_luong && (
-      <>
-        <strong>TRỌNG LƯỢNG:</strong> {sanpham.cau_hinh.trong_luong}
-        <br />
-      </>
-    )}
-    {sanpham.cau_hinh.kieu_man_hinh && (
-      <>
-        <strong>KIỂU MÀN HÌNH:</strong> {sanpham.cau_hinh.kieu_man_hinh}
-        <br />
-      </>
-    )}
-    {sanpham.cau_hinh.kich_thuoc && (
-      <>
-        <strong>KÍCH THƯỚC:</strong> {sanpham.cau_hinh.kich_thuoc}
-        <br />
-      </>
-    )}
-    {sanpham.cau_hinh.tuong_thich_vesa && (
-      <>
-        <strong>TƯƠNG THÍCH VESA:</strong> {sanpham.cau_hinh.tuong_thich_vesa}
-        <br />
-      </>
-    )}
-    {sanpham.cau_hinh.cong_ket_noi && (
-      <>
-        <strong>CỔNG KẾT NỐI:</strong> {sanpham.cau_hinh.cong_ket_noi}
-        <br />
-      </>
-    )}
-    {sanpham.cau_hinh.tan_so_quet && (
-      <>
-        <strong>TẦN SỐ QUÉT:</strong> {sanpham.cau_hinh.tan_so_quet}
-        <br />
-      </>
-    )}
-    {sanpham.cau_hinh.do_phan_giai && (
-      <>
-        <strong>ĐỘ PHÂN GIẢI:</strong> {sanpham.cau_hinh.do_phan_giai}
-        <br />
-      </>
-    )}
-    {sanpham.cau_hinh.tam_nen && (
-      <>
-        <strong>TẤM NỀN:</strong> {sanpham.cau_hinh.tam_nen}
-        <br />
-      </>
-    )}
-    {sanpham.cau_hinh.khong_gian_mau && (
-      <>
-        <strong>KHÔNG GIAN MÀU:</strong> {sanpham.cau_hinh.khong_gian_mau}
-        <br />
-      </>
-    )}
-    {sanpham.cau_hinh.phu_kien_trong_hop && (
-      <>
-        <strong>PHỤ KIỆN TRONG HỘP:</strong> {sanpham.cau_hinh.phu_kien_trong_hop}
-        <br />
-      </>
-    )}
-    {sanpham.cau_hinh.thoi_gian_phan_hoi && (
-      <>
-        <strong>THỜI GIAN PHẢN HỒI:</strong> {sanpham.cau_hinh.thoi_gian_phan_hoi}
-        <br />
-      </>
-    )}
-    {sanpham.cau_hinh.do_sang && (
-      <>
-        <strong>ĐỘ SÁNG:</strong> {sanpham.cau_hinh.do_sang}
-        <br />
-      </>
-    )}
-  </td>
-  
-            <td>{sanpham.bao_hanh}</td>
-            <td>
-              <a href="">
-                <button type="button" className="btn btn-light">
-                  <i className="text-primary bi-pencil-square" />
-                  Sửa
-                </button>
-              </a>
-              <a href="">
-                <button type="button" className="btn btn-light">
-                  <i className="text-warning bi-trash" />
-                  Xóa
-                </button>
-              </a>
-            </td>
-          </tr>)
-         
-
-        })
-      ):(
-        <tr>
-        <td colSpan="9" className="text-center">Đang tải sản phẩm...</td>
-      </tr>
-      )}
-         
-
+          {filteredItems.length > 0 ? (
+            filteredItems.map((sanpham, index) => {
+              const imagePath = getImagePath(sanpham.id_danhmuc);
+              return (
+                <tr key={index}>
+                  <td className="align-middle">{sanpham.id}</td>
+                  <td className="align-middle">{sanpham.ma_san_pham}</td>
+                  <td className="align-middle">{sanpham.ten_sp}</td>
+                  <td>
+                    <img
+                      src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.chinh}`}
+                      style={{ width: "150px", height: "auto" }}
+                      alt={sanpham.ten_sp}
+                      className="w100 trans03"
+                    />
+                  </td>
+                  <td className="align-middle">{sanpham.gia_sp}</td>
+                  <td className="align-middle">{sanpham.id_danhmuc}</td>
+                  <td className="align-middle text-left">
+                  {/* {renderConfig(sanpham.cau_hinh, sanpham.id_danhmuc)} */}
+                  {renderConfig(sanpham.cau_hinh, sanpham.id_danhmuc)}
+                  </td>
+                  <td className="align-middle">{sanpham.bao_hanh}</td>
+                  <td className="text-center align-middle  d-flex justify-content-center gap-2 pt-5 " >
+                
+                  <Link to={`/products/edit/${sanpham.id}`} className="btn btn-light ">
+                      <i className="text-primary bi-pencil-square" />
+                      
+                    </Link>
+                   
+                    <button onClick={() => handleDelete(sanpham.id)} type="button" className="btn btn-light">
+                      <i className="text-warning bi-trash" />
+                      
+                    </button>
+    
+                  </td>
+                </tr>
+              );
+            })
+          ) : (
+            <tr>
+              <td colSpan="9" className="text-center">Không có sản phẩm nào</td>
+            </tr>
+          )}
         </tbody>
       </table>
-       {/* Hiển thị các nút phân trang */}
-       <div className="pagination ">
-        {Array.from({ length: totalPages }, (_, index) => (
-          <button
-            key={index + 1}
-            onClick={() => goToPage(index + 1)}
-            className={`btn ${currentPage === index + 1 ? "btn-primary" : "btn-light"}`}
-          >
-            {index + 1}
-          </button>
-        ))}
-      </div>
     </>
   );
 }
