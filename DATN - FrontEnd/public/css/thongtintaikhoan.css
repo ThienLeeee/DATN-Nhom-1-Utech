@@ -1,0 +1,131 @@
+.account-container {
+    display: flex;
+    max-width: 1000px;
+    margin: 20px auto;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  
+  .sidebar {
+    width: 250px;
+    background-color: #f5f5f5;
+    border-right: 1px solid #ddd;
+    padding: 20px;
+  }
+  
+  .profile {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+  }
+  
+  .username {
+    font-weight: bold;
+  }
+  
+  .menu-form {
+    background-color: #dbdbe5;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .menu-item {
+    padding: 10px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: #333;
+  }
+  
+  .menu-item i {
+    margin-right: 10px;
+  }
+  
+  .menu-item.active, .menu-item:hover {
+    color: rgb(237, 11, 11);
+  }
+  
+  .account-info {
+    flex: 1;
+    padding: 20px;
+  }
+  
+  .account-info h2 {
+    font-size: 24px;
+    font-weight: normal;
+    margin-bottom: 20px;
+  }
+  
+  .account-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .account-form input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .gender-options label {
+    margin-right: 15px;
+  }
+  
+  .editable-field {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+  .editable-field span {
+    margin-right: 10px;
+  }
+  
+  .change-link {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .change-link:hover {
+    text-decoration: underline;
+  }
+  
+  .date-select {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  
+  .date-select select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .save-button {
+    background-color: rgb(12, 145, 198);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .save-button:hover {
+    background-color: rgb(19, 8, 136);
+  }
+  
