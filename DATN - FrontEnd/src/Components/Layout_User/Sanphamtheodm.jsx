@@ -40,12 +40,14 @@ export default function SanPhamTheodm() {
     if (itemIndex > -1) {
       cartItems[itemIndex].quantity += 1;
     } else {
-      // Chuyển đổi giá thành số để lưu vào giỏ hàng
       const priceAsNumber = parseInt(sanPhamMoi.gia_sp.replace(/\./g, ''));
       cartItems.push({ ...sanPhamMoi, gia_sp: priceAsNumber, quantity: 1 });
     }
   
     localStorage.setItem("cartItem", JSON.stringify(cartItems));
+    
+    window.dispatchEvent(new Event("cartUpdated"));
+    
     navigate("/giohang");
   };
   // Tìm kiếm tên danh mục tương ứng với ID hiện tại

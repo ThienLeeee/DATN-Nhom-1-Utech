@@ -102,4 +102,17 @@ $(document).ready(function(){
         dots: true,
         infinity: true
     });
+
+    // Đảm bảo phần tử tồn tại trước khi khởi tạo Slick
+    if ($('.owl_img_detail').length) {
+        $('.owl_img_detail').slick({
+            // các options của bạn
+            dots: false,
+            infinite: true,
+            speed: 300,
+            slidesToShow: 4,
+            slidesToScroll: 1,
+            // ... các options khác
+        });
+    }
 });

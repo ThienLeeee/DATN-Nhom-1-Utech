@@ -21,10 +21,10 @@ export default function Thanhtoan() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Kiểm tra nếu thiếu bất kỳ trường nào
+    // Kiểm tra form
     if (
       !formData.ten_thanhtoan ||
       !formData.diachi_thanhtoan ||
@@ -35,22 +35,56 @@ export default function Thanhtoan() {
       alert("Vui lòng điền đầy đủ thông tin.");
       return;
     }
-   // Xóa giỏ hàng khỏi localStorage
-  localStorage.removeItem("checkoutItems");
 
-    // Lưu đơn hàng tạm thời vào localStorage
-    const checkoutItems = JSON.parse(localStorage.getItem("checkoutItems")) || [];
-    const order = {
-      ...formData,
-      items: checkoutItems,
-      orderDate: new Date().toLocaleString(),
-    };
-    localStorage.setItem("order", JSON.stringify(order));
+    try {
+      // Lấy thông tin giỏ hàng và đảm bảo nó là một mảng
+      let checkoutItems = JSON.parse(localStorage.getItem("checkoutItems"));
+      if (!Array.isArray(checkoutItems)) {
+        // Nếu không phải mảng, chuyển đổi thành mảng hoặc tạo mảng rỗng
+        checkoutItems = checkoutItems ? [checkoutItems] : [];
+      }
+      
+      // Tính tổng tiền an toàn hơn
+      const tongTien = checkoutItems.reduce((total, item) => {
+        const soLuong = Number(item.soLuong) || 0;
+        const giaSp = Number(item.gia_sp) || 0;
+        return total + (giaSp * soLuong);
+      }, 0);
 
-    // Hiển thị thông báo thành công
-    setIsSuccess(true);
+      // Tạo đối tượng đơn hàng
+      const orderData = {
+        hoTen: formData.ten_thanhtoan,
+        diaChi: formData.diachi_thanhtoan,
+        dienThoai: formData.dienthoai_thanhtoan,
+        email: formData.email_thanhtoan,
+        ghiChu: formData.noidung_thanhtoan,
+        hinhThucThanhToan: formData.ht_thanhtoan,
+        sanPham: checkoutItems,
+        tongTien: tongTien
+      };
 
-    
+      // Gọi API để lưu đơn hàng
+      const response = await fetch('http://localhost:3000/api/donHang', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Lỗi khi tạo đơn hàng');
+      }
+
+      // Xóa giỏ hàng khỏi localStorage
+      localStorage.removeItem("checkoutItems");
+      
+      // Hiển thị thông báo thành công
+      setIsSuccess(true);
+    } catch (error) {
+      console.error('Lỗi:', error);
+      alert('Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại.');
+    }
   };
 
   return (

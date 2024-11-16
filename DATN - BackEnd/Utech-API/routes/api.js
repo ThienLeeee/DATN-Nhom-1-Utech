@@ -724,4 +724,34 @@ function authenToken (req, res, next) {
   }
 }
 
+// API tạo đơn hàng mới
+router.post('/donHang', async (req, res) => {
+  const db = await connectDb();
+  const donHangCollection = db.collection('donHang');
+  
+  try {
+    // Lấy đơn hàng cuối cùng để tạo id mới
+    const lastOrder = await donHangCollection
+      .find()
+      .sort({ id: -1 })
+      .limit(1)
+      .toArray();
+    const id = lastOrder[0] ? lastOrder[0].id + 1 : 1;
+
+    // Tạo đơn hàng mới với id tự động tăng
+    const newOrder = {
+      id,
+      ...req.body,
+      ngayDat: new Date(),
+      trangThai: "Chờ xử lý"
+    };
+
+    await donHangCollection.insertOne(newOrder);
+    res.status(200).json({ message: 'Đặt hàng thành công', order: newOrder });
+  } catch (error) {
+    console.error('Lỗi khi tạo đơn hàng:', error);
+    res.status(500).json({ message: 'Đã xảy ra lỗi khi tạo đơn hàng' });
+  }
+});
+
 module.exports = router

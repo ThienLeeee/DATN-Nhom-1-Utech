@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 export default function Header() {
 
   const [danhMuc, setDanhmuc] = useState([]);
+  const [cartItemCount, setCartItemCount] = useState(0);
 
   useEffect(() => {
     const loadDanhmuc = async () => {
@@ -15,6 +16,27 @@ export default function Header() {
       }
     };
     loadDanhmuc();
+
+    // Thêm listener để cập nhật số lượng giỏ hàng
+    const updateCartCount = () => {
+      const cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
+      const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+      setCartItemCount(totalItems);
+    };
+
+    // Cập nhật lần đầu
+    updateCartCount();
+
+    // Lắng nghe sự thay đổi của localStorage
+    window.addEventListener("storage", updateCartCount);
+    
+    // Custom event để cập nhật từ các component khác
+    window.addEventListener("cartUpdated", updateCartCount);
+
+    return () => {
+      window.removeEventListener("storage", updateCartCount);
+      window.removeEventListener("cartUpdated", updateCartCount);
+    };
   }, []);
   return (
     <>
@@ -124,8 +146,7 @@ export default function Header() {
               </div>
               <Link
                 to="/giohang"
-                className="cart-header d-block d-flex "
-                href="gio-hang.html"
+                className="cart-header d-block d-flex"
                 style={{ overflow: "hidden" }}
               >
                 <img
@@ -135,7 +156,7 @@ export default function Header() {
                   style={{ float: "left", marginRight: 10 }}
                 />
                 <p style={{ float: "left" }}>
-                  Giỏ hàng (<strong>0</strong>)
+                  Giỏ hàng (<strong>{cartItemCount}</strong>)
                 </p>
               </Link>
             </div>

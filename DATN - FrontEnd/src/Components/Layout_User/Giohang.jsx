@@ -7,6 +7,7 @@ export default function Giohang() {
   const [totalQuantity, setTotalQuantity] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
   const navigate = useNavigate();
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
 
   const getImagePath = (idDanhmuc) => {
     switch (idDanhmuc) {
@@ -52,8 +53,12 @@ export default function Giohang() {
     const updatedItems = sanPham.map((item) =>
       item.id === id ? { ...item, quantity: Math.max(1, newQuantity) } : item
     );
+    
     setSanpham(updatedItems);
     localStorage.setItem("cartItem", JSON.stringify(updatedItems));
+
+    // Dispatch event để cập nhật số lượng trong Header
+    window.dispatchEvent(new Event("cartUpdated"));
   };
 
   const removeItem = (id) => {
@@ -68,6 +73,9 @@ export default function Giohang() {
 
     // Cập nhật state sau khi xóa
     setSanpham(updatedItems);
+    
+    // Dispatch event để cập nhật số lượng trong Header
+    window.dispatchEvent(new Event("cartUpdated"));
   };
 
   // Xóa toàn bộ giỏ hàng
@@ -76,13 +84,16 @@ export default function Giohang() {
       alert("Giỏ hàng đã trống!");
       return;
     }
+    setShowDeletePopup(true);
+  };
 
-    if (window.confirm("Bạn có chắc chắn muốn xóa toàn bộ giỏ hàng?")) {
-      setSanpham([]);
-      localStorage.removeItem("cartItem");
-      setTotalQuantity(0);
-      setTotalPrice(0);
-    }
+  const handleConfirmDelete = () => {
+    setSanpham([]);
+    localStorage.removeItem("cartItem");
+    setTotalQuantity(0);
+    setTotalPrice(0);
+    window.dispatchEvent(new Event("cartUpdated"));
+    setShowDeletePopup(false);
   };
 
   const handleCheckout = (e) => {
@@ -119,7 +130,7 @@ export default function Giohang() {
         </div>
         <div className="content_main">
           <div id="giohang_ct">
-            <form name="form1" method="post">
+            <form name="form1" method="post" onSubmit={(e) => e.preventDefault()}>
               {sanPham.length === 0 ? (
                 <div style={{ textAlign: "center", padding: "20px" }}>
                   <Link to="/">
@@ -384,6 +395,35 @@ export default function Giohang() {
       </div>
 
       {/*sub main*/}
+      
+      {/* Popup xóa tất cả */}
+      {showDeletePopup && (
+        <div className="delete-popup-overlay">
+          <div className="delete-popup">
+            <div className="delete-popup-icon">
+              <i className="fas fa-exclamation-triangle"></i>
+            </div>
+            <h2>Xác nhận xóa</h2>
+            <p style={{ textAlign: 'center' }}>
+              Bạn muốn xóa tất cả sản phẩm khỏi giỏ hàng?
+            </p>
+            <div className="delete-popup-buttons">
+              <button 
+                className="confirm-delete"
+                onClick={handleConfirmDelete}
+              >
+                Xóa tất cả
+              </button>
+              <button 
+                className="cancel-delete"
+                onClick={() => setShowDeletePopup(false)}
+              >
+                Hủy
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

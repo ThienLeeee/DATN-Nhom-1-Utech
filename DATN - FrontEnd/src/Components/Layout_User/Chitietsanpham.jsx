@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { fetchSanphamIddm } from "../../../service/sanphamService";
-import { useParams } from "react-router-dom";
+import { fetchSanphamIddm, fetchSanPhamTheoDm } from "../../../service/sanphamService";
+import { Link, useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+
 import "/public/css/chitietsp.css";
 
 export default function ChiTietSanPham() {
@@ -10,10 +11,28 @@ export default function ChiTietSanPham() {
   const [sanpham, setSanpham] = useState(null);
   const [popupVisible, setPopupVisible] = useState(false); // Quản lý popup
   const navigate = useNavigate();
+  const [relatedProducts, setRelatedProducts] = useState([]);
 
   useEffect(() => {
-    // Giả sử bạn có một hàm để lấy dữ liệu sản phẩm theo ID
-    fetchSanphamIddm(id).then((sanphamData) => setSanpham(sanphamData));
+    const fetchData = async () => {
+      try {
+        // Fetch sản phẩm chính
+        const sanphamData = await fetchSanphamIddm(id);
+        setSanpham(sanphamData);
+        
+        // Fetch sản phẩm cùng danh mục
+        const relatedData = await fetchSanPhamTheoDm(sanphamData.id_danhmuc);
+        // Lọc bỏ sản phẩm hiện tại và chỉ lấy 3 sản phẩm
+        const filtered = relatedData
+          .filter(product => product.id !== sanphamData.id)
+          .slice(0, 3);
+        setRelatedProducts(filtered);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    
+    fetchData();
   }, [id]);
 
   const handleAddToCart = (sanPhamMoi) => {
@@ -936,36 +955,44 @@ export default function ChiTietSanPham() {
                 </div>
               </div>
               <div className="right_bottom_detail">
-                <div className="title_right">Sản phẩm liên quan</div>
+                <div className="title_right">Sản phẩm liên quan</div>
                 <div className="content_right">
-                  <div className="item_sanpham">
-                    <div className="img_sp">
-                      <a
-                        href="san-pham/laptop-dell-inspiron-3530-n5i7240w1-9346.html"
-                        title="Laptop Dell Inspiron 3530 N5i7240W1"
-                      >
-                        <img
-                          src="img/Laptop Dell Inspiron 3530 N5i7240W1.jpg"
-                          alt="Laptop Dell Inspiron 3530 N5i7240W1"
-                          className="mw100 trans03"
-                        />
-                      </a>
-                    </div>
-                    <div className="nd_sp">
-                      <h2>
-                        <a
-                          href="san-pham/laptop-dell-inspiron-3530-n5i7240w1-9346.html"
-                          title="Laptop Dell Inspiron 3530 N5i7240W1"
+                  {relatedProducts.map((product) => (
+                    <div key={product.id} className="item_sanpham">
+                      <div className="img_sp">
+                        <Link 
+                         to={`/chitietsp/sanPham/${sanpham.id}`}
+                          title={product.ten_sp}
                         >
-                          Laptop Dell Inspiron 3530 N5i7240W1
-                        </a>
-                      </h2>
-                      <div className="gia_sp">
-                        <span>19,890,000 VNĐ</span>
+                          <img
+                            src={`/img/sanpham/${
+                              product.id_danhmuc === 1 ? 'Laptop' :
+                              product.id_danhmuc === 2 ? 'PC' :
+                              product.id_danhmuc === 3 ? 'Manhinh' :
+                              product.id_danhmuc === 4 ? 'Chuot' :
+                              product.id_danhmuc === 5 ? 'Banphim' : 'Khac'
+                            }/${product.hinh_anh.chinh}`}
+                            alt={product.ten_sp}
+                            className="mw100 trans03"
+                          />
+                        </Link>
                       </div>
+                      <div className="nd_sp">
+                        <h2>
+                          <Link 
+                            to={`/chitietsp/sanpham/${sanpham.id}`} 
+                            title={product.ten_sp}
+                          >
+                            {product.ten_sp}
+                          </Link>
+                        </h2>
+                        <div className="gia_sp">
+                          <span>{product.gia_sp} VNĐ</span>
+                        </div>
+                      </div>
+                      <div className="clear" />
                     </div>
-                    <div className="clear" />
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>

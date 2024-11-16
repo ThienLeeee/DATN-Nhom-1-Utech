@@ -32,7 +32,7 @@ export default function Trangchu() {
       }
     };
     loadDanhmuc();
-  }, []);
+  }, []); 
 
   const handleAddToCart = (sanPhamMoi) => {
     let cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
@@ -41,12 +41,14 @@ export default function Trangchu() {
     if (itemIndex > -1) {
       cartItems[itemIndex].quantity += 1;
     } else {
-      // Chuyển đổi giá thành số để lưu vào giỏ hàng
-      const priceAsNumber = parseInt(sanPhamMoi.gia_sp.replace(/\./g, ''));
+      const priceAsNumber = parseInt(sanPhamMoi.gia_sp.replace(/\./g, ""));
       cartItems.push({ ...sanPhamMoi, gia_sp: priceAsNumber, quantity: 1 });
     }
   
     localStorage.setItem("cartItem", JSON.stringify(cartItems));
+    
+    window.dispatchEvent(new Event("cartUpdated"));
+    
     navigate("/giohang");
   };
   
@@ -933,7 +935,7 @@ export default function Trangchu() {
                             tabIndex={-1}
                           >
                             <img
-                              src="/public/img/products/Laptop-Dell-Vostro-3530.png"
+                              src=""
                               alt="MÀN HÌNH LCD HP M24FW 2E2Y5AA"
                               className="w100 trans03"
                             />
@@ -942,13 +944,11 @@ export default function Trangchu() {
                           <div className="desc-product">
                             <div>
                               <div>Kích thước màn hình: 24 inch</div>
-                              <div>Độ phân giải: Full HD (1920×1080)</div>
+                              <div>Độ phân giải: Full HD (1920x1080)</div>
                               <div>Loại màn hình: Màn hình phẳng</div>
                               <div>Tấm nền: IPS</div>
                               <div>Tần số: 75Hz</div>
-                              <div>
-                                Kết nối: 1 VGA; 1 HDMI 1.4 (with HDCP support)
-                              </div>
+                              <div>Kết nối: 1VGA; 1 HDMI 1.4 (with HDCP support)</div>
                               <div
                                 data-original-title=""
                                 id="mttContainer"
@@ -978,7 +978,7 @@ export default function Trangchu() {
                               className="mua_giohang"
                               rel={5998}
                               data-confirm=""
-                              onClick="new jBox()"
+                              onClick={() => handleAddToCart(sanPham)}
                             >
                               Mua ngay
                             </span>
