@@ -1,5 +1,6 @@
 const url = 'http://localhost:3000/api'
-
+import axios from 'axios';
+// ... existing code ...
 export const fetchSanpham = async () => {
   try {
     const response = await fetch(`${url}/sanPham`)
@@ -36,3 +37,14 @@ export const fetchSanPhamTheoDm = async id => {
     throw error
   }
 }
+
+// Thêm hàm này vào file service
+export const fetchSanphamByThuonghieu = async (thuongHieu, id_danhmuc) => {
+  try {
+    const response = await axios.get(`${url}/sanPham/thuong_hieu/${thuongHieu}/${id_danhmuc}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching products by brand:', error);
+    throw error;
+  }
+};

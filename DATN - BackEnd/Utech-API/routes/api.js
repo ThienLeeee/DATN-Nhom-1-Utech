@@ -113,7 +113,7 @@ router.post('/danhMuc', upload.single('hinhanh'), async (req, res) => {
     const id = lastCategory[0] ? lastCategory[0].id + 1 : 1;
     // Tạo đối tượng danh mục mới
     const newCategory = { id, tendm, hinhanh: fileName };
-    // Thêm danh mục vào cơ sở dữ liệu
+    // Thêm danh mc vào cơ sở dữ liệu
     await categoriesCollection.insertOne(newCategory);
     // Phản hồi thành công
     res.status(200).json(newCategory);
@@ -480,26 +480,42 @@ router.get('/sanPham/id_danhmuc/:id', async (req, res, next) => {
   }
 })
 
-//Lấy sản phẩm theo thương hiệu
-router.get('/sanPham/thuong_hieu/:thuong_hieu', async (req, res, next) => {
-  const thuong_hieu = req.params.thuong_hieu
+//Lấy sản phẩm theo thương hiệu và danh mục
+router.get('/sanPham/thuong_hieu/:thuong_hieu/:id_danhmuc?', async (req, res, next) => {
+  const thuong_hieu = req.params.thuong_hieu;
+  const id_danhmuc = req.params.id_danhmuc ? parseInt(req.params.id_danhmuc) : null;
 
   try {
-    const db = await connectDb() // Kết nối đến database
-    const sanPhamCollection = db.collection('sanPham')
+    const db = await connectDb();
+    const sanPhamCollection = db.collection('sanPham');
+
+    // Tạo query dựa trên điều kiện
+    let query = {
+      thuong_hieu: { $regex: thuong_hieu, $options: 'i' }
+    };
+    
+    // Thêm điều kiện id_danhmuc nếu được cung cấp
+    if (id_danhmuc) {
+      query.id_danhmuc = id_danhmuc;
+    }
 
     const sanPham = await sanPhamCollection
-      .find({
-        thuong_hieu: { $regex: thuong_hieu, $options: 'i' } // Tìm kiếm không phân biệt hoa thường
-      })
-      .toArray() // Chuyển đổi cursor thành mảng
+      .find(query)
+      .toArray();
 
-    res.json(sanPham)
+    if (sanPham.length > 0) {
+      res.json(sanPham);
+    } else {
+      const message = id_danhmuc 
+        ? `Không tìm thấy sản phẩm thuộc thương hiệu ${thuong_hieu} trong danh mục ${id_danhmuc}`
+        : `Không tìm thấy sản phẩm thuộc thương hiệu ${thuong_hieu}`;
+      res.status(404).json({ message });
+    }
   } catch (error) {
-    console.error('Lỗi khi tìm kiếm sản phẩm theo thương hiệu:', error)
-    res.status(500).json({ message: 'Đã xảy ra lỗi trong quá trình tìm kiếm' })
+    console.error('Lỗi khi tìm kiếm sản phẩm theo thương hiệu:', error);
+    res.status(500).json({ message: 'Đã xảy ra lỗi trong quá trình tìm kiếm' });
   }
-})
+});
 
 //Lấy sản phẩm theo tên danh mục
 router.get('/sanPham/categoryname/:name', async (req, res, next) => {

@@ -16,7 +16,7 @@ export default function Trangchu() {
         const sanPhamData = await fetchSanpham();
         setSanpham(sanPhamData);
       } catch (error) {
-        console.error("Lỗi:", error);
+        console.error("Lỗi:",  error);
       }
     };
     loadSanpham();
@@ -1003,12 +1003,12 @@ export default function Trangchu() {
                 <ul>
                   <li>
                     <a href="" title="LAPTOP LG">
-                      LAPTOP ASUS
+                      LAPTOP LENOVO
                     </a>
                   </li>
                   <li>
                     <a href="" title="LAPTOP ASUS">
-                      LAPTOP ACER
+                      LAPTOP ASUS
                     </a>
                   </li>
                   <li>
