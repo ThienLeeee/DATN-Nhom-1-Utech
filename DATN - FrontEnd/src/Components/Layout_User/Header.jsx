@@ -1,10 +1,16 @@
 import { Link } from "react-router-dom";
 import { fetchDanhmuc } from "../../../service/danhmucService";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from '@/context/AuthContext';
+
 export default function Header() {
 
+  const { user, logout } = useAuth();
   const [danhMuc, setDanhmuc] = useState([]);
   const [cartItemCount, setCartItemCount] = useState(0);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadDanhmuc = async () => {
@@ -38,6 +44,12 @@ export default function Header() {
       window.removeEventListener("cartUpdated", updateCartCount);
     };
   }, []);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
   return (
     <>
       {/* header */}
@@ -127,22 +139,65 @@ export default function Header() {
                 </form>
               </div>{" "}
               <div className="hotline-header">
-                <Link
-                  to="/Dangnhap"
-                  className="login-header d-block text-center"
-                  style={{
-                    overflow: "hidden",
-                    padding: '10px 20px',      // Khoảng cách giữa chữ và viền khung
-                    border: '2px solid #000',  // Đường viền khung, bạn có thể thay đổi màu sắc (#000 là màu đen)
-                    borderRadius: '5px',       // Bo góc khung
-                    display: 'inline-block',   // Đảm bảo khung không chiếm toàn bộ chiều rộng
-                    textDecoration: 'none',    // Loại bỏ gạch chân mặc định của thẻ <a> (liên kết)
-                    color: '#000',             // Màu chữ
-                    fontWeight: 'bold',        // Độ đậm của chữ
-                  }}
-                >
-                  <p style={{ marginBottom: 0 }}>Đăng nhập</p>
-                </Link>
+                {user ? (
+                  <div className="user-menu-container" style={{ position: 'relative' }}>
+                    <button
+                      onClick={() => setShowUserMenu(!showUserMenu)}
+                      className="user-button"
+                      style={{
+                        padding: '10px 20px',
+                        border: '2px solid #000',
+                        borderRadius: '5px',
+                        background: 'none',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {user.username}
+                    </button>
+                    {showUserMenu && (
+                      <div className="user-menu" style={{
+                        position: 'absolute',
+                        top: '100%',
+                        right: 0,
+                        background: '#fff',
+                        border: '1px solid #ddd',
+                        borderRadius: '5px',
+                        padding: '10px',
+                        zIndex: 1000
+                      }}>
+                        <div className="menu-item" style={{ padding: '5px 0' }}>
+                          <Link to="/profile">Thông tin người dùng</Link>
+                        </div>
+                        <div className="menu-item" style={{ padding: '5px 0' }}>
+                          <Link to="/forgot-password">Quên mật khẩu</Link>
+                        </div>
+                        <div className="menu-item" style={{ padding: '5px 0' }}>
+                          <button onClick={handleLogout} style={{
+                            border: 'none',
+                            background: 'none',
+                            color: 'red',
+                            cursor: 'pointer'
+                          }}>Đăng xuất</button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <Link
+                    to="/Dangnhap"
+                    className="login-header d-block text-center"
+                    style={{
+                      padding: '10px 20px',
+                      border: '2px solid #000',
+                      borderRadius: '5px',
+                      textDecoration: 'none',
+                      color: '#000',
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    <p style={{ marginBottom: 0 }}>Đăng nhập</p>
+                  </Link>
+                )}
               </div>
               <Link
                 to="/giohang"

@@ -10,7 +10,7 @@ import Giohang from "./Layout_User/Giohang";
 import Thanhtoan from "./Layout_User/Thanhtoan";
 import Dangnhap from "./DK.DN/Dangnhap";
 import Dangky from "./DK.DN/Dangky";
-
+import { AuthProvider } from "../context/AuthContext";
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
@@ -41,20 +41,22 @@ import "/public/js/bootstrap/bootstrap.min.js"
 
 export default function Index() {
   return (
-    <Router>
-      <Header/>
-      <Routes>
-          <Route path="/" element={<Trangchu></Trangchu>}></Route>
-          <Route path="/gioithieu" element={<Gioithieu></Gioithieu>}></Route>
-          <Route path="/lienhe" element={<LienHe></LienHe>}></Route>
-          <Route path="/chitietsp/sanPham/:id" element={<Chitietsanpham></Chitietsanpham>}></Route>
-          <Route path="/sanPham/id_danhmuc/:id" element={<SanPhamTheodm></SanPhamTheodm>}></Route>
-          <Route path="/giohang"  element={<Giohang></Giohang>}></Route>
-          <Route path="/Dangnhap" element={<Dangnhap></Dangnhap>}></Route>
-          <Route path="/Dangky" element={<Dangky></Dangky>}></Route>
-          <Route path="/thanhtoan" element={<Thanhtoan></Thanhtoan>}></Route>            
-      </Routes>
-      <Footer/>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Header/>
+        <Routes>         
+            <Route path="/" element={<Trangchu></Trangchu>}></Route>
+            <Route path="/gioithieu" element={<Gioithieu></Gioithieu>}></Route>
+            <Route path="/lienhe" element={<LienHe></LienHe>}></Route>
+            <Route path="/chitietsp/sanPham/:id" element={<Chitietsanpham></Chitietsanpham>}></Route>
+            <Route path="/sanPham/id_danhmuc/:id" element={<SanPhamTheodm></SanPhamTheodm>}></Route>
+            <Route path="/giohang"  element={<Giohang></Giohang>}></Route>
+            <Route path="/Dangnhap" element={<Dangnhap></Dangnhap>}></Route>
+            <Route path="/Dangky" element={<Dangky></Dangky>}></Route>
+            <Route path="/thanhtoan" element={<Thanhtoan></Thanhtoan>}></Route>            
+        </Routes>
+        <Footer/>
+      </Router>
+    </AuthProvider>
   );
 }

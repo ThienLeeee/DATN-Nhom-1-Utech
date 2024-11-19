@@ -1,22 +1,49 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import "/public/css/dangnhap.css";
+import "/public/css/popup.css";
+import { useAuth } from '../../context/AuthContext';
+
 export default function Dangnhap() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [error, setError] = useState("");
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
 
-    if (username === "admin" && password === "123") {
-      setShowAlert(true);
-      setError("");
-    } else {
-      setError("Tên đăng nhập hoặc mật khẩu không đúng!");
+    try {
+      const response = await axios.post('http://localhost:3000/api/accounts/login', {
+        username,
+        password
+      });
+
+      const { user, token } = response.data;
+
+      // Sử dụng context để cập nhật trạng thái đăng nhập
+      login(user);
+      localStorage.setItem('token', token);
+
+      if (user.role === 'admin') {
+        setShowAlert(true);
+      } else {
+        setShowSuccessPopup(true);
+        setTimeout(() => {
+          setShowSuccessPopup(false);
+          navigate('/');
+        }, 2000);
+      }
+    } catch (error) {
+      setError(error.response?.data?.message || "Đăng nhập thất bại!");
     }
   };
+
   const togglePassword = () => {
     const passwordField = document.getElementById("password");
     if (passwordField.type === "password") {
@@ -24,6 +51,11 @@ export default function Dangnhap() {
     } else {
       passwordField.type = "password";
     }
+  };
+
+  const handlePopupClick = () => {
+    setShowSuccessPopup(false);
+    navigate('/');
   };
 
   return (
@@ -40,16 +72,17 @@ export default function Dangnhap() {
               <h3 className="text-center mb-4">Đăng nhập</h3>
               <form onSubmit={handleLogin}>
                 <div className="mb-3 position-relative">
-                  <label htmlFor="fullname" className="form-label">
+                  <label htmlFor="username" className="form-label">
                     Tên đăng nhập
                   </label>
                   <input
                     type="text"
                     className="form-control"
-                    id="fullname"
+                    id="username"
                     placeholder="Tên đăng nhập"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
+                    required
                   />
                 </div>
                 <div className="mb-3 position-relative">
@@ -63,6 +96,7 @@ export default function Dangnhap() {
                     placeholder="Mật khẩu"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    required
                   />
                   <span className="eye-icon" onClick={togglePassword}>
                     <img
@@ -75,7 +109,7 @@ export default function Dangnhap() {
                   <div className="alert alert-danger text-center">{error}</div>
                 )}
                 <div className="text-end mb-3">
-                  <a href="#">Quên mật khẩu?</a>
+                  <Link to="/forgot-password">Quên mật khẩu?</Link>
                 </div>
                 <button type="submit" className="btn btn-primary w-100">
                   Đăng nhập
@@ -101,37 +135,41 @@ export default function Dangnhap() {
                   Facebook
                 </button>
               </div>
-              <div className="footer-text mt-3">
-                Bạn đã có tài khoản? <a href="#">Đăng nhập!</a>
-              </div>
             </div>
           </div>
         </div>
 
-        {/* Thông báo chào mừng dạng pop-up */}
+        {/* Thông báo chào mừng dạng pop-up cho admin */}
         {showAlert && (
           <div className="modal-popup">
-          <div className="modal-content">
-              {/* Dấu "X" để đóng pop-up */}
+            <div className="modal-content">
               <span className="close-button" onClick={() => setShowAlert(false)}>
-                  &times; {/* Ký tự đại diện cho dấu X */}
+                &times;
               </span>
-      
               <img
-                  src="/public/img/logo/logo_no_bg.png"
-                  alt="Welcome Icon"
-                  className="modal-image"
+                src="/public/img/logo/logo_no_bg.png"
+                alt="Welcome Icon"
+                className="modal-image"
               />
-            
               <button
-                  className="modal-button"
-                  onClick={() => (window.location.href = "http://localhost:5174/")}
+                className="modal-button"
+                onClick={() => {
+                  window.location.href = "http://localhost:5174/";
+                }}
               >
-                  Đi đến trang Admin
+                Đi đến trang Admin
               </button>
+            </div>
           </div>
-      </div>
-      
+        )}
+
+        {showSuccessPopup && (
+          <div className="popup-overlay" onClick={handlePopupClick}>
+            <div className="popup-content">
+              <h3 className="popup-title">Đăng nhập thành công!</h3>
+              <p className="popup-message">Chào mừng bạn đã quay trở lại.</p>
+            </div>
+          </div>
         )}
       </div>
     </>
