@@ -12,6 +12,32 @@ export default function ChiTietSanPham() {
   const [popupVisible, setPopupVisible] = useState(false); // Quản lý popup
   const navigate = useNavigate();
   const [relatedProducts, setRelatedProducts] = useState([]);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false); 
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isChangingImage, setIsChangingImage] = useState(false);
+
+  // Định nghĩa imagePath trước
+  let imagePath = "";
+  if (sanpham) {
+    switch (sanpham.id_danhmuc) {
+      case 1: imagePath = "Laptop"; break;
+      case 2: imagePath = "PC"; break;
+      case 3: imagePath = "Manhinh"; break;
+      case 4: imagePath = "Chuot"; break;
+      case 5: imagePath = "Banphim"; break;
+      default: imagePath = "Khac";
+    }
+  }
+
+  // Sau đó mới sử dụng trong allImages
+  const allImages = sanpham ? [
+    `/img/sanpham/${imagePath}/${sanpham.hinh_anh.chinh}`,
+    `/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu1}`,
+    `/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu2}`,
+    `/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu3}`,
+    `/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu4}`,
+    `/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu5}`
+  ] : [];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,20 +61,57 @@ export default function ChiTietSanPham() {
     fetchData();
   }, [id]);
 
-  const handleAddToCart = (sanPhamMoi) => {
+  const handleAddToCart = () => {
     let cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
-    const itemIndex = cartItems.findIndex((item) => item.id === sanPhamMoi.id);
+    const itemIndex = cartItems.findIndex((item) => item.id === sanpham.id);
 
     if (itemIndex > -1) {
       cartItems[itemIndex].quantity += 1;
     } else {
       // Chuyển đổi giá thành số để lưu vào giỏ hàng
-      const priceAsNumber = parseInt(sanPhamMoi.gia_sp.replace(/\./g, ""));
-      cartItems.push({ ...sanPhamMoi, gia_sp: priceAsNumber, quantity: 1 });
+      const priceAsNumber = parseInt(sanpham.gia_sp.replace(/\./g, ""));
+      cartItems.push({ ...sanpham, gia_sp: priceAsNumber, quantity: 1 });
     }
 
     localStorage.setItem("cartItem", JSON.stringify(cartItems));
-    setPopupVisible(true); // Hiển thị popup khi thêm vào giỏ hàng
+    
+    // Dispatch event để cập nhật số lượng trong header
+    window.dispatchEvent(new Event('cartUpdated'));
+    
+    // Hiển thị popup
+    const popup = document.createElement('div');
+    popup.className = 'popup';
+    popup.innerHTML = `
+      <div class="popup-content">
+        <i class="fas fa-check-circle popup-icon success"></i>
+        <h3 class="popup-title">Thêm vào giỏ hàng thành công!</h3>
+        <p class="popup-message">Sản phẩm đã được thêm vào giỏ hàng của bạn</p>
+        <div class="popup-buttons">
+          <button class="popup-button secondary" id="continueShopping">Mua tiếp</button>
+          <button class="popup-button primary" id="goToCart">Đến giỏ hàng</button>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(popup);
+    
+    // Thêm class show sau một frame để trigger animation
+    requestAnimationFrame(() => {
+      popup.classList.add('show');
+    });
+
+    // Xử lý sự kiện cho nút "Mua tiếp"
+    document.getElementById('continueShopping').addEventListener('click', () => {
+      popup.classList.remove('show');
+      setTimeout(() => {
+        popup.remove();
+      }, 300); // Đợi animation kết thúc
+    });
+
+    // Xử lý sự kiện cho nút "Đến giỏ hàng"
+    document.getElementById('goToCart').addEventListener('click', () => {
+      window.location.href = '/giohang';
+    });
   };
 
   const handleBuyNow = (sanPhamMoi) => {
@@ -63,6 +126,9 @@ export default function ChiTietSanPham() {
     }
   
     localStorage.setItem("cartItem", JSON.stringify(cartItems));
+  
+    // Dispatch event để cập nhật số lượng trong header
+    window.dispatchEvent(new Event('cartUpdated'));
   
     // Điều hướng đến giỏ hàng ngay lập tức
     navigate("/giohang");
@@ -82,29 +148,38 @@ export default function ChiTietSanPham() {
     navigate("/giohang");
   };
 
+  const handleImageClick = (e, index) => {
+    e.preventDefault(); // Ngăn load lại trang
+    setCurrentImageIndex(index);
+    setIsLightboxOpen(true);
+  };
+
+  const handleCloseLightbox = () => {
+    setIsLightboxOpen(false);
+  };
+
+  const handlePrevImage = () => {
+    setIsChangingImage(true);
+    setTimeout(() => {
+      setCurrentImageIndex((prev) => 
+        prev === 0 ? allImages.length - 1 : prev - 1
+      );
+      setIsChangingImage(false);
+    }, 300);
+  };
+
+  const handleNextImage = () => {
+    setIsChangingImage(true);
+    setTimeout(() => {
+      setCurrentImageIndex((prev) => 
+        prev === allImages.length - 1 ? 0 : prev + 1
+      );
+      setIsChangingImage(false);
+    }, 300);
+  };
+
   if (!sanpham) {
     return <div>Loading...</div>;
-  }
-
-  let imagePath = "";
-  switch (sanpham.id_danhmuc) {
-    case 1:
-      imagePath = "Laptop";
-      break;
-    case 2:
-      imagePath = "PC";
-      break;
-    case 3:
-      imagePath = "Manhinh";
-      break;
-    case 4:
-      imagePath = "Chuot";
-      break;
-    case 5:
-      imagePath = "Banphim";
-      break;
-    default:
-      imagePath = "Khac";
   }
 
   return (
@@ -132,6 +207,7 @@ export default function ChiTietSanPham() {
                         src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.chinh}`}
                         alt={sanpham.ten_sp}
                         style={{ width: 380, height: 333.2 }}
+                        onClick={() => handleImageClick(0)}
                       />
                       <div
                         className="mz-lens"
@@ -194,9 +270,9 @@ export default function ChiTietSanPham() {
                           <div className="owl-item" style={{ width: 95 }}>
                             <div className="item_owl_sub">
                               <a
-                                href={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu1}`}
-                                rel="zoom-id: Zoomer"
-                                className="mz-thumb-selected mz-thumb"
+                                href="#"
+                                onClick={(e) => handleImageClick(e, 1)}
+                                className="mz-thumb"
                               >
                                 <img
                                   src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu1}`}
@@ -212,8 +288,8 @@ export default function ChiTietSanPham() {
                           <div className="owl-item" style={{ width: 95 }}>
                             <div className="item_owl_sub">
                               <a
-                                href={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu2}`}
-                                rel="zoom-id: Zoomer"
+                                href="#"
+                                onClick={(e) => handleImageClick(e, 2)}
                                 className="mz-thumb"
                               >
                                 <img
@@ -230,8 +306,8 @@ export default function ChiTietSanPham() {
                           <div className="owl-item" style={{ width: 95 }}>
                             <div className="item_owl_sub">
                               <a
-                                src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu3}`}
-                                rel="zoom-id: Zoomer"
+                                href="#"
+                                onClick={(e) => handleImageClick(e, 3)}
                                 className="mz-thumb"
                               >
                                 <img
@@ -248,8 +324,8 @@ export default function ChiTietSanPham() {
                           <div className="owl-item" style={{ width: 95 }}>
                             <div className="item_owl_sub">
                               <a
-                                src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu4}`}
-                                rel="zoom-id: Zoomer"
+                                href="#"
+                                onClick={(e) => handleImageClick(e, 4)}
                                 className="mz-thumb"
                               >
                                 <img
@@ -266,8 +342,8 @@ export default function ChiTietSanPham() {
                           <div className="owl-item" style={{ width: 95 }}>
                             <div className="item_owl_sub">
                               <a
-                                src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu5}`}
-                                rel="zoom-id: Zoomer"
+                                href="#"
+                                onClick={(e) => handleImageClick(e, 5)}
                                 className="mz-thumb"
                               >
                                 <img
@@ -912,44 +988,9 @@ export default function ChiTietSanPham() {
                     Bình luận/ Đánh giá sản phẩm
                   </a>
                   <div className="clear" />
+                  
                   <div id="binhluan" className="content_tab active">
-                    <div className="text">
-                      <div
-                        className="fb-comments fb_iframe_widget fb_iframe_widget_fluid_desktop"
-                        data-href="https://stcom.vn:443/san-pham/laptop-dell-vostro-3530-v5i3465w1-7385.html"
-                        data-width="100%"
-                        data-numposts={5}
-                        style={{ width: "100%" }}
-                      >
-                        <span
-                          style={{
-                            verticalAlign: "bottom",
-                            width: "100%",
-                            height: 200,
-                          }}
-                        >
-                          <iframe
-                            name="fe1d4687f64639425"
-                            width="1000px"
-                            height="100px"
-                            data-testid="fb:comments Facebook Social Plugin"
-                            title="fb:comments Facebook Social Plugin"
-                            frameBorder={0}
-                            allowFullScreen="true"
-                            scrolling="no"
-                            allow="encrypted-media"
-                            src="https://www.facebook.com/v2.3/plugins/comments.php?app_id=&channel=https%3A%2F%2Fstaticxx.facebook.com%2Fx%2Fconnect%2Fxd_arbiter%2F%3Fversion%3D46%23cb%3Dfb9e7435f723694fe%26domain%3Dstcom.vn%26is_canvas%3Dfalse%26origin%3Dhttps%253A%252F%252Fstcom.vn%252Ff791dce3dcce20b43%26relation%3Dparent.parent&container_width=868&height=100&href=https%3A%2F%2Fstcom.vn%2Fsan-pham%2Flaptop-dell-vostro-3530-v5i3465w1-7385.html&locale=vi_VN&numposts=5&sdk=joey&version=v2.3&width="
-                            style={{
-                              border: "none",
-                              visibility: "visible",
-                              width: "100%",
-                              height: 200,
-                            }}
-                            className=""
-                          />
-                        </span>
-                      </div>
-                    </div>
+                 
                   </div>
                   <div className="clear" />
                 </div>
@@ -958,10 +999,10 @@ export default function ChiTietSanPham() {
                 <div className="title_right">Sản phẩm liên quan</div>
                 <div className="content_right">
                   {relatedProducts.map((product) => (
-                    <div key={product.id} className="item_sanpham">
+                      <div key={product.id} className="item_sanpham">
                       <div className="img_sp">
                         <Link 
-                         to={`/chitietsp/sanPham/${sanpham.id}`}
+                         to={`/chitietsp/sanPham/${product.id}`}
                           title={product.ten_sp}
                         >
                           <img
@@ -1091,6 +1132,32 @@ export default function ChiTietSanPham() {
         </div>
       </div>
       {/* chitietsanpham-container */}
+      {isLightboxOpen && (
+        <div className={`lightbox-overlay ${isLightboxOpen ? 'active' : ''}`}>
+          <div className={`lightbox-content ${isLightboxOpen ? 'active' : ''}`}>
+            <button className="lightbox-close" onClick={handleCloseLightbox}>×</button>
+            <button className="lightbox-nav lightbox-prev" onClick={handlePrevImage}>‹</button>
+            <img 
+              src={allImages[currentImageIndex]} 
+              alt="Product" 
+              className={`lightbox-image ${isChangingImage ? 'changing' : ''}`}
+            />
+            <button className="lightbox-nav lightbox-next" onClick={handleNextImage}>›</button>
+            
+            <div className={`lightbox-thumbnails ${isLightboxOpen ? 'active' : ''}`}>
+              {allImages.map((img, index) => (
+                <img
+                  key={index}
+                  src={img}
+                  alt={`Thumbnail ${index}`}
+                  className={`lightbox-thumbnail ${index === currentImageIndex ? 'active' : ''}`}
+                  onClick={() => setCurrentImageIndex(index)}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
