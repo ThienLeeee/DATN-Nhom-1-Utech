@@ -481,25 +481,31 @@ router.get('/sanPham/id_danhmuc/:id', async (req, res, next) => {
 })
 
 //Lấy sản phẩm theo thương hiệu
-router.get('/sanPham/thuong_hieu/:thuong_hieu', async (req, res, next) => {
-  const thuong_hieu = req.params.thuong_hieu
-
+router.get('/sanPham/thuong-hieu/:thuonghieu', async (req, res) => {
   try {
-    const db = await connectDb() // Kết nối đến database
-    const sanPhamCollection = db.collection('sanPham')
-
+    const thuonghieu = req.params.thuonghieu.toLowerCase();
+    const db = await connectDb();
+    const sanPhamCollection = db.collection('sanPham');
+    
     const sanPham = await sanPhamCollection
-      .find({
-        thuong_hieu: { $regex: thuong_hieu, $options: 'i' } // Tìm kiếm không phân biệt hoa thường
+      .find({ 
+        thuong_hieu: new RegExp(thuonghieu, 'i'),
+        id_danhmuc: 1 // Chỉ lấy laptop
       })
-      .toArray() // Chuyển đổi cursor thành mảng
+      .toArray();
 
-    res.json(sanPham)
+    if (sanPham.length > 0) {
+      res.status(200).json(sanPham);
+    } else {
+      res.status(404).json({ 
+        message: `Không tìm thấy sản phẩm thuộc thương hiệu ${thuonghieu}` 
+      });
+    }
   } catch (error) {
-    console.error('Lỗi khi tìm kiếm sản phẩm theo thương hiệu:', error)
-    res.status(500).json({ message: 'Đã xảy ra lỗi trong quá trình tìm kiếm' })
+    console.error('Lỗi:', error);
+    res.status(500).json({ message: 'Lỗi server khi tìm sản phẩm' });
   }
-})
+});
 
 //Lấy sản phẩm theo tên danh mục
 router.get('/sanPham/categoryname/:name', async (req, res, next) => {
@@ -524,17 +530,32 @@ router.get('/sanPham/categoryname/:name', async (req, res, next) => {
   }
 })
 
-//Lấy sản phẩm "nóng"
-router.get('/sanPham/hot', authenToken, async (req, res, next) => {
-  const db = await connectDb()
-  const productCollection = db.collection('sanPham')
-  const product = await productCollection.find({ hot: 1 }).toArray()
-  if (product) {
-    res.status(200).json(product)
-  } else {
-    res.status(404).json({ message: "Product 'CHÁY' not found " })
+// Lấy sản phẩm bán chạy
+router.get('/sanPham/ban-chay', async (req, res) => {
+  try {
+    const db = await connectDb();
+    const sanPhamCollection = db.collection('sanPham');
+    
+    // Tìm các sản phẩm có ban_chay = 1
+    const hotProducts = await sanPhamCollection
+      .find({ ban_chay: 1 })
+      .toArray();
+
+    if (hotProducts.length > 0) {
+      res.status(200).json(hotProducts);
+    } else {
+      res.status(404).json({ 
+        message: "Không tìm thấy sản phẩm bán chạy"
+      });
+    }
+  } catch (error) {
+    console.error('Lỗi khi lấy sản phẩm bán chạy:', error);
+    res.status(500).json({ 
+      message: 'Đã xảy ra lỗi khi lấy sản phẩm bán chạy',
+      error: error.message 
+    });
   }
-})
+});
 
 //Hiển thị 1 sản phẩm theo id
 router.get('/sanPham/:id', async (req, res, next) => {
@@ -645,132 +666,66 @@ router.delete('/user/:id', async (req, res) => {
 
 
 //API đăng ký tài khoản
-router.post('/accounts/register', async (req, res) => {
-  let { username, email, password, repassword } = req.body;
-  const db = await connectDb();
-  const usersCollection = db.collection('users');
-
-  try {
-    // Kiểm tra username đã tồn tại
-    let existingUser = await usersCollection.findOne({ 
-      $or: [
-        { username: username },
-        { email: email }
-      ]
-    });
-    
-    if (existingUser) {
-      if (existingUser.username === username) {
-        return res.status(409).json({ message: 'Tên đăng nhập đã tồn tại' });
+router.post(
+  '/accounts/register',
+  upload.single('img'),
+  async (req, res, next) => {
+    let { username, email, password, repassword } = req.body
+    const db = await connectDb()
+    const accountCollection = db.collection('accounts')
+    let account = await accountCollection.findOne({ email: email })
+    if (account) {
+      res.status(409).json({ message: 'Email đã tồn tại' })
+    } else {
+      let lastAccount = await accountCollection
+        .find()
+        .sort({ id: -1 })
+        .limit(1)
+        .toArray()
+      let id = lastAccount[0] ? lastAccount[0].id + 1 : 1
+      const salt = bcrypt.genSaltSync(10)
+      let hashPassword = bcrypt.hashSync(password, salt)
+      let newAccount = {
+        id: id,
+        username,
+        email,
+        password: hashPassword,
+        repassword: hashPassword,
+        role: 0
       }
-      if (existingUser.email === email) {
-        return res.status(409).json({ message: 'Email đã tồn tại' });
+      try {
+        let result = await accountCollection.insertOne(newAccount)
+        console.log(result)
+        res.status(200).json({ message: 'Đăng ký oke!' })
+      } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: 'Thêm tài khoản lỗi!' })
       }
     }
-
-    // Kiểm tra password và repassword
-    if (password !== repassword) {
-      return res.status(400).json({ message: 'Mật khẩu không khớp' });
-    }
-
-    // Tạo id mới
-    let lastUser = await usersCollection.find().sort({ id: -1 }).limit(1).toArray();
-    let id = lastUser[0] ? lastUser[0].id + 1 : 1;
-
-    // Mã hóa mật khẩu
-    const salt = bcrypt.genSaltSync(10);
-    let hashPassword = bcrypt.hashSync(password, salt);
-
-    // Tạo user mới
-    let newUser = {
-      id,
-      username,
-      email,
-      password: hashPassword,
-      role: 'user',
-      createdAt: new Date(),
-      status: 'active',
-      profile: {
-        fullName: '',
-        phone: '',
-        address: '',
-        avatar: ''
-      }
-    };
-
-    await usersCollection.insertOne(newUser);
-    
-    // Trả về thông báo thành công và thông tin user (không bao gồm password)
-    const userResponse = {
-      id: newUser.id,
-      username: newUser.username,
-      email: newUser.email,
-      role: newUser.role
-    };
-
-    res.status(200).json({ 
-      message: 'Đăng ký thành công!',
-      user: userResponse
-    });
-
-  } catch (error) {
-    console.error('Lỗi đăng ký:', error);
-    res.status(500).json({ message: 'Lỗi server' });
   }
-});
+)
 
-// Cập nhật API đăng nhập để sử dụng collection users
-router.post('/accounts/login', async (req, res) => {
-  const { username, password } = req.body;
-  const db = await connectDb();
-  const usersCollection = db.collection('users');
-
-  try {
-    // Tìm user theo username
-    const user = await usersCollection.findOne({ username });
-    
-    if (!user) {
-      return res.status(401).json({ message: 'Tên đăng nhập không tồn tại!' });
+//API đăng nhập tài khoản có sử dụng token
+router.post('/accounts/login', upload.single('img'), async (req, res, next) => {
+  const db = await connectDb()
+  const accountCollection = db.collection('accounts')
+  let { username, password } = req.body
+  const account = await accountCollection.findOne({ username: username })
+  if (account) {
+    if (bcrypt.compareSync(password, account.password)) {
+      const token = jwt.sign(
+        { username: account.username, role: account.role },
+        'secretkey',
+        { expiresIn: '60s' }
+      )
+      res.status(200).json({ token: token })
+    } else {
+      res.status(403).json({ message: 'password ko đúng' })
     }
-
-    // Kiểm tra mật khẩu
-    const isValidPassword = await bcrypt.compare(password, user.password);
-    
-    if (!isValidPassword) {
-      return res.status(401).json({ message: 'Mật khẩu không đúng!' });
-    }
-
-    // Tạo token JWT
-    const token = jwt.sign(
-      { 
-        userId: user.id, 
-        username: user.username, 
-        role: user.role 
-      },
-      'secretkey',
-      { expiresIn: '24h' }
-    );
-
-    // Trả về thông tin user (không bao gồm password) và token
-    const userResponse = {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      role: user.role,
-      profile: user.profile
-    };
-
-    res.status(200).json({
-      message: 'Đăng nhập thành công!',
-      user: userResponse,
-      token
-    });
-
-  } catch (error) {
-    console.error('Lỗi đăng nhập:', error);
-    res.status(500).json({ message: 'Lỗi server' });
+  } else {
+    res.status(403).json({ message: 'tên tk hoặc mk ko đúng' })
   }
-});
+})
 
 //Hàm xác thực token
 function authenToken (req, res, next) {
@@ -809,7 +764,7 @@ router.post('/donHang', async (req, res) => {
       id,
       ...req.body,
       ngayDat: new Date(),
-      trangThai: "Ch xử lý"
+      trangThai: "Chờ xử lý"
     };
 
     await donHangCollection.insertOne(newOrder);
@@ -817,6 +772,325 @@ router.post('/donHang', async (req, res) => {
   } catch (error) {
     console.error('Lỗi khi tạo đơn hàng:', error);
     res.status(500).json({ message: 'Đã xảy ra lỗi khi tạo đơn hàng' });
+  }
+});
+
+// Lấy tất cả bình luận
+router.get('/binhLuan', async (req, res) => {
+  try {
+    const db = await connectDb();
+    const binhLuanCollection = db.collection('binhLuan');
+    
+    const comments = await binhLuanCollection
+      .find()
+      .sort({ time: -1 })
+      .toArray();
+      
+    res.status(200).json(comments);
+  } catch (error) {
+    console.error('Lỗi khi lấy bình luận:', error);
+    res.status(500).json({ 
+      message: 'Lấy danh sách bình luận không thành công', 
+      error: error.message 
+    });
+  }
+});
+
+// Lấy bình luận theo sản phẩm
+router.get('/binhLuan/:productId', async (req, res) => {
+  const db = await connectDb();
+  const binhLuanCollection = db.collection('binhLuan');
+  
+  try {
+    const productId = parseInt(req.params.productId);
+    const comments = await binhLuanCollection
+      .find({ productId: productId })
+      .sort({ time: -1 })
+      .toArray();
+    res.status(200).json(comments);
+  } catch (error) {
+    res.status(500).json({ message: 'Lấy bình luận không thành công', error });
+  }
+});
+
+// Thêm bình luận mới
+router.post('/binhLuan', async (req, res) => {
+  try {
+    const db = await connectDb();
+    const binhLuanCollection = db.collection('binhLuan');
+    
+    const lastComment = await binhLuanCollection
+      .find()
+      .sort({ id: -1 })
+      .limit(1)
+      .toArray();
+    
+    const newId = lastComment.length > 0 ? lastComment[0].id + 1 : 1;
+    
+    const newComment = {
+      id: newId,
+      productId: parseInt(req.body.productId),
+      comment: req.body.comment,
+      time: new Date(),
+      like: 0,
+      cmt: 0,
+      status: 'visible'
+    };
+
+    const result = await binhLuanCollection.insertOne(newComment);
+    
+    if (result.acknowledged) {
+      res.status(200).json(newComment);
+    } else {
+      throw new Error('Không thể thêm bình luận vào database');
+    }
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Thêm bình luận không thành công', 
+      error: error.message 
+    });
+  }
+});
+
+// Xóa bình luận
+router.delete('/binhLuan/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const db = await connectDb();
+    const binhLuanCollection = db.collection('binhLuan');
+    
+    const result = await binhLuanCollection.deleteOne({ id: id });
+    
+    if (result.deletedCount > 0) {
+      console.log('Bình luận đã được xóa:', id);
+      res.status(200).json({ message: 'Xóa bình luận thành công' });
+    } else {
+      res.status(404).json({ message: 'Không tìm thấy bình luận để xóa' });
+    }
+  } catch (error) {
+    console.error('Lỗi khi xóa bình luận:', error);
+    res.status(500).json({ message: 'Xóa bình luận không thành công', error: error.message });
+  }
+});
+
+// Tìm kiếm sản phẩm theo tên
+router.get('/sanPham/search/:keyword', async (req, res) => {
+  try {
+    const keyword = req.params.keyword;
+    const db = await connectDb();
+    const sanPhamCollection = db.collection('sanPham');
+
+    const sanPham = await sanPhamCollection
+      .find({
+        ten_sp: { $regex: keyword, $options: 'i' } // 'i' để không phân biệt hoa thường
+      })
+      .toArray();
+
+    if (sanPham.length > 0) {
+      res.status(200).json(sanPham);
+    } else {
+      res.status(404).json({ message: 'Không tìm thấy sản phẩm phù hợp' });
+    }
+  } catch (error) {
+    console.error('Lỗi tìm kiếm:', error);
+    res.status(500).json({ message: 'Lỗi server khi tìm kiếm sản phẩm' });
+  }
+});
+
+// Cập nhật bình luận
+router.put('/binhLuan/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const { comment, status } = req.body;
+    const db = await connectDb();
+    const binhLuanCollection = db.collection('binhLuan');
+    
+    const updateData = {};
+    if (comment !== undefined) updateData.comment = comment;
+    if (status !== undefined) updateData.status = status;
+    
+    const result = await binhLuanCollection.updateOne(
+      { id: id },
+      { $set: updateData }
+    );
+    
+    if (result.modifiedCount > 0) {
+      res.status(200).json({ message: 'Cập nhật bình luận thành công' });
+    } else {
+      res.status(404).json({ message: 'Không tìm thấy bình luận' });
+    }
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Cập nhật bình luận không thành công', 
+      error: error.message 
+    });
+  }
+});
+
+// Cập nhật trạng thái ẩn/hiện bình luận
+router.patch('/binhLuan/toggleStatus/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const { status } = req.body;
+    const db = await connectDb();
+    const binhLuanCollection = db.collection('binhLuan');
+    
+    const result = await binhLuanCollection.updateOne(
+      { id: id },
+      { $set: { status: status } }
+    );
+    
+    if (result.modifiedCount > 0) {
+      res.status(200).json({ 
+        message: `Bình luận đã được ${status === 'hidden' ? 'ẩn' : 'hiện'}`,
+        status: status 
+      });
+    } else {
+      res.status(404).json({ message: 'Không tìm thấy bình luận' });
+    }
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Cập nhật trạng thái bình luận không thành công', 
+      error: error.message 
+    });
+  }
+});
+
+// Lấy sản phẩm khuyến mãi
+router.get('/sanPham/khuyen-mai', async (req, res) => {
+  try {
+    const db = await connectDb();
+    const sanPhamCollection = db.collection('sanPham');
+    
+    // Tìm các sản phẩm có khuyenmai tồn tại và có giá trị
+    const promotionalProducts = await sanPhamCollection
+      .find({ 
+        khuyenmai: { 
+          $exists: true, 
+          $ne: null,  // không null
+          $ne: "",    // không rỗng
+          $type: "string",  // kiểu dữ liệu là string
+          $regex: /\S/  // chứa ít nhất một ký tự không phải khoảng trắng
+        } 
+      })
+      .toArray();
+
+    if (promotionalProducts.length > 0) {
+      res.status(200).json(promotionalProducts);
+    } else {
+      res.status(404).json({ 
+        message: "Không tìm thấy sản phẩm khuyến mãi"
+      });
+    }
+  } catch (error) {
+    console.error('Lỗi khi lấy sản phẩm khuyến mãi:', error);
+    res.status(500).json({ 
+      message: 'Đã xảy ra lỗi khi lấy sản phẩm khuyến mãi',
+      error: error.message 
+    });
+  }
+});
+
+// API đăng ký người dùng
+router.post('/users/register', async (req, res) => {
+  try {
+    const db = await connectDb();
+    const usersCollection = db.collection('users');
+    
+    // Kiểm tra username và email đã tồn tại chưa
+    const existingUser = await usersCollection.findOne({
+      $or: [
+        { username: req.body.username },
+        { email: req.body.email }
+      ]
+    });
+
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: 'Tên đăng nhập hoặc email đã tồn tại!'
+      });
+    }
+
+    // Mã hóa mật khẩu
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPassword = bcrypt.hashSync(req.body.password, salt);
+
+    // Tạo user mới
+    const lastUser = await usersCollection.find().sort({ id: -1 }).limit(1).toArray();
+    const newId = lastUser[0] ? lastUser[0].id + 1 : 1;
+
+    const newUser = {
+      id: newId,
+      fullname: req.body.fullname,
+      email: req.body.email,
+      username: req.body.username,
+      password: hashedPassword,
+      role: 'user',
+      createdAt: new Date()
+    };
+
+    await usersCollection.insertOne(newUser);
+    
+    res.status(201).json({
+      success: true,
+      message: 'Đăng ký thành công!'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Đã xảy ra lỗi khi đăng ký!',
+      error: error.message
+    });
+  }
+});
+
+// API đăng nhập
+router.post('/users/login', async (req, res) => {
+  try {
+    const db = await connectDb();
+    const usersCollection = db.collection('users');
+    
+    // Tìm user theo username
+    const user = await usersCollection.findOne({ username: req.body.username });
+    
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Tên đăng nhập không tồn tại!'
+      });
+    }
+
+    // Kiểm tra mật khẩu
+    const validPassword = bcrypt.compareSync(req.body.password, user.password);
+    if (!validPassword) {
+      return res.status(401).json({
+        success: false,
+        message: 'Mật khẩu không đúng!'
+      });
+    }
+
+    // Tạo JWT token
+    const token = jwt.sign(
+      { id: user.id, username: user.username, role: user.role },
+      'secretkey',
+      { expiresIn: '24h' }
+    );
+
+    // Trả về thông tin user (không bao gồm password) và token
+    const { password, ...userWithoutPassword } = user;
+    
+    res.status(200).json({
+      success: true,
+      user: userWithoutPassword,
+      token
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Đã xảy ra lỗi khi đăng nhập!',
+      error: error.message
+    });
   }
 });
 

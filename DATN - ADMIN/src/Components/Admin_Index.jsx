@@ -12,6 +12,7 @@ import AddProduct from "./Layout_Admin/components/add_product";
 import EditProduct from "./Layout_Admin/components/edit_product";
 import AddCategory from "./Layout_Admin/components/add_category";
 import EditCategory from "./Layout_Admin/components/edit_category";
+import Admin_comment from "./Layout_Admin/Admin_comment";
 export default function Admin_Index() {
   return (
     <div className="row">
@@ -44,7 +45,7 @@ export default function Admin_Index() {
             <Route path="/admin-bill" element={<div>Quản lý đơn hàng</div>} />
             <Route
               path="/admin-comment"
-              element={<div>Quản lý bình luận</div>}
+              element={<Admin_comment/>}
             />
           </Routes>
         </div>

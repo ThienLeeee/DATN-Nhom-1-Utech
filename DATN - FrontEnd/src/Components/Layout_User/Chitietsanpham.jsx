@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { fetchSanphamIddm, fetchSanPhamTheoDm } from "../../../service/sanphamService";
 import { Link, useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 import "/public/css/chitietsp.css";
 
@@ -12,32 +13,11 @@ export default function ChiTietSanPham() {
   const [popupVisible, setPopupVisible] = useState(false); // Quản lý popup
   const navigate = useNavigate();
   const [relatedProducts, setRelatedProducts] = useState([]);
-  const [isLightboxOpen, setIsLightboxOpen] = useState(false); 
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isChangingImage, setIsChangingImage] = useState(false);
-
-  // Định nghĩa imagePath trước
-  let imagePath = "";
-  if (sanpham) {
-    switch (sanpham.id_danhmuc) {
-      case 1: imagePath = "Laptop"; break;
-      case 2: imagePath = "PC"; break;
-      case 3: imagePath = "Manhinh"; break;
-      case 4: imagePath = "Chuot"; break;
-      case 5: imagePath = "Banphim"; break;
-      default: imagePath = "Khac";
-    }
-  }
-
-  // Sau đó mới sử dụng trong allImages
-  const allImages = sanpham ? [
-    `/img/sanpham/${imagePath}/${sanpham.hinh_anh.chinh}`,
-    `/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu1}`,
-    `/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu2}`,
-    `/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu3}`,
-    `/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu4}`,
-    `/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu5}`
-  ] : [];
+  const [showCommentForm, setShowCommentForm] = useState(false);
+  const [comment, setComment] = useState('');
+  const [comments, setComments] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,57 +41,88 @@ export default function ChiTietSanPham() {
     fetchData();
   }, [id]);
 
-  const handleAddToCart = () => {
+  // Lấy tất cả bình luận
+  useEffect(() => {
+    fetchComments();
+  }, [id]);
+
+  const fetchComments = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`http://localhost:3000/api/binhLuan/${id}`);
+      // Lọc bỏ các bình luận bị ẩn
+      const visibleComments = response.data.filter(comment => comment.status !== 'hidden');
+      setComments(visibleComments);
+    } catch (error) {
+      console.error('Lỗi khi lấy bình luận:', error);
+      setError('Không thể tải bình luận. Vui lòng thử lại sau.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Gửi bình luận mới
+  const handleSubmitComment = async (e) => {
+    e.preventDefault();
+    if (!comment.trim()) return;
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await axios.post('http://localhost:3000/api/binhLuan', {
+        productId: parseInt(id),
+        comment: comment.trim(),
+        status: 'visible' // Thêm trạng thái mặc định là hiện
+      });
+      
+      if (response.status === 200 && response.data) {
+        setComments(prevComments => [response.data, ...prevComments]);
+        setComment('');
+        setShowCommentForm(false);
+      }
+    } catch (error) {
+      console.error('Lỗi khi gửi bình luận:', error);
+      setError('Không thể gửi bình luận. Vui lòng thử lại sau.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Hàm tăng lượt thích
+  const handleLike = async (commentId) => {
+    try {
+      await axios.patch(`http://localhost:3000/api/binhLuan/like/${commentId}`);
+      fetchComments(); // Refresh danh sách bình luận
+    } catch (error) {
+      console.error('Error liking comment:', error);
+    }
+  };
+
+  // Hàm tăng lượt phản hồi
+  const handleReply = async (commentId) => {
+    try {
+      await axios.patch(`http://localhost:3000/api/binhLuan/cmt/${commentId}`);
+      fetchComments(); // Refresh danh sách bình luận
+    } catch (error) {
+      console.error('Error replying to comment:', error);
+    }
+  };
+
+  const handleAddToCart = (sanPhamMoi) => {
     let cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
-    const itemIndex = cartItems.findIndex((item) => item.id === sanpham.id);
+    const itemIndex = cartItems.findIndex((item) => item.id === sanPhamMoi.id);
 
     if (itemIndex > -1) {
       cartItems[itemIndex].quantity += 1;
     } else {
       // Chuyển đổi giá thành số để lưu vào giỏ hàng
-      const priceAsNumber = parseInt(sanpham.gia_sp.replace(/\./g, ""));
-      cartItems.push({ ...sanpham, gia_sp: priceAsNumber, quantity: 1 });
+      const priceAsNumber = parseInt(sanPhamMoi.gia_sp.replace(/\./g, ""));
+      cartItems.push({ ...sanPhamMoi, gia_sp: priceAsNumber, quantity: 1 });
     }
 
     localStorage.setItem("cartItem", JSON.stringify(cartItems));
-    
-    // Dispatch event để cập nhật số lượng trong header
-    window.dispatchEvent(new Event('cartUpdated'));
-    
-    // Hiển thị popup
-    const popup = document.createElement('div');
-    popup.className = 'popup';
-    popup.innerHTML = `
-      <div class="popup-content">
-        <i class="fas fa-check-circle popup-icon success"></i>
-        <h3 class="popup-title">Thêm vào giỏ hàng thành công!</h3>
-        <p class="popup-message">Sản phẩm đã được thêm vào giỏ hàng của bạn</p>
-        <div class="popup-buttons">
-          <button class="popup-button secondary" id="continueShopping">Mua tiếp</button>
-          <button class="popup-button primary" id="goToCart">Đến giỏ hàng</button>
-        </div>
-      </div>
-    `;
-    
-    document.body.appendChild(popup);
-    
-    // Thêm class show sau một frame để trigger animation
-    requestAnimationFrame(() => {
-      popup.classList.add('show');
-    });
-
-    // Xử lý sự kiện cho nút "Mua tiếp"
-    document.getElementById('continueShopping').addEventListener('click', () => {
-      popup.classList.remove('show');
-      setTimeout(() => {
-        popup.remove();
-      }, 300); // Đợi animation kết thúc
-    });
-
-    // Xử lý sự kiện cho nút "Đến giỏ hàng"
-    document.getElementById('goToCart').addEventListener('click', () => {
-      window.location.href = '/giohang';
-    });
+    setPopupVisible(true); // Hiển thị popup khi thêm vào giỏ hàng
   };
 
   const handleBuyNow = (sanPhamMoi) => {
@@ -126,9 +137,6 @@ export default function ChiTietSanPham() {
     }
   
     localStorage.setItem("cartItem", JSON.stringify(cartItems));
-  
-    // Dispatch event để cập nhật số lượng trong header
-    window.dispatchEvent(new Event('cartUpdated'));
   
     // Điều hướng đến giỏ hàng ngay lập tức
     navigate("/giohang");
@@ -148,38 +156,29 @@ export default function ChiTietSanPham() {
     navigate("/giohang");
   };
 
-  const handleImageClick = (e, index) => {
-    e.preventDefault(); // Ngăn load lại trang
-    setCurrentImageIndex(index);
-    setIsLightboxOpen(true);
-  };
-
-  const handleCloseLightbox = () => {
-    setIsLightboxOpen(false);
-  };
-
-  const handlePrevImage = () => {
-    setIsChangingImage(true);
-    setTimeout(() => {
-      setCurrentImageIndex((prev) => 
-        prev === 0 ? allImages.length - 1 : prev - 1
-      );
-      setIsChangingImage(false);
-    }, 300);
-  };
-
-  const handleNextImage = () => {
-    setIsChangingImage(true);
-    setTimeout(() => {
-      setCurrentImageIndex((prev) => 
-        prev === allImages.length - 1 ? 0 : prev + 1
-      );
-      setIsChangingImage(false);
-    }, 300);
-  };
-
   if (!sanpham) {
     return <div>Loading...</div>;
+  }
+
+  let imagePath = "";
+  switch (sanpham.id_danhmuc) {
+    case 1:
+      imagePath = "Laptop";
+      break;
+    case 2:
+      imagePath = "PC";
+      break;
+    case 3:
+      imagePath = "Manhinh";
+      break;
+    case 4:
+      imagePath = "Chuot";
+      break;
+    case 5:
+      imagePath = "Banphim";
+      break;
+    default:
+      imagePath = "Khac";
   }
 
   return (
@@ -207,7 +206,6 @@ export default function ChiTietSanPham() {
                         src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.chinh}`}
                         alt={sanpham.ten_sp}
                         style={{ width: 380, height: 333.2 }}
-                        onClick={() => handleImageClick(0)}
                       />
                       <div
                         className="mz-lens"
@@ -270,9 +268,9 @@ export default function ChiTietSanPham() {
                           <div className="owl-item" style={{ width: 95 }}>
                             <div className="item_owl_sub">
                               <a
-                                href="#"
-                                onClick={(e) => handleImageClick(e, 1)}
-                                className="mz-thumb"
+                                href={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu1}`}
+                                rel="zoom-id: Zoomer"
+                                className="mz-thumb-selected mz-thumb"
                               >
                                 <img
                                   src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu1}`}
@@ -288,8 +286,8 @@ export default function ChiTietSanPham() {
                           <div className="owl-item" style={{ width: 95 }}>
                             <div className="item_owl_sub">
                               <a
-                                href="#"
-                                onClick={(e) => handleImageClick(e, 2)}
+                                href={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu2}`}
+                                rel="zoom-id: Zoomer"
                                 className="mz-thumb"
                               >
                                 <img
@@ -306,8 +304,8 @@ export default function ChiTietSanPham() {
                           <div className="owl-item" style={{ width: 95 }}>
                             <div className="item_owl_sub">
                               <a
-                                href="#"
-                                onClick={(e) => handleImageClick(e, 3)}
+                                src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu3}`}
+                                rel="zoom-id: Zoomer"
                                 className="mz-thumb"
                               >
                                 <img
@@ -324,8 +322,8 @@ export default function ChiTietSanPham() {
                           <div className="owl-item" style={{ width: 95 }}>
                             <div className="item_owl_sub">
                               <a
-                                href="#"
-                                onClick={(e) => handleImageClick(e, 4)}
+                                src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu4}`}
+                                rel="zoom-id: Zoomer"
                                 className="mz-thumb"
                               >
                                 <img
@@ -342,8 +340,8 @@ export default function ChiTietSanPham() {
                           <div className="owl-item" style={{ width: 95 }}>
                             <div className="item_owl_sub">
                               <a
-                                href="#"
-                                onClick={(e) => handleImageClick(e, 5)}
+                                src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu5}`}
+                                rel="zoom-id: Zoomer"
                                 className="mz-thumb"
                               >
                                 <img
@@ -696,7 +694,7 @@ export default function ChiTietSanPham() {
                   data-confirm=""
                   onClick={() => handleAddToCart(sanpham)}
                 >
-                  Thêm vào giỏ hàng
+                  Thêm vào gio hàng
                 </a>
 
                 {/* Popup thông báo */}
@@ -988,10 +986,88 @@ export default function ChiTietSanPham() {
                     Bình luận/ Đánh giá sản phẩm
                   </a>
                   <div className="clear" />
-                  
-                  <div id="binhluan" className="content_tab active">
-                 
-                  </div>
+                    <div id="binhluan" className="content_tab active">
+                      <div className="comment-section">
+                        {/* Comment Statistics */}
+                        <div className="comment-stats">
+                          <div className="stat-item">
+                            <i className="fas fa-comments"></i>
+                            <span className="stat-number">24</span>
+                            <span>Bình luận</span>
+                          </div>
+                          <div className="stat-item">
+                            <i className="fas fa-star"></i>
+                            <span className="stat-number">4.5</span>
+                            <span>Đánh giá trung bình</span>
+                          </div>
+                        </div>
+
+                        {/* Nút thêm bình luận */}
+                        <button 
+                          className="add-comment-btn"
+                          onClick={() => setShowCommentForm(!showCommentForm)}
+                        >
+                          <i className="fas fa-plus"></i>
+                          {showCommentForm ? 'Đóng bình luận' : 'Bình luận'}
+                        </button>
+
+                        {/* Comment Form */}
+                        {showCommentForm && (
+                          <div className="comment-form">
+                            <form onSubmit={handleSubmitComment}>
+                              <textarea 
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
+                                placeholder="Viết bình luận của bạn..."
+                                disabled={loading}
+                                required
+                              />
+                              <button 
+                                type="submit"
+                                disabled={loading || !comment.trim()}
+                              >
+                                {loading ? 'Đang gửi...' : 'Gửi bình luận'}
+                              </button>
+                            </form>
+                          </div>
+                        )}
+
+                        {/* Hiển thị lỗi nếu có */}
+                        {error && (
+                          <div className="error-message" style={{ color: 'red', marginTop: '10px' }}>
+                            {error}
+                          </div>
+                        )}
+
+                        {/* Comments List */}
+                        <div className="comments-list">
+                          {loading && <div>Đang tải bình luận...</div>}
+                          {comments.map((item) => (
+                            <div key={item.id} className="comment-item">
+                              <div className="comment-content">
+                                <div className="comment-header">
+                                  <span className="comment-date">
+                                    {new Date(item.time).toLocaleString()}
+                                  </span>
+                                </div>
+                                <div className="comment-text">{item.comment}</div>
+                                <div className="comment-actions">
+                                  <span className="comment-action">
+                                    <i className="far fa-thumbs-up"></i>
+                                    Thích ({item.like})
+                                  </span>
+                                  <span className="comment-action">
+                                    <i className="far fa-comment"></i>
+                                    Trả lời ({item.cmt})
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
                   <div className="clear" />
                 </div>
               </div>
@@ -999,10 +1075,10 @@ export default function ChiTietSanPham() {
                 <div className="title_right">Sản phẩm liên quan</div>
                 <div className="content_right">
                   {relatedProducts.map((product) => (
-                      <div key={product.id} className="item_sanpham">
+                    <div key={product.id} className="item_sanpham">
                       <div className="img_sp">
                         <Link 
-                         to={`/chitietsp/sanPham/${product.id}`}
+                         to={`/chitietsp/sanPham/${sanpham.id}`}
                           title={product.ten_sp}
                         >
                           <img
@@ -1132,32 +1208,6 @@ export default function ChiTietSanPham() {
         </div>
       </div>
       {/* chitietsanpham-container */}
-      {isLightboxOpen && (
-        <div className={`lightbox-overlay ${isLightboxOpen ? 'active' : ''}`}>
-          <div className={`lightbox-content ${isLightboxOpen ? 'active' : ''}`}>
-            <button className="lightbox-close" onClick={handleCloseLightbox}>×</button>
-            <button className="lightbox-nav lightbox-prev" onClick={handlePrevImage}>‹</button>
-            <img 
-              src={allImages[currentImageIndex]} 
-              alt="Product" 
-              className={`lightbox-image ${isChangingImage ? 'changing' : ''}`}
-            />
-            <button className="lightbox-nav lightbox-next" onClick={handleNextImage}>›</button>
-            
-            <div className={`lightbox-thumbnails ${isLightboxOpen ? 'active' : ''}`}>
-              {allImages.map((img, index) => (
-                <img
-                  key={index}
-                  src={img}
-                  alt={`Thumbnail ${index}`}
-                  className={`lightbox-thumbnail ${index === currentImageIndex ? 'active' : ''}`}
-                  onClick={() => setCurrentImageIndex(index)}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }

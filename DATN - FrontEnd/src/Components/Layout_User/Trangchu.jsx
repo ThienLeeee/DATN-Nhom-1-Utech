@@ -4,11 +4,20 @@ import { Link } from "react-router-dom";
 import { fetchSanpham } from "../../../service/sanphamService";
 import { fetchDanhmuc } from "../../../service/danhmucService";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import "/public/css/trangchu.css";
+
 
 export default function Trangchu() {
   const [sanPham, setSanpham] = useState([]);
   const [danhMuc, setDanhmuc] = useState([]);
+  const [hotProducts, setHotProducts] = useState([]);
   const navigate = useNavigate();
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const productsPerSlide = 4;
+  const totalSlides = Math.ceil(hotProducts.length / productsPerSlide);
+  const [promotionalProducts, setPromotionalProducts] = useState([]);
+  const [currentPromotionalSlide, setCurrentPromotionalSlide] = useState(0);
 
   useEffect(() => {
     const loadSanpham = async () => {
@@ -16,7 +25,7 @@ export default function Trangchu() {
         const sanPhamData = await fetchSanpham();
         setSanpham(sanPhamData);
       } catch (error) {
-        console.error("Lỗi:",  error);
+        console.error("Lỗi:", error);
       }
     };
     loadSanpham();
@@ -32,7 +41,31 @@ export default function Trangchu() {
       }
     };
     loadDanhmuc();
-  }, []); 
+  }, []);
+
+  useEffect(() => {
+    const fetchHotProducts = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/api/sanPham/ban-chay');
+        setHotProducts(response.data);
+      } catch (error) {
+        console.error("Lỗi khi lấy sản phẩm bán chạy:", error);
+      }
+    };
+    fetchHotProducts();
+  }, []);
+
+  useEffect(() => {
+    const fetchPromotionalProducts = async () => {
+      try {
+        const response = await axios.get('http://localhost:4000/api/sanPham/khuyen-mai');
+        setPromotionalProducts(response.data);
+      } catch (error) {
+        console.error('Error fetching promotional products:', error);
+      }
+    };
+    fetchPromotionalProducts();
+  }, []);
 
   const handleAddToCart = (sanPhamMoi) => {
     let cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
@@ -58,6 +91,14 @@ export default function Trangchu() {
   const sanPhamdm1 = sanPham.filter((sanpham) => sanpham.id_danhmuc === 1);
   const sanPhamdm2 = sanPham.filter((sanpham) => sanpham.id_danhmuc === 2);
   const sanPhamdm3 = sanPham.filter((sanpham) => sanpham.id_danhmuc === 3);
+
+  const handleSlideChange = (slideIndex) => {
+    setCurrentSlide(slideIndex);
+  };
+
+  const handlePromotionalSlideChange = (slideIndex) => {
+    setCurrentPromotionalSlide(slideIndex);
+  };
 
   return (
     <>
@@ -887,7 +928,7 @@ export default function Trangchu() {
                       </div>
                     ))
                   ) : (
-                    <p>Đang tải danh mục...</p>
+                    <p>Đang tải danh mục...</p>
                   )}
                 </div>
               </div>
@@ -903,96 +944,146 @@ export default function Trangchu() {
               <div className="title-bestseller">
                 <span>Sản phẩm bán chạy</span>
               </div>
-              <div
-                className="slick-product none slick-initialized slick-slider slick-dotted"
-                role="toolbar"
-              >
-                <div
-                  aria-live="polite"
-                  className="slick-list draggable"
-                  style={{ height: 400 }}
-                >
-                  <div
-                    className="slick-track"
-                    style={{ opacity: 1, width: 1336 }}
-                    role="listbox"
+              <div className="hidden_tab">
+                <div className="grid-products-slider">
+                  <div 
+                    className="slider-container"
+                    style={{
+                      transform: `translateX(-${currentSlide * 100}%)`,
+                      transition: 'transform 0.5s ease-in-out'
+                    }}
                   >
-                    <div
-                      className="product  slick-slide"
-                      data-slick-index={8}
-                      aria-hidden="true"
-                      style={{ height: 250, width: 247 }}
-                      tabIndex={-1}
-                      role="option"
-                      aria-describedby="slick-slide51"
-                    >
-                      <div className="box-product">
-                        <div className="pic-product" data-tooltip="sticky5998">
-                          <a
-                            className="d-block"
-                            href="san-pham/man-hinh-lcd-hp-m24fw-2e2y5aa-5998.html"
-                            title="MÀN HÌNH LCD HP M24FW 2E2Y5AA"
-                            tabIndex={-1}
-                          >
-                            <img
-                              src=""
-                              alt="MÀN HÌNH LCD HP M24FW 2E2Y5AA"
-                              className="w100 trans03"
-                            />
-                          </a>
-                          <div className="hot-icon blink" />
-                          <div className="desc-product">
-                            <div>
-                              <div>Kích thước màn hình: 24 inch</div>
-                              <div>Độ phân giải: Full HD (1920x1080)</div>
-                              <div>Loại màn hình: Màn hình phẳng</div>
-                              <div>Tấm nền: IPS</div>
-                              <div>Tần số: 75Hz</div>
-                              <div>Kết nối: 1VGA; 1 HDMI 1.4 (with HDCP support)</div>
-                              <div
-                                data-original-title=""
-                                id="mttContainer"
-                                title=""
-                              >
-                                &nbsp;
+                    {hotProducts.map((sanpham) => (
+                      <div className="product" key={sanpham.id}>
+                        <div className="box-product">
+                          <div className="pic-product" data-tooltip={`sticky${sanpham.id}`}>
+                            <Link
+                              to={`/chitietsp/sanPham/${sanpham.id}`}
+                              className="d-block"
+                              title={sanpham.ten_sp}
+                            >
+                              <img
+                                src={`/img/sanpham/${
+                                  sanpham.id_danhmuc === 1 ? 'Laptop' : 
+                                  sanpham.id_danhmuc === 2 ? 'PC' : 
+                                  sanpham.id_danhmuc === 3 ? 'Manhinh' : 
+                                  sanpham.id_danhmuc === 4 ? 'Chuot' : 
+                                  'Banphim'}/${sanpham.hinh_anh.chinh}`}
+                                alt={sanpham.ten_sp}
+                                className="w100 trans03"
+                              />
+                            </Link>
+                            <div className="hot-icon blink" />
+                            <div className="desc-product">
+                              <div>
+                                <ul>
+                                  {/* Cấu hình cho Laptop */}
+                                  {sanpham.id_danhmuc === 1 && (
+                                    <>
+                                      <li>CPU: {sanpham.cau_hinh.cpu}</li>
+                                      <li>RAM: {sanpham.cau_hinh.ram}</li>
+                                      <li>Ổ cứng: {sanpham.cau_hinh.o_cung}</li>
+                                      <li>Card đồ họa: {sanpham.cau_hinh.card_do_hoa}</li>
+                                      <li>Màn hình: {sanpham.cau_hinh.man_hinh}</li>
+                                    </>
+                                  )}
+
+                                  {/* Cấu hình cho PC */}
+                                  {sanpham.id_danhmuc === 2 && (
+                                    <>
+                                      <li>CPU: {sanpham.cau_hinh.cpu}</li>
+                                      <li>Mainboard: {sanpham.cau_hinh.mainboard}</li>
+                                      <li>RAM: {sanpham.cau_hinh.ram}</li>
+                                      <li>VGA: {sanpham.cau_hinh.vga}</li>
+                                      <li>Nguồn: {sanpham.cau_hinh.nguon}</li>
+                                      <li>Case: {sanpham.cau_hinh.case}</li>
+                                    </>
+                                  )}
+
+                                  {/* Cấu hình cho Màn hình */}
+                                  {sanpham.id_danhmuc === 3 && (
+                                    <>
+                                      <li>Kiểu màn hình: {sanpham.cau_hinh.kieu_man_hinh}</li>
+                                      <li>Kích thước: {sanpham.cau_hinh.kich_thuoc}</li>
+                                      <li>Độ phân giải: {sanpham.cau_hinh.do_phan_giai}</li>
+                                      <li>Tần số quét: {sanpham.cau_hinh.tan_so_quet}</li>
+                                      <li>Tấm nền: {sanpham.cau_hinh.tam_nen}</li>
+                                      <li>Độ sáng: {sanpham.cau_hinh.do_sang}</li>
+                                      <li>Thời gian phản hồi: {sanpham.cau_hinh.thoi_gian_phan_hoi}</li>
+                                    </>
+                                  )}
+
+                                  {/* Cấu hình cho Chuột */}
+                                  {sanpham.id_danhmuc === 4 && (
+                                    <>
+                                      <li>DPI: {sanpham.cau_hinh.dpi}</li>
+                                      <li>Kết nối: {sanpham.cau_hinh.ket_noi}</li>
+                                      <li>Thời gian phản hồi: {sanpham.cau_hinh.thoi_gian_phan_hoi}</li>
+                                      <li>Số nút bấm: {sanpham.cau_hinh.so_nut_bam}</li>
+                                      <li>Trọng lượng: {sanpham.cau_hinh.trong_luong}</li>
+                                    </>
+                                  )}
+
+                                  {/* Cấu hình cho Bàn phím */}
+                                  {sanpham.id_danhmuc === 5 && (
+                                    <>
+                                      <li>Switch: {sanpham.cau_hinh.switch}</li>
+                                      <li>Kết nối: {sanpham.cau_hinh.ket_noi}</li>
+                                      <li>Layout: {sanpham.cau_hinh.layout}</li>
+                                      <li>Keycap: {sanpham.cau_hinh.keycap}</li>
+                                      <li>Led: {sanpham.cau_hinh.led}</li>
+                                    </>
+                                  )}
+                                </ul>
+                                <p>&nbsp;</p>
+                                <div className="baohanh">Bảo hành: {sanpham.bao_hanh} tháng</div>
                               </div>
-                              <div className="baohanh ">Bảo hành: 36 tháng</div>
+                            </div>
+                          </div>
+                          <div className="info-product">
+                            <Link
+                              to={`/chitietsp/sanPham/${sanpham.id}`}
+                              className="name-product text-split"
+                              title={sanpham.ten_sp}
+                            >
+                              {sanpham.ten_sp}
+                            </Link>
+                            <div className="price-product">
+                              <span className="price-new">{sanpham.gia_sp}đ</span>
+                            </div>
+                            <div className="cart-product d-flex flex-wrap justify-content-between align-items-center">
+                              <span className="status-pro sts2">Còn hàng</span>
+                              <span
+                                className="mua_giohang"
+                                onClick={() => handleAddToCart(sanpham)}
+                              >
+                                Mua ngay
+                              </span>
                             </div>
                           </div>
                         </div>
-                        <div className="info-product">
-                          <a
-                            className="name-product text-split"
-                            href="san-pham/man-hinh-lcd-hp-m24fw-2e2y5aa-5998.html"
-                            title="MÀN HÌNH LCD HP M24FW 2E2Y5AA"
-                            tabIndex={-1}
-                          >
-                            MÀN HÌNH LCD HP M24FW 2E2Y5AA
-                          </a>
-                          <div className="price-product">
-                            <span className="price-new">Liên hệ</span>
-                          </div>
-                          <div className="cart-product d-flex justify-content-between align-items-center">
-                            <span className="status-pro sts2">Còn hàng</span>
-                            <span
-                              className="mua_giohang"
-                              rel={5998}
-                              data-confirm=""
-                              onClick={() => handleAddToCart(sanPham)}
-                            >
-                              Mua ngay
-                            </span>
-                          </div>
-                        </div>
                       </div>
-                    </div>
+                    ))}
                   </div>
+                </div>
+                <div className="slider-dots">
+                  {[...Array(totalSlides)].map((_, index) => (
+                    <button
+                      key={index}
+                      className={`dot ${currentSlide === index ? 'active' : ''}`}
+                      onClick={() => handleSlideChange(index)}
+                    />
+                  ))}
                 </div>
               </div>
             </div>
           </div>
         </div>
         {/* hot-products end */}
+
+        {/* promotional-products */}
+        
+        {/* promotional-products end */}
 
         {/* products 1 */}
         <div className="sub_main" id="scroll0" style={{ marginBottom: 50 }}>
@@ -1003,12 +1094,12 @@ export default function Trangchu() {
                 <ul>
                   <li>
                     <a href="" title="LAPTOP LG">
-                      LAPTOP LENOVO
+                      LAPTOP ASUS
                     </a>
                   </li>
                   <li>
                     <a href="" title="LAPTOP ASUS">
-                      LAPTOP ASUS
+                      LAPTOP ACER
                     </a>
                   </li>
                   <li>

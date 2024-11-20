@@ -3,6 +3,8 @@ import { Link, useParams } from "react-router-dom";
 import { fetchSanPhamTheoDm } from "../../../service/sanphamService";
 import { fetchDanhMucById } from "../../../service/danhmucService";
 import { useNavigate } from "react-router-dom";
+
+
 export default function SanPhamTheodm() {
   const [sanPham, setSanpham] = useState([]);
   const [tenDanhMuc, setTenDanhMuc] = useState("");
@@ -10,11 +12,55 @@ export default function SanPhamTheodm() {
 
   const { id } = useParams();
 
+  // Thêm state để lưu khoảng giá đã chọn
+  const [priceRange, setPriceRange] = useState(0);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+
+  // Hàm xử lý khi thay đổi khoảng giá
+  const handlePriceFilter = (event) => {
+    const selectedValue = parseInt(event.target.value);
+    setPriceRange(selectedValue);
+      
+    if (selectedValue === 0) {
+      // Nếu chọn "Mức giá" (giá trị 0), hiển thị tất cả sản phẩm
+      setFilteredProducts(sanPham);
+      return;
+    }
+
+    // Lọc sản phẩm theo khoảng giá
+    const filtered = sanPham.filter(product => {
+      const price = parseInt(product.gia_sp.replace(/\./g, ''));
+      switch (selectedValue) {
+        case 19: // Dưới 3 triệu
+          return price < 3000000;
+        case 20: // Dưới 5 triệu
+          return price < 5000000;
+        case 21: // Dưới 8 triệu
+          return price < 8000000;
+        case 22: // Dưới 10 triệu
+          return price < 10000000;
+        case 49: // Dưới 15 triệu
+          return price < 15000000;
+        case 50: // Dưới 20 triệu
+          return price < 20000000;
+        case 51: // Dưới 25 triệu
+          return price < 25000000;
+        case 52: // Trên 25 triệu
+          return price >= 25000000;
+        default:
+          return true;
+      }
+    });
+    
+    setFilteredProducts(filtered);
+  };
+
   useEffect(() => {
     const loadSanpham = async () => {
       try {
         const sanPham = await fetchSanPhamTheoDm(id);
         setSanpham(sanPham);
+        setFilteredProducts(sanPham); // Khởi tạo filteredProducts
       } catch (error) {
         console.error("Lỗi:", error);
       }
@@ -88,7 +134,12 @@ export default function SanPhamTheodm() {
               </select>
             </div>
             <div className="item_filter">
-              <select name="filter[]" className="filter">
+              <select 
+                name="filter[]" 
+                className="filter"
+                onChange={handlePriceFilter}
+                value={priceRange}
+              >
                 <option value={0}>Mức giá</option>
                 <option value={19}>Dưới 3 triệu</option>
                 <option value={20}>Dưới 5 triệu</option>
@@ -221,8 +272,8 @@ export default function SanPhamTheodm() {
           <div className="border_sanpham">
             <div id="results1">
               <div className="grid-products">
-                {sanPham.length > 0 ? (
-                  sanPham.map((sanpham) => {
+                {filteredProducts.length > 0 ? (
+                  filteredProducts.map((sanpham) => {
                     // Xác định thư mục hình ảnh dựa trên id_danhmuc
                     let imagePath = "";
                     switch (sanpham.id_danhmuc) {
@@ -439,7 +490,7 @@ export default function SanPhamTheodm() {
                     );
                   })
                 ) : (
-                  <p>Đang tải sản phẩm...</p>
+                  <p>Không tìm thấy sản phẩm phù hợp với mức giá đã chọn</p>
                 )}
               </div>
 
