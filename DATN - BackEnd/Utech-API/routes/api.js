@@ -578,24 +578,17 @@ router.get('/sanPham/ban-chay', async (req, res) => {
     const db = await connectDb();
     const sanPhamCollection = db.collection('sanPham');
     
-    // Tìm các sản phẩm có ban_chay = 1
-    const hotProducts = await sanPhamCollection
-      .find({ ban_chay: 1 })
+    // Giả sử có trường 'sold' để đếm số lượng bán ra
+    const bestSellingProducts = await sanPhamCollection
+      .find({}) // Thêm các điều kiện lọc nếu cần
+      .sort({ sold: -1 }) // Sắp xếp giảm dần theo số lượng đã bán
+      .limit(10) // Lấy top 10 sản phẩm bán chạy nhất
       .toArray();
 
-    if (hotProducts.length > 0) {
-      res.status(200).json(hotProducts);
-    } else {
-      res.status(404).json({ 
-        message: "Không tìm thấy sản phẩm bán chạy"
-      });
-    }
+    res.status(200).json(bestSellingProducts);
   } catch (error) {
-    console.error('Lỗi khi lấy sản phẩm bán chạy:', error);
-    res.status(500).json({ 
-      message: 'Đã xảy ra lỗi khi lấy sản phẩm bán chạy',
-      error: error.message 
-    });
+    console.error("Lỗi khi lấy sản phẩm bán chạy:", error);
+    res.status(500).json({ message: 'Lỗi khi lấy sản phẩm bán chạy', error: error.message });
   }
 });
 
@@ -612,32 +605,44 @@ router.get('/sanPham/:id', async (req, res, next) => {
   }
 })
 
-//Tìm kiếm sản phẩm
-router.put('/user/:id', async (req, res) => {
-  const id = parseInt(req.params.id); // Lấy id từ URL
+//Sửa đổi thông tin người dùng
+router.put('/user/:id', authenToken, async (req, res) => {
+  const id = parseInt(req.params.id); // Lấy id từ URL và chuyển sang số nguyên
   const db = await connectDb();
-  const userCollection = db.collection('user');
-  
-  const { ma_san_pham, hoten, ngaysinh, gioitinh, sdt, email, diachi } = req.body;
-  const editUser = { ma_san_pham, hoten, ngaysinh, gioitinh, sdt, email, diachi };
+  const usersCollection = db.collection('users'); // Sử dụng đúng collection người dùng
+
+  // Lấy dữ liệu từ body
+  const { hoten, ngaysinh, gioitinh, sdt, email, diachi } = req.body;
+
+  // Tạo đối tượng cập nhật
+  const editUser = {
+    hoten,
+    ngaysinh,
+    gioitinh,
+    sdt,
+    email,
+    diachi
+  };
 
   try {
-    const result = await userCollection.updateOne(
-      { id }, 
+    // Thực hiện cập nhật người dùng
+    const result = await usersCollection.updateOne(
+      { id: id },
       { $set: editUser }
     );
-    
+
     if (result.matchedCount === 0) {
       return res.status(404).json({ message: 'Không tìm thấy người dùng để cập nhật.' });
     }
 
     if (result.modifiedCount > 0) {
-      res.status(200).json({ message: 'Cập nhật thành công', user: editUser });
+      res.status(200).json({ message: 'Cập nhật người dùng thành công.', user: editUser });
     } else {
-      res.status(200).json({ message: 'Không có thay đổi nào.' });
+      res.status(200).json({ message: 'Không có thay đổi nào được thực hiện.' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Đã xảy ra lỗi khi cập nhật', error });
+    console.error('Lỗi cập nhật người dùng:', error);
+    res.status(500).json({ message: 'Lỗi máy chủ khi cập nhật người dùng.' });
   }
 });
 
@@ -645,7 +650,7 @@ router.put('/user/:id', async (req, res) => {
 //show tài khoản
 router.get('/user', async (req, res, next) => {
   const db = await connectDb()
-  const accountsCollection = db.collection('user')
+  const accountsCollection = db.collection('users')
   const accounts = await accountsCollection.find().toArray()
   if (accounts) {
     res.status(200).json(accounts)
@@ -655,49 +660,74 @@ router.get('/user', async (req, res, next) => {
 })
 
 // API tìm kiếm người dùng theo id_user
-router.get('/user/:id', async (req, res, next) => {
-  let  id  = req.params.id; // Lấy id từ URL
-  const db = await connectDb()
-  const userCollection = db.collection('user')
-  const nguoidung= await userCollection.findOne({ id: parseInt(id) })
-  if (nguoidung) {
-    res.status(200).json(nguoidung)
-  } else {
-    res.status(404).json({ message: 'Không tìm thấy sản phẩm' })
+router.get('/user/:id',  async (req, res) => {
+  const id = parseInt(req.params.id);
+  const db = await connectDb();
+  const usersCollection = db.collection('users');
+
+  try {
+    const nguoidung = await usersCollection.findOne({ id: id });
+    if (nguoidung) {
+      res.status(200).json(nguoidung);
+    } else {
+      res.status(404).json({ message: 'Không tìm thấy người dùng' });
+    }
+  } catch (error) {
+    console.error('Lỗi:', error);
+    res.status(500).send('error');
   }
 });
 
 module.exports = router;
 
+
 // API sửa người dùng theo id_user
-router.put('/user/:id', async (req, res, next) => {
-  const id = req.params.id; // Lấy id từ URL
+router.put('/user/:id', authenToken, async (req, res) => {
+  const id = parseInt(req.params.id); // Lấy id từ URL và chuyển sang số nguyên
   const db = await connectDb();
-  const userCollection = db.collection('user')
-  let{ma_san_pham,hoten,ngaysinh,gioitinh,sdt,email,diachi}=req.body
-  let editUser={
-    ma_san_pham,hoten,ngaysinh,gioitinh,sdt,email,diachi
-  }
-   // Cập nhật sản phẩm trong cơ sở dữ liệu
-   const result = await sanPhamCollection.updateOne(
-    { id: parseInt(id) },
-    { $set: editProduct }
-   );
+  const usersCollection = db.collection('users'); // Sử dụng đúng collection người dùng
+
+  // Lấy dữ liệu từ body
+  const { hoten, ngaysinh, gioitinh, sdt, email, diachi } = req.body;
+
+  // Tạo đối tượng cập nhật
+  const editUser = {
+    hoten,
+    ngaysinh,
+    gioitinh,
+    sdt,
+    email,
+    diachi
+  };
+
+  try {
+    // Thực hiện cập nhật người dùng
+    const result = await usersCollection.updateOne(
+      { id: id },
+      { $set: editUser }
+    );
+
     if (result.matchedCount === 0) {
-      return res.status(404).json({ message: 'Không tìm thấy người dùngđể cập nhật.' });
+      return res.status(404).json({ message: 'Không tìm thấy người dùng để cập nhật.' });
     }
+
     if (result.modifiedCount > 0) {
-      res.status(200).json(editProduct);
+      res.status(200).json({ message: 'Cập nhật người dùng thành công.', user: editUser });
     } else {
-      res.status(404).json({ message: 'Sửa người dùng không thành công hoặc không có thay đổi nào.' });
+      res.status(200).json({ message: 'Không có thay đổi nào được thực hiện.' });
     }
+  } catch (error) {
+    console.error('Lỗi cập nhật người dùng:', error);
+    res.status(500).json({ message: 'Lỗi máy chủ khi cập nhật người dùng.' });
+  }
 });
+
 
 // API xóa người dùng theo id_user
 router.delete('/user/:id', async (req, res) => {
   let id = req.params.id
   const db = await connectDb()
-  const userCollection = db.collection('user')
+  const userCollection = db.collection('users')
   let nguoidung = await userCollection.deleteOne({ id: parseInt(id) })
   if (nguoidung) {
     res.status(200).json({ message: 'Xóa thành công' })
@@ -708,66 +738,132 @@ router.delete('/user/:id', async (req, res) => {
 
 
 //API đăng ký tài khoản
-router.post(
-  '/accounts/register',
-  upload.single('img'),
-  async (req, res, next) => {
-    let { username, email, password, repassword } = req.body
-    const db = await connectDb()
-    const accountCollection = db.collection('accounts')
-    let account = await accountCollection.findOne({ email: email })
-    if (account) {
-      res.status(409).json({ message: 'Email đã tồn tại' })
-    } else {
-      let lastAccount = await accountCollection
-        .find()
-        .sort({ id: -1 })
-        .limit(1)
-        .toArray()
-      let id = lastAccount[0] ? lastAccount[0].id + 1 : 1
-      const salt = bcrypt.genSaltSync(10)
-      let hashPassword = bcrypt.hashSync(password, salt)
-      let newAccount = {
-        id: id,
-        username,
-        email,
-        password: hashPassword,
-        repassword: hashPassword,
-        role: 0
-      }
-      try {
-        let result = await accountCollection.insertOne(newAccount)
-        console.log(result)
-        res.status(200).json({ message: 'Đăng ký oke!' })
-      } catch (error) {
-        console.error(error)
-        res.status(500).json({ message: 'Thêm tài khoản lỗi!' })
-      }
-    }
-  }
-)
+router.post('/accounts/register', async (req, res) => {
+  let { username, email, password, repassword } = req.body;
+  const db = await connectDb();
+  const usersCollection = db.collection('users');
 
-//API đăng nhập tài khoản có sử dụng token
-router.post('/accounts/login', upload.single('img'), async (req, res, next) => {
-  const db = await connectDb()
-  const accountCollection = db.collection('accounts')
-  let { username, password } = req.body
-  const account = await accountCollection.findOne({ username: username })
-  if (account) {
-    if (bcrypt.compareSync(password, account.password)) {
-      const token = jwt.sign(
-        { username: account.username, role: account.role },
-        'secretkey',
-        { expiresIn: '60s' }
-      )
-      res.status(200).json({ token: token })
-    } else {
-      res.status(403).json({ message: 'password ko đúng' })
+  try {
+    // Kiểm tra username đã tồn tại
+    let existingUser = await usersCollection.findOne({ 
+      $or: [
+        { username: username },
+        { email: email }
+      ]
+    });
+    
+    if (existingUser) {
+      if (existingUser.username === username) {
+        return res.status(409).json({ message: 'Tên đăng nhập đã tồn tại' });
+      }
+      if (existingUser.email === email) {
+        return res.status(409).json({ message: 'Email đã tồn tại' });
+      }
     }
-  } else {
-    res.status(403).json({ message: 'tên tk hoặc mk ko đúng' })
+
+    // Kiểm tra password và repassword
+    if (password !== repassword) {
+      return res.status(400).json({ message: 'Mật khẩu không khớp' });
+    }
+
+    // Tạo id mới
+    let lastUser = await usersCollection.find().sort({ id: -1 }).limit(1).toArray();
+    let id = lastUser[0] ? lastUser[0].id + 1 : 1;
+
+    // Mã hóa mật khẩu
+    const salt = bcrypt.genSaltSync(10);
+    let hashPassword = bcrypt.hashSync(password, salt);
+
+    // Tạo user mới
+    let newUser = {
+      id,
+      username,
+      email,
+      password: hashPassword,
+      role: 'user',
+      createdAt: new Date(),
+      status: 'active',
+      profile: {
+        fullName: '',
+        phone: '',
+        address: '',
+        avatar: ''
+      }
+    };
+
+    await usersCollection.insertOne(newUser);
+    
+    // Trả về thông báo thành công và thông tin user (không bao gồm password)
+    const userResponse = {
+      id: newUser.id,
+      username: newUser.username,
+      email: newUser.email,
+      role: newUser.role
+    };
+
+    res.status(200).json({ 
+      message: 'Đăng ký thành công!',
+      user: userResponse
+    });
+
+  } catch (error) {
+    console.error('Lỗi đăng ký:', error);
+    res.status(500).json({ message: 'Lỗi server' });
   }
-})
+});
+
+// Cập nhật API đăng nhập để sử dụng collection users
+router.post('/accounts/login', async (req, res) => {
+  const { username, password } = req.body;
+  const db = await connectDb();
+  const usersCollection = db.collection('users');
+
+  try {
+    // Tìm user theo username
+    const user = await usersCollection.findOne({ username });
+    
+    if (!user) {
+      return res.status(401).json({ message: 'Tên đăng nhập không tồn tại!' });
+    }
+
+    // Kiểm tra mật khẩu
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    
+    if (!isValidPassword) {
+      return res.status(401).json({ message: 'Mật khẩu không đúng!' });
+    }
+
+    // Tạo token JWT
+    const token = jwt.sign(
+      { 
+        userId: user.id, 
+        username: user.username, 
+        role: user.role 
+      },
+      'secretkey',
+      { expiresIn: '24h' }
+    );
+
+    // Trả về thông tin user (không bao gồm password) và token
+    const userResponse = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      profile: user.profile
+    };
+
+    res.status(200).json({
+      message: 'Đăng nhập thành công!',
+      user: userResponse,
+      token
+    });
+
+  } catch (error) {
+    console.error('Lỗi đăng nhập:', error);
+    res.status(500).json({ message: 'Lỗi server' });
+  }
+});
 
 //Hàm xác thực token
 function authenToken (req, res, next) {

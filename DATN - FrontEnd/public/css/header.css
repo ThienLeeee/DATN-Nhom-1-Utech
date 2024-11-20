@@ -1,0 +1,37 @@
+
+/* Thêm padding cho từng menu-item */
+.menu-item {
+    padding: 5px 0;
+  }
+  .user-menu{
+    width: 200px;
+  }
+  /* Kiểu dáng cho các liên kết trong menu */
+  .menu-link {
+    color: #007bff; /* Màu xanh chuẩn Bootstrap */
+    text-decoration: none;
+    font-size: 16px;
+    transition: color 0.3s ease;
+  }
+  
+  .menu-link:hover {
+    color: #f60b0b; /* Màu xanh đậm hơn khi hover */
+    /* text-decoration: underline; */
+  }
+  
+  /* Kiểu dáng cho nút Đăng xuất */
+  .logout-button {
+    border: none;
+    background: none;
+    color: #007bff; /* Màu xanh */
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0;
+    transition: color 0.3s ease;
+    margin: 0 0 0 10px;
+  }
+  
+  .logout-button:hover {
+    color: #de1f09; /* Màu xanh đậm hơn khi hover */
+    /* background-color: #0056b3; */
+  }

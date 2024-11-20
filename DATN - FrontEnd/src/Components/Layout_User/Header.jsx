@@ -3,7 +3,7 @@ import { fetchDanhmuc } from "../../../service/danhmucService";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '@/context/AuthContext';
-
+import '/public/css/header.css';
 export default function Header() {
   const [keyword, setKeyword] = useState("");
   const { user, logout } = useAuth();
@@ -44,6 +44,12 @@ export default function Header() {
       window.removeEventListener("cartUpdated", updateCartCount);
     };
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      setShowUserMenu(false);
+    }
+  }, [user]);
 
   const handleLogout = () => {
     logout();
@@ -145,6 +151,7 @@ export default function Header() {
                   </button>
                 </form>
               </div>{" "}
+
               <div className="hotline-header">
                 {user ? (
                   <div className="user-menu-container" style={{ position: 'relative' }}>
@@ -156,35 +163,38 @@ export default function Header() {
                         border: '2px solid #000',
                         borderRadius: '5px',
                         background: 'none',
-                        cursor: 'pointer'
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px'
                       }}
                     >
-                      {user.username}
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"  viewBox="0 0 16 16">
+  <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+</svg>
+                     <img src="/public/img/icon/user-icon.png" alt="icon user" style={{ width: '32px', height: '32px', borderRadius: '50%' }} /> <p>{user.username}</p>
                     </button>
                     {showUserMenu && (
                       <div className="user-menu" style={{
                         position: 'absolute',
                         top: '100%',
-                        right: 0,
+                        right: -45,
                         background: '#fff',
                         border: '1px solid #ddd',
                         borderRadius: '5px',
                         padding: '10px',
                         zIndex: 1000
                       }}>
-                        <div className="menu-item" style={{ padding: '5px 0' }}>
-                          <Link to="/profile">Thông tin người dùng</Link>
+                        <div className="menu-item">
+                          <Link to="/Thongtintaikhoan" className="menu-link">Thông tin người dùng</Link>
                         </div>
-                        <div className="menu-item" style={{ padding: '5px 0' }}>
-                          <Link to="/forgot-password">Quên mật khẩu</Link>
+                        <div className="menu-item">
+                          <Link to="/forgot-password" className="menu-link">Quên mật khẩu</Link>
                         </div>
-                        <div className="menu-item" style={{ padding: '5px 0' }}>
-                          <button onClick={handleLogout} style={{
-                            border: 'none',
-                            background: 'none',
-                            color: 'red',
-                            cursor: 'pointer'
-                          }}>Đăng xuất</button>
+                        <div className="menu-item">
+                          <button onClick={handleLogout} className="logout-button">
+                            Đăng xuất
+                          </button>
                         </div>
                       </div>
                     )}
@@ -206,6 +216,7 @@ export default function Header() {
                   </Link>
                 )}
               </div>
+
               <Link
                 to="/giohang"
                 className="cart-header d-block d-flex"

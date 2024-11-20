@@ -11,6 +11,8 @@ import Thanhtoan from "./Layout_User/Thanhtoan";
 import Dangnhap from "./DK.DN/Dangnhap";
 import Dangky from "./DK.DN/Dangky";
 import { AuthProvider } from "../context/AuthContext";
+import Thongtintaikhoan from "./Layout_User/Thongtintaikhoan";
+import Thongtindonhang from "./Layout_User/Thongtindonhang";
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
@@ -57,7 +59,9 @@ export default function Index() {
             <Route path="/Dangky" element={<Dangky></Dangky>}></Route>
             <Route path="/sanPham"  element={<SanPhamSearch></SanPhamSearch>}></Route>
             <Route path="/sanPham/id_danhmuc/:id_danhmuc/thuong_hieu/:thuong_hieu" element={<SanPhamThuongHieu></SanPhamThuongHieu>}></Route>
-            <Route path="/thanhtoan" element={<Thanhtoan></Thanhtoan>}></Route>            
+            <Route path="/thanhtoan" element={<Thanhtoan></Thanhtoan>}></Route>    
+            <Route path="/thongtintaikhoan" element={<Thongtintaikhoan></Thongtintaikhoan>}></Route>       
+            <Route path="/thongtindonhang" element={<Thongtindonhang></Thongtindonhang>}></Route>         
         </Routes>
         <Footer/>
       </Router>
