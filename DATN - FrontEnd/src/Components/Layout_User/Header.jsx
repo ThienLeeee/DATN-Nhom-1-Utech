@@ -8,7 +8,10 @@ export default function Header() {
   const [keyword, setKeyword] = useState("");
   const { user, logout } = useAuth();
   const [danhMuc, setDanhmuc] = useState([]);
-  const [cartItemCount, setCartItemCount] = useState(0);
+  const [cartCount, setCartCount] = useState(() => {
+    const cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
+    return cartItems.reduce((total, item) => total + item.quantity, 0);
+  });
   const [showUserMenu, setShowUserMenu] = useState(false);
   const navigate = useNavigate();
 
@@ -23,25 +26,18 @@ export default function Header() {
     };
     loadDanhmuc();
 
-    // Thêm listener để cập nhật số lượng giỏ hàng
-    const updateCartCount = () => {
+    // Lắng nghe sự kiện cartUpdated
+    const handleCartUpdate = () => {
       const cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
-      const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-      setCartItemCount(totalItems);
+      const newCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+      setCartCount(newCount);
     };
 
-    // Cập nhật lần đầu
-    updateCartCount();
+    window.addEventListener('cartUpdated', handleCartUpdate);
 
-    // Lắng nghe sự thay đổi của localStorage
-    window.addEventListener("storage", updateCartCount);
-    
-    // Custom event để cập nhật từ các component khác
-    window.addEventListener("cartUpdated", updateCartCount);
-
+    // Cleanup
     return () => {
-      window.removeEventListener("storage", updateCartCount);
-      window.removeEventListener("cartUpdated", updateCartCount);
+      window.removeEventListener('cartUpdated', handleCartUpdate);
     };
   }, []);
 
@@ -229,7 +225,7 @@ export default function Header() {
                   style={{ float: "left", marginRight: 10 }}
                 />
                 <p style={{ float: "left" }}>
-                  Giỏ hàng (<strong>{cartItemCount}</strong>)
+                  Giỏ hàng (<strong>{cartCount}</strong>)
                 </p>
               </Link>
             </div>

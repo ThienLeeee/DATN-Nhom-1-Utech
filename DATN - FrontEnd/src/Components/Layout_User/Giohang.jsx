@@ -132,260 +132,117 @@ export default function Giohang() {
           <div id="giohang_ct">
             <form name="form1" method="post" onSubmit={(e) => e.preventDefault()}>
               {sanPham.length === 0 ? (
-                <div style={{ textAlign: "center", padding: "20px" }}>
-                  <Link to="/">
-                    <button className="btnc btn-primary">Mua sản phẩm</button>
-                  </Link>
+                <div className="empty-cart">
+                  <div className="empty-cart-content">
+                    <img src="/img/icon/bangboo-cart.gif" alt="Bangboo Cart" className="empty-cart-image" />
+                    <h2>Giỏ hàng hiện tại đang trống</h2>
+                    <p>Hãy thêm sản phẩm vào giỏ hàng của bạn</p>
+                    <Link to="/" className="shop-now-btn">
+                      <i className="fas fa-shopping-cart"></i>
+                      Mua sắm ngay
+                    </Link>
+                  </div>
                 </div>
               ) : (
                 <div className="contain_table_giohang">
-                  <table
-                    style={{
-                      width: "100%",
-                      color: "#333",
-                      border: "1px solid #e9e9e9",
-                    }}
-                  >
+                  <table className="cart-table">
                     <thead>
-                      <tr style={{ backgroundColor: "#fff" }}>
-                        <th
-                          style={{
-                            textAlign: "center",
-                            padding: 5,
-                            whiteSpace: "nowrap",
-                            fontSize: 13,
-                            border: "1px solid #e9e9e9",
-                          }}
-                        >
-                          Hình ảnh
-                        </th>
-                        <th
-                          style={{
-                            textAlign: "center",
-                            padding: 5,
-                            whiteSpace: "nowrap",
-                            fontSize: 13,
-                            border: "1px solid #e9e9e9",
-                          }}
-                        >
-                          Tên
-                        </th>
-                        <th
-                          style={{
-                            textAlign: "center",
-                            padding: 5,
-                            whiteSpace: "nowrap",
-                            fontSize: 13,
-                            border: "1px solid #e9e9e9",
-                          }}
-                        >
-                          Số lượng
-                        </th>
-                        <th
-                          style={{
-                            textAlign: "center",
-                            padding: 5,
-                            whiteSpace: "nowrap",
-                            fontSize: 13,
-                            border: "1px solid #e9e9e9",
-                          }}
-                        >
-                          Tổng tiền
-                        </th>
-                        <th
-                          style={{
-                            textAlign: "center",
-                            padding: 5,
-                            whiteSpace: "nowrap",
-                            fontSize: 13,
-                            border: "1px solid #e9e9e9",
-                          }}
-                        >
-                          Thao tác
-                        </th>
+                      <tr>
+                        <th>Sản phẩm</th>
+                        <th>Giá</th>
+                        <th>Số lượng</th>
+                        <th>Tổng tiền</th>
+                        <th>Thao tác</th>
                       </tr>
                     </thead>
-
                     <tbody>
                       {sanPham.map((sanpham, index) => {
                         const imagePath = getImagePath(sanpham.id_danhmuc);
-
                         return (
-                          <tr
-                            key={index}
-                            style={{ borderBottom: "1px solid #ecedef" }}
-                          >
-                            <td
-                              style={{
-                                textAlign: "center",
-                                padding: "5px",
-                                border: "1px solid #e9e9e9",
-                              }}
-                            >
-                              <img
-                                src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.chinh}`}
-                                alt={sanpham.ten_sp}
-                                width={60}
-                              />
+                          <tr key={index}>
+                            <td>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                <img
+                                  src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.chinh}`}
+                                  alt={sanpham.ten_sp}
+                                  className="cart-product-image"
+                                />
+                                <div className="cart-product-info">
+                                  <div className="cart-product-name">{sanpham.ten_sp}</div>
+                                </div>
+                              </div>
                             </td>
-                            <td
-                              style={{
-                                textAlign: "left",
-                                padding: "5px",
-                                border: "1px solid #e9e9e9",
-                              }}
-                            >
-                              <h3
-                                className="name_p_cart"
-                                style={{ fontSize: 14, fontWeight: "bold" }}
-                              >
-                                {sanpham.ten_sp}
-                              </h3>
-                              <div
-                                className="price_p_cart_name"
-                                style={{ fontSize: 15, color: "#f00" }}
-                              >
+                            <td>
+                              <div className="cart-product-price">
                                 {sanpham.gia_sp.toLocaleString("vi-VN")} VNĐ
                               </div>
                             </td>
-                            <td
-                              style={{
-                                textAlign: "center",
-                                padding: "5px",
-                                border: "1px solid #e9e9e9",
-                              }}
-                            >
-                              <div
-                                className="box_number_cart"
-                                style={{
-                                  margin: "auto",
-                                  width: 100,
-                                  display: "flex",
-                                  justifyContent: "space-evenly",
-                                }}
-                              >
-                                <button
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    updateQuantity(
-                                      sanpham.id,
-                                      sanpham.quantity - 1
-                                    );
-                                  }}
-                                  style={{ width: 20, padding: 2 }}
+                            <td>
+                              <div className="quantity-controls">
+                                <button 
+                                  className="quantity-btn"
+                                  onClick={() => updateQuantity(sanpham.id, sanpham.quantity - 1)}
                                 >
-                                  <img
-                                    src="/img/icon/icon-minus.png"
-                                    style={{ marginTop: 6 }}
-                                  />
+                                  <i className="fas fa-minus"></i>
                                 </button>
                                 <input
                                   type="text"
+                                  className="quantity-input"
                                   value={sanpham.quantity}
                                   readOnly
-                                  style={{ width: 50, textAlign: "center" }}
                                 />
-                                <button
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    updateQuantity(
-                                      sanpham.id,
-                                      sanpham.quantity + 1
-                                    );
-                                  }}
-                                  style={{ width: 20, padding: 2 }}
+                                <button 
+                                  className="quantity-btn"
+                                  onClick={() => updateQuantity(sanpham.id, sanpham.quantity + 1)}
                                 >
-                                  <img
-                                    src="/img/icon/icon-plus.png"
-                                    style={{ marginTop: 2 }}
-                                  />
+                                  <i className="fas fa-plus"></i>
                                 </button>
                               </div>
                             </td>
-                            <td
-                              style={{
-                                textAlign: "center",
-                                padding: "5px",
-                                border: "1px solid #e9e9e9",
-                              }}
-                            >
-                              {(
-                                sanpham.gia_sp * sanpham.quantity
-                              ).toLocaleString("vi-VN")}{" "}
-                              VNĐ
+                            <td>
+                              <div className="cart-total-price">
+                                {(sanpham.gia_sp * sanpham.quantity).toLocaleString("vi-VN")} VNĐ
+                              </div>
                             </td>
-                            <td
-                              style={{
-                                textAlign: "center",
-                                padding: "5px",
-                                border: "1px solid #e9e9e9",
-                              }}
-                            >
-                              <button
+                            <td>
+                              <button 
+                                className="cart-delete-btn"
                                 onClick={() => removeItem(sanpham.id)}
-                                className="btn-delete"
                               >
-                                <img
-                                  src="/public/img/icon/icon-delete.png"
-                                  className="img-delete"
-                                />
+                                <i className="fas fa-trash-alt"></i>
                               </button>
                             </td>
                           </tr>
                         );
                       })}
                     </tbody>
-
-                    <tfoot>
-                      <tr>
-                        <td colSpan={5} style={{ textAlign: "right" }}>
-                          <b>Tổng số lượng: {totalQuantity} sản phẩm</b>
-                        </td>
-                      </tr>
-                      <tr style={{ border: "1px solid #e9e9e9" }}>
-                        <td
-                          colSpan={5}
-                          style={{
-                            textAlign: "right",
-                            padding: "10px 5px",
-                            fontWeight: "bold",
-                            color: "#e53c2f",
-                            fontSize: 16,
-                          }}
-                        >
-                          Tổng giá:{" "}
-                          <span>{totalPrice.toLocaleString("vi-VN")} VNĐ</span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          colSpan={5}
-                          style={{ textAlign: "right", padding: 5 }}
-                        >
-                          <Link to="/">
-                            <button className="btnc btn-primary">
-                              Mua tiếp
-                            </button>
-                          </Link>
-                          <button
-                            type="button"
-                            className="btnc btn-danger"
-                            onClick={clearCart}
-                          >
-                            Xóa tất cả
-                          </button>
-                          <Link to="/thanhtoan" state={{ cartItems: sanPham }}>
-                            <button
-                              className="btnc btn-success"
-                              onClick={handleCheckout}
-                            >
-                              Thanh toán
-                            </button>
-                          </Link>
-                        </td>
-                      </tr>
-                    </tfoot>
                   </table>
+
+                  <div className="cart-footer">
+                    <div className="cart-total-info">
+                      <div className="cart-total-quantity">
+                        Tổng số lượng: {totalQuantity} sản phẩm
+                      </div>
+                      <div className="cart-total-amount">
+                        Tổng tiền: {totalPrice.toLocaleString("vi-VN")} VNĐ
+                      </div>
+                    </div>
+                    <div className="cart-actions">
+                      <Link to="/">
+                        <button className="btnc btn-primary">
+                          <i className="fas fa-shopping-cart"></i> Mua tiếp
+                        </button>
+                      </Link>
+                      <button className="btnc btn-danger" onClick={clearCart}>
+                        <i className="fas fa-trash"></i> Xóa tất cả
+                      </button>
+                      <Link to="/thanhtoan" state={{ cartItems: sanPham }}>
+                        <button className="btnc btn-success" onClick={handleCheckout}>
+                          <i className="fas fa-check"></i> Thanh toán
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
                 </div>
               )}
             </form>

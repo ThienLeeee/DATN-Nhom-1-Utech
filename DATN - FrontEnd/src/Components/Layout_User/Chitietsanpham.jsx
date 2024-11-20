@@ -6,6 +6,7 @@ import axios from "axios";
 
 import "/public/css/chitietsp.css";
 
+
 export default function ChiTietSanPham() {
   
   const { id } = useParams();
@@ -18,6 +19,8 @@ export default function ChiTietSanPham() {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showGallery, setShowGallery] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -116,29 +119,36 @@ export default function ChiTietSanPham() {
     if (itemIndex > -1) {
       cartItems[itemIndex].quantity += 1;
     } else {
-      // Chuyển đổi giá thành số để lưu vào giỏ hàng
       const priceAsNumber = parseInt(sanPhamMoi.gia_sp.replace(/\./g, ""));
       cartItems.push({ ...sanPhamMoi, gia_sp: priceAsNumber, quantity: 1 });
     }
 
     localStorage.setItem("cartItem", JSON.stringify(cartItems));
-    setPopupVisible(true); // Hiển thị popup khi thêm vào giỏ hàng
+    
+    // Dispatch một custom event để thông báo thay đổi giỏ hàng
+    const event = new CustomEvent('cartUpdated');
+    window.dispatchEvent(event);
+    
+    setPopupVisible(true);
   };
 
   const handleBuyNow = (sanPhamMoi) => {
     let cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
     const itemIndex = cartItems.findIndex((item) => item.id === sanPhamMoi.id);
-  
+
     if (itemIndex > -1) {
       cartItems[itemIndex].quantity += 1;
     } else {
-      const priceAsNumber = parseInt(sanPhamMoi.gia_sp.replace(/\./g, ''));
+      const priceAsNumber = parseInt(sanPhamMoi.gia_sp.replace(/\./g, ""));
       cartItems.push({ ...sanPhamMoi, gia_sp: priceAsNumber, quantity: 1 });
     }
-  
+
     localStorage.setItem("cartItem", JSON.stringify(cartItems));
-  
-    // Điều hướng đến giỏ hàng ngay lập tức
+    
+    // Dispatch một custom event để thông báo thay đổi giỏ hàng
+    const event = new CustomEvent('cartUpdated');
+    window.dispatchEvent(event);
+    
     navigate("/giohang");
   };
   
@@ -181,6 +191,53 @@ export default function ChiTietSanPham() {
       imagePath = "Khac";
   }
 
+  // Tạo mảng chứa tất cả ảnh
+  const allImages = sanpham ? [
+    {
+      src: `/img/sanpham/${imagePath}/${sanpham.hinh_anh.chinh}`,
+      alt: `${sanpham.ten_sp} - Ảnh chính`
+    },
+    {
+      src: `/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu1}`,
+      alt: `${sanpham.ten_sp} - Ảnh 1`
+    },
+    {
+      src: `/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu2}`,
+      alt: `${sanpham.ten_sp} - Ảnh 2`
+    },
+    {
+      src: `/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu3}`,
+      alt: `${sanpham.ten_sp} - Ảnh 3`
+    },
+    {
+      src: `/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu4}`,
+      alt: `${sanpham.ten_sp} - Ảnh 4`
+    },
+    {
+      src: `/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu5}`,
+      alt: `${sanpham.ten_sp} - Ảnh 5`
+    }
+  ] : [];
+
+  // Hàm điều hướng
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => 
+      prev === allImages.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => 
+      prev === 0 ? allImages.length - 1 : prev - 1
+    );
+  };
+
+  // Thêm hàm để mở gallery với index cụ thể
+  const openGallery = (index) => {
+    setCurrentImageIndex(index);
+    setShowGallery(true);
+  };
+
   return (
     <>
       {/* chitietsanpham-container */}
@@ -194,46 +251,11 @@ export default function ChiTietSanPham() {
             <div className="top_detail">
               <div className="img_detail">
                 <div className="main_img_detail">
-                  <a
-                    id="Zoomer"
-                    href=""
-                    className="MagicZoomPlus"
-                    rel="zoom-width:300px; zoom-height:300px;selectors-effect-speed: 600; selectors-class: Active;"
-                  >
-                    <figure className="mz-figure mz-hover-zoom mz-ready">
-                      <img
-                        itemProp="image"
-                        src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.chinh}`}
-                        alt={sanpham.ten_sp}
-                        style={{ width: 380, height: 333.2 }}
-                      />
-                      <div
-                        className="mz-lens"
-                        style={{
-                          top: 0,
-                          transform: "translate(-10000px, -10000px)",
-                          width: 169,
-                          height: 129,
-                        }}
-                      >
-                        <img
-                          src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.chinh}`}
-                          alt={sanpham.ten_sp}
-                          style={{
-                            position: "absolute",
-                            top: 0,
-                            left: 0,
-                            width: 378,
-                            height: 330,
-                            transform: "translate(-12px, -77px)",
-                          }}
-                        />
-                      </div>
-                      <div className="mz-loading" />
-                      <div className="mz-hint mz-hint-hidden">
-                        <span className="mz-hint-message">Click to expand</span>
-                      </div>
-                    </figure>
+                  <a onClick={() => {
+                    setShowGallery(true);
+                    setCurrentImageIndex(0);
+                  }}>
+                    <img src={allImages[0].src} alt={allImages[0].alt} />
                   </a>
                 </div>
 
@@ -267,11 +289,7 @@ export default function ChiTietSanPham() {
                           {/* anh_phu_1 */}
                           <div className="owl-item" style={{ width: 95 }}>
                             <div className="item_owl_sub">
-                              <a
-                                href={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu1}`}
-                                rel="zoom-id: Zoomer"
-                                className="mz-thumb-selected mz-thumb"
-                              >
+                              <a onClick={() => openGallery(1)} style={{ cursor: 'pointer' }}>
                                 <img
                                   src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu1}`}
                                   className="w100"
@@ -285,11 +303,7 @@ export default function ChiTietSanPham() {
                           {/* anh_phu_2 */}
                           <div className="owl-item" style={{ width: 95 }}>
                             <div className="item_owl_sub">
-                              <a
-                                href={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu2}`}
-                                rel="zoom-id: Zoomer"
-                                className="mz-thumb"
-                              >
+                              <a onClick={() => openGallery(2)} style={{ cursor: 'pointer' }}>
                                 <img
                                   src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu2}`}
                                   className="w100"
@@ -303,11 +317,7 @@ export default function ChiTietSanPham() {
                           {/* anh_phu_3 */}
                           <div className="owl-item" style={{ width: 95 }}>
                             <div className="item_owl_sub">
-                              <a
-                                src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu3}`}
-                                rel="zoom-id: Zoomer"
-                                className="mz-thumb"
-                              >
+                              <a onClick={() => openGallery(3)} style={{ cursor: 'pointer' }}>
                                 <img
                                   src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu3}`}
                                   className="w100"
@@ -321,11 +331,7 @@ export default function ChiTietSanPham() {
                           {/* anh_phu_4 */}
                           <div className="owl-item" style={{ width: 95 }}>
                             <div className="item_owl_sub">
-                              <a
-                                src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu4}`}
-                                rel="zoom-id: Zoomer"
-                                className="mz-thumb"
-                              >
+                              <a onClick={() => openGallery(4)} style={{ cursor: 'pointer' }}>
                                 <img
                                   src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu4}`}
                                   className="w100"
@@ -339,11 +345,7 @@ export default function ChiTietSanPham() {
                           {/* anh_phu_5 */}
                           <div className="owl-item" style={{ width: 95 }}>
                             <div className="item_owl_sub">
-                              <a
-                                src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu5}`}
-                                rel="zoom-id: Zoomer"
-                                className="mz-thumb"
-                              >
+                              <a onClick={() => openGallery(5)} style={{ cursor: 'pointer' }}>
                                 <img
                                   src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu5}`}
                                   className="w100"
@@ -697,22 +699,30 @@ export default function ChiTietSanPham() {
                   Thêm vào gio hàng
                 </a>
 
-                {/* Popup thông báo */}
+                {/* Thay thế phần popup cũ bằng popup mới */}
                 {popupVisible && (
-                  <div className="popup">
-                    <div className="popup-content">
-                      <button
-                        className="popup-close"
-                        onClick={handleClosePopup}
-                      >
-                        &times;
-                      </button>
-                      <h3>Sản phẩm đã được thêm vào giỏ hàng </h3>
+                  <div className="popup-overlay">
+                    <div className="popup">
+                      <button className="popup-close" onClick={handleClosePopup}>&times;</button>
+                      <div className="popup-icon">
+                        <i className="fas fa-check-circle"></i>
+                      </div>
+                      <div className="popup-title">
+                        Đã thêm vào giỏ hàng
+                      </div>
                       <div className="popup-buttons">
-                        <button onClick={handleContinueShopping}>
-                          Tiếp tục mua hàng
+                        <button 
+                          className="popup-button continue-shopping" 
+                          onClick={handleContinueShopping}
+                        >
+                          Mua tiếp
                         </button>
-                        <button onClick={handleViewCart}>Xem giỏ hàng</button>
+                        <button 
+                          className="popup-button view-cart" 
+                          onClick={handleViewCart}
+                        >
+                          Đến giỏ hàng
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -1097,7 +1107,7 @@ export default function ChiTietSanPham() {
                       <div className="nd_sp">
                         <h2>
                           <Link 
-                            to={`/chitietsp/sanpham/${sanpham.id}`} 
+                            to={`/chitietsp/sanpham/${product.id}`} 
                             title={product.ten_sp}
                           >
                             {product.ten_sp}
@@ -1208,6 +1218,39 @@ export default function ChiTietSanPham() {
         </div>
       </div>
       {/* chitietsanpham-container */}
+
+      {/* Gallery Lightbox */}
+      {showGallery && (
+        <div className="gallery-overlay" onClick={() => setShowGallery(false)}>
+          <div className="gallery-container" onClick={e => e.stopPropagation()}>
+            <button className="gallery-close" onClick={() => setShowGallery(false)}>×</button>
+            
+            <div className="gallery-main">
+              <button className="gallery-nav prev" onClick={prevImage}>‹</button>
+              <div className="gallery-image-wrapper">
+                <img 
+                  src={allImages[currentImageIndex].src} 
+                  alt={allImages[currentImageIndex].alt}
+                  className="gallery-image"
+                />
+              </div>
+              <button className="gallery-nav next" onClick={nextImage}>›</button>
+            </div>
+
+            <div className="gallery-thumbnails">
+              {allImages.map((image, index) => (
+                <div 
+                  key={index}
+                  className={`thumbnail ${currentImageIndex === index ? 'active' : ''}`}
+                  onClick={() => setCurrentImageIndex(index)}
+                >
+                  <img src={image.src} alt={image.alt} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

@@ -60,184 +60,154 @@
   color: #333;
 }
 
-/* Enhanced Popup Styles */
-.popup {
+/* Overlay nền mờ */
+.popup-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 163, 0.15);
+  backdrop-filter: blur(3px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.popup.show {
-  opacity: 1;
-  visibility: visible;
-}
-
-.popup-content {
-  background-color: white;
+/* Container popup */
+.popup {
+  background: #ffffff;
   padding: 25px;
   border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 163, 0.15);
+  width: 360px;
   position: relative;
-  min-width: 320px;
-  max-width: 90%;
-  text-align: center;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  transform: translateY(-20px) scale(0.95);
-  opacity: 0;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(20px);
+  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  border: 1px solid rgba(0, 0, 163, 0.1);
 }
 
-.popup.show .popup-content {
-  transform: translateY(0) scale(1);
-  opacity: 1;
-}
-
+/* Icon thành công */
 .popup-icon {
-  font-size: 48px;
-  margin-bottom: 15px;
-  display: inline-block;
-  animation: popupIconScale 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  text-align: center;
+  margin-bottom: 20px;
+  position: relative;
 }
 
-.popup-icon.success {
-  color: #4CAF50;
+.popup-icon i {
+  font-size: 45px;
+  color: #0000a3;
+  animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  background: linear-gradient(45deg, #0000a3, #0000ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 163, 0.2));
 }
 
-.popup-icon.error {
-  color: #f44336;
-}
-
+/* Tiêu đề popup */
 .popup-title {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 10px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
   color: #333;
-}
-
-.popup-message {
-  font-size: 16px;
-  color: #666;
   margin-bottom: 20px;
   line-height: 1.4;
+  padding: 0 10px;
 }
 
-.popup-close {
-  position: absolute;
-  right: 15px;
-  top: 15px;
-  background: none;
-  border: none;
-  font-size: 24px;
-  color: #999;
-  cursor: pointer;
-  padding: 5px;
-  transition: all 0.2s ease;
-}
-
-.popup-close:hover {
-  color: #333;
-  transform: rotate(90deg);
-}
-
+/* Container các nút */
 .popup-buttons {
   display: flex;
   justify-content: center;
-  gap: 15px;
-  margin-top: 25px;
+  gap: 10px;
+  margin-top: 20px;
 }
 
+/* Style chung cho các nút */
 .popup-button {
-  padding: 12px 24px;
+  padding: 10px 20px;
   border: none;
   border-radius: 6px;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-  min-width: 130px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  position: relative;
-  overflow: hidden;
+  min-width: 110px;
 }
 
-.popup-button.primary {
-  background-color: #4CAF50;
-  color: white;
-  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.2);
-}
-
-.popup-button.primary:hover {
-  background-color: #45a049;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
-}
-
-.popup-button.secondary {
-  background-color: #f5f5f5;
+/* Nút "Mua tiếp" */
+.continue-shopping {
+  background: #f5f5f5;
   color: #333;
-  border: 1px solid #ddd;
+  border: 1px solid #e0e0e0;
 }
 
-.popup-button.secondary:hover {
-  background-color: #e0e0e0;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.continue-shopping:hover {
+  background: #ebebeb;
+  transform: translateY(-1px);
 }
 
-/* Thêm animation cho buttons */
-.popup.show .popup-button {
-  animation: buttonPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-  animation-delay: 0.2s;
-  opacity: 0;
-  transform: scale(0.9);
+/* Nút "Đến giỏ hàng" */
+.view-cart {
+  background: #0000a3;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 163, 0.25);
 }
 
-.popup.show .popup-button:nth-child(2) {
-  animation-delay: 0.3s;
+.view-cart:hover {
+  background: #00008b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 163, 0.3);
 }
 
-@keyframes buttonPop {
+/* Nút đóng */
+.popup-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 28px;
+  color: #666;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+}
+
+.popup-close:hover {
+  color: #0000a3;
+  background: rgba(0, 0, 163, 0.1);
+  transform: rotate(90deg);
+}
+
+/* Thêm hiệu ứng focus để tăng khả năng tiếp cận */
+.popup-close:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 0, 163, 0.2);
+}
+
+/* Thêm animations mới */
+@keyframes slideUp {
   from {
     opacity: 0;
-    transform: scale(0.9);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0);
   }
 }
 
-/* Thêm hiệu ứng ripple khi click button */
-.popup-button::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  transition: width 0.3s ease-out, height 0.3s ease-out;
-}
-
-.popup-button:active::after {
-  width: 200%;
-  height: 200%;
-}
-
-/* Animations */
-@keyframes popupIconScale {
+@keyframes bounceIn {
   0% {
     transform: scale(0);
   }
@@ -249,119 +219,36 @@
   }
 }
 
-@keyframes slideIn {
-  from {
-    transform: translateY(-100px);
-    opacity: 0;
+@keyframes pulseCircle {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0.5;
   }
-  to {
-    transform: translateY(0);
-    opacity: 1;
+  50% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.3;
   }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
+  100% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0.5;
   }
 }
 
-/* Animation classes */
-.slide-in {
-  animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-.fade-in {
-  animation: fadeIn 0.3s ease forwards;
-}
-
-/* Shake animation for error messages */
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-  20%, 40%, 60%, 80% { transform: translateX(5px); }
-}
-
-.shake {
-  animation: shake 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-}
-
-.right_bottom_detail {
-  width: 25%;
-  float: right;
-}
-
-.title_right {
-  font-family: var(--font-primary);
-  font-size: 18px;
-  font-weight: var(--fw-bold);
-  color: #333;
-  padding: 10px 0;
-  border-bottom: 2px solid #ddd;
-  margin-bottom: 15px;
-}
-
-.item_sanpham {
-  margin-bottom: 20px;
-  padding: 10px;
-  border: 1px solid #eee;
-  transition: all 0.3s ease;
-}
-
-.item_sanpham:hover {
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.img_sp {
-  width: 100%;
-  margin-bottom: 10px;
-}
-
-.img_sp img {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-}
-
-.nd_sp h2 {
-  font-size: 14px;
-  margin: 8px 0;
-}
-
-.nd_sp h2 a {
-  color: #333;
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-.nd_sp h2 a:hover {
-  color: #007bff;
-}
-
-.gia_sp {
-  color: #e31837;
-  font-weight: var(--fw-bold);
-  font-size: 15px;
-}
-
-.clear {
-  clear: both;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .right_bottom_detail {
-    width: 100%;
-    float: none;
+/* Responsive Design */
+@media (max-width: 480px) {
+  .popup {
+    width: 90%;
+    padding: 25px;
+    margin: 0 10px;
   }
 
-  .content_right {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
+  .popup-buttons {
+    flex-direction: row;
+  }
+
+  .popup-button {
+    min-width: unset;
+    padding: 10px 20px;
   }
 }
 
@@ -693,4 +580,284 @@
 
 .comment-form button:hover {
   background: #0056a4;
+}
+
+.right_bottom_detail {
+  width: 25%;
+  float: right;
+}
+
+.title_right {
+  font-family: var(--font-primary);
+  font-size: 18px;
+  font-weight: var(--fw-bold);
+  color: #333;
+  padding: 10px 0;
+  border-bottom: 2px solid #ddd;
+  margin-bottom: 15px;
+}
+
+.item_sanpham {
+  margin-bottom: 20px;
+  padding: 10px;
+  border: 1px solid #eee;
+  transition: all 0.3s ease;
+}
+
+.item_sanpham:hover {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.img_sp {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.img_sp img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.nd_sp h2 {
+  font-size: 14px;
+  margin: 8px 0;
+}
+
+.nd_sp h2 a {
+  color: #333;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.nd_sp h2 a:hover {
+  color: #007bff;
+}
+
+.gia_sp {
+  color: #e31837;
+  font-weight: var(--fw-bold);
+  font-size: 15px;
+}
+
+.clear {
+  clear: both;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .right_bottom_detail {
+    width: 100%;
+    float: none;
+  }
+
+  .content_right {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+}
+
+/* Animations */
+@keyframes popupIconScale {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Animation classes */
+.slide-in {
+  animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+/* Shake animation for error messages */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.shake {
+  animation: shake 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+/* Gallery Lightbox */
+.gallery-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.gallery-container {
+  width: 90%;
+  max-width: 1200px;
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  position: relative;
+}
+
+.gallery-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 45px;
+  height: 45px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  font-size: 32px;
+  color: #333;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 1002;
+  padding: 0;
+  line-height: 0;
+  font-weight: 300;
+}
+
+.gallery-close:hover {
+  background: rgba(255, 255, 255, 1);
+  color: #0000a3;
+  transform: rotate(90deg);
+}
+
+.gallery-main {
+  position: relative;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.gallery-image-wrapper {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.gallery-image {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.gallery-nav {
+  background: rgba(255, 255, 255, 0.8);
+  border: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 0 10px;
+  color: #333;
+}
+
+.gallery-nav:hover {
+  background: #fff;
+  transform: scale(1.1);
+}
+
+.gallery-thumbnails {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 10px 0;
+}
+
+.thumbnail {
+  width: 80px;
+  height: 80px;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: all 0.3s ease;
+}
+
+.thumbnail:hover {
+  opacity: 0.8;
+}
+
+.thumbnail.active {
+  opacity: 1;
+  border: 2px solid #0000a3;
+}
+
+.thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Thêm media query cho mobile */
+@media (max-width: 768px) {
+  .gallery-close {
+    top: 10px;
+    right: 10px;
+    width: 44px;
+    height: 44px;
+    font-size: 28px;
+    background: rgba(255, 255, 255, 0.95);
+  }
 }

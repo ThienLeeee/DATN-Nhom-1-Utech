@@ -1,0 +1,168 @@
+/* Modern Contact Page */
+.lh-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.lh-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.lh-header h1 {
+  color: #0000a3;
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.lh-header p {
+  color: #666;
+  font-size: 16px;
+}
+
+.lh-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+/* Company Info Section */
+.lh-info {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 163, 0.08);
+}
+
+.lh-company-details h2 {
+  color: #0000a3;
+  font-size: 24px;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid rgba(0, 0, 163, 0.1);
+}
+
+.lh-info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  margin-bottom: 25px;
+  padding: 15px;
+  background: #f8f9ff;
+  border-radius: 12px;
+  transition: transform 0.3s ease;
+}
+
+.lh-info-item:hover {
+  transform: translateY(-3px);
+}
+
+.lh-info-item i {
+  color: #0000a3;
+  font-size: 24px;
+  padding: 12px;
+  background: rgba(0, 0, 163, 0.1);
+  border-radius: 10px;
+}
+
+.lh-info-item h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #2c3345;
+}
+
+.lh-info-item p {
+  color: #666;
+  font-size: 15px;
+}
+
+/* Map */
+.lh-map {
+  height: 300px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 30px;
+}
+
+/* Contact Form */
+.lh-form {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 163, 0.08);
+}
+
+.lh-form-group {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  padding: 10px 15px;
+  transition: all 0.3s ease;
+}
+
+.lh-form-group i {
+  color: #0000a3;
+  font-size: 16px;
+  min-width: 20px;
+  text-align: center;
+}
+
+.lh-form-group input,
+.lh-form-group textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 2px solid #eef0f5;
+  border-radius: 12px;
+  font-size: 15px;
+  background: #f8f9ff;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.lh-form-group input:focus,
+.lh-form-group textarea:focus {
+  border-color: #0000a3;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(0, 0, 163, 0.1);
+}
+
+.lh-form-group textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.lh-form-buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.lh-btn-submit,
+.lh-btn-reset {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lh-btn-submit {
+  background: #0000a3;
+  color: white;
+  flex: 2;
+}
+
+.lh-btn-reset {
+  background: #f8f9ff;
+  color: #0000a3;
+  flex: 1;
+} 

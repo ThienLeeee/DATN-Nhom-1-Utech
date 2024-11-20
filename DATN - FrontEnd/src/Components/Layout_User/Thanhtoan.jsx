@@ -40,11 +40,10 @@ export default function Thanhtoan() {
       // Lấy thông tin giỏ hàng và đảm bảo nó là một mảng
       let checkoutItems = JSON.parse(localStorage.getItem("checkoutItems"));
       if (!Array.isArray(checkoutItems)) {
-        // Nếu không phải mảng, chuyển đổi thành mảng hoặc tạo mảng rỗng
         checkoutItems = checkoutItems ? [checkoutItems] : [];
       }
       
-      // Tính tổng tiền an toàn hơn
+      // Tính tổng tiền
       const tongTien = checkoutItems.reduce((total, item) => {
         const soLuong = Number(item.soLuong) || 0;
         const giaSp = Number(item.gia_sp) || 0;
@@ -76,8 +75,12 @@ export default function Thanhtoan() {
         throw new Error('Lỗi khi tạo đơn hàng');
       }
 
-      // Xóa giỏ hàng khỏi localStorage
+      // Sửa lại key name để match với Giohang.jsx
       localStorage.removeItem("checkoutItems");
+      localStorage.removeItem("cartItem"); // Thay đổi từ cartItems thành cartItem
+      
+      // Dispatch event để cập nhật số lượng trong Header
+      window.dispatchEvent(new Event("cartUpdated"));
       
       // Hiển thị thông báo thành công
       setIsSuccess(true);
@@ -184,17 +187,26 @@ export default function Thanhtoan() {
           </div>
         </div>
       ) : (
-        <div className="popup-overlay">
-        <div className="popup-container">
-          <h2>Thanh toán thành công!</h2>
-          <button
-            className="btn-home"
-            onClick={() => navigate("/")}
-          >
-            Về trang chủ
-          </button>
+        <div className="success-page">
+          <div className="success-container">
+            <div className="success-content">
+
+            <div className="success-image">
+                <img src="/public/img/icon/bangboo-pay.gif" alt="Thank you" />
+              </div>
+              
+              <h1 className="success-title">THANH TOÁN THÀNH CÔNG!</h1>
+              <p className="success-message">Cảm ơn bạn đã quan tâm đến sản phẩm của chúng tôi</p>
+              
+              
+
+              <button className="back-home-btn" onClick={() => navigate("/")}>
+                <i className="fas fa-home"></i>
+                <span>Về trang chủ</span>
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
       )}
     </div>
   );
