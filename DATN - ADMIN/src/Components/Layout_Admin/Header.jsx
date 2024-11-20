@@ -2,7 +2,7 @@ export default function Header() {
   return (
     <>
       {/* header */}
-      <div className="shadow bg-primary text-white d-flex justify-content-between align-content-center p-3 pb-1">
+      <div className="shadow bg-primary text-white d-flex justify-content-between align-content-center p-3 pb-1 d-none d-md-flex">
         <p>TRANG QUẢN TRỊ WEBSITE UTECH</p>
         <div>
           <span>Admin</span>
@@ -15,7 +15,7 @@ export default function Header() {
           />
         </div>
       </div>
-      {/* header end*/}
+      {/* header end */}
     </>
   );
 }

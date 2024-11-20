@@ -1,5 +1,5 @@
 const url = 'http://localhost:3000/api'
-import axios from 'axios';
+
 // ... existing code ...
 export const fetchSanpham = async () => {
   try {
@@ -14,6 +14,31 @@ export const fetchSanpham = async () => {
     throw error
   }
 }
+export const fetchSanPhamTheoSearch = async (keyword) => {
+  try {
+    const response = await fetch(`${url}/sanpham?keyword=${keyword}`);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Lỗi khi tìm kiếm sản phẩm:", error);
+    return [];
+  }
+};
+
+export const fetchSanPhamTheoDanhMucVaThuongHieu = async (id_danhmuc, thuong_hieu) => {
+  try {
+    const response = await fetch(`${url}/sanPham/id_danhmuc/${id_danhmuc}/thuong_hieu/${thuong_hieu}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Lỗi khi tìm kiếm sản phẩm theo danh mục và thương hiệu:", error);
+    return { message: 'Không thể tải dữ liệu', products: [] };
+  }
+};
+
 
 // Api chi tiết sản phẩm
 export const fetchSanphamIddm = async id => {
@@ -37,14 +62,3 @@ export const fetchSanPhamTheoDm = async id => {
     throw error
   }
 }
-
-// Thêm hàm này vào file service
-export const fetchSanphamByThuonghieu = async (thuongHieu, id_danhmuc) => {
-  try {
-    const response = await axios.get(`${url}/sanPham/thuong_hieu/${thuongHieu}/${id_danhmuc}`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching products by brand:', error);
-    throw error;
-  }
-};

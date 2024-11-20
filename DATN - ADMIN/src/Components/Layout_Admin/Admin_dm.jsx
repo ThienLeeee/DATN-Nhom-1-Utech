@@ -58,11 +58,12 @@ export default function Admin_dm() {
     <>
        <h1 className="text-center" >Quản lý danh mục</h1>
       
-      <div>
-        <Link to="/category/add">
-          <button className="btn btn-primary">Thêm danh mục</button>
-        </Link>
-      </div>
+       <div>
+  <Link to="/category/add">
+    <button className="btn btn-primary btn-sm">Thêm danh mục</button>
+  </Link>
+</div>
+
 
       <table className="table table-bordered m-2">
         <thead className="table-dark">
@@ -75,50 +76,47 @@ export default function Admin_dm() {
         </thead>
 
         <tbody>
-          {danhMuc.length > 0 ? (
-            danhMuc.map((dm) => (
-              <tr className="text-center" key={dm.id}>
-                <td className="align-middle">{dm.id}</td>
-                <td className="align-middle" >{dm.tendm}</td>
-                <td>
-                  <img
-                    src={`/img/danhmuc/${dm.hinhanh}`}
-                    style={{ width: "150px", height: "auto" }}
-                    alt={dm.tendm}
-                    className="w100 trans03"
-                  />
-                </td>
-                <td className="text-center align-middle">
-                  <div className="d-flex justify-content-center">
-                    <Link to={`/category/edit/${dm.id}`} className="btn btn-light mx-1">
-                      <i className="text-primary bi-pencil-square" />
-                      
-                    </Link>
-                    <button
-                      onClick={() => handleDelete(dm.id)}
-                      type="button"
-                      className="btn btn-light mx-2"
-                    >
-                      <i className="text-warning bi-trash" />
-                      
-                    </button>
-                    <button onClick={() => toggleLock(dm.id)} type="button" className="btn btn-light">
-                    <i className={`bi ${dm.locked ? 'bi-lock-fill text-danger' : 'bi-unlock text-success'}`} />
-                    {dm.locked ? 'Mở khóa' : 'Khóa'}
-                  </button>
+  {danhMuc.length > 0 ? (
+    danhMuc.map((dm) => (
+      <tr className="text-center" key={dm.id}>
+        <td className="align-middle" data-label="ID">{dm.id}</td>
+        <td className="align-middle" data-label="Tên danh mục">{dm.tendm}</td>
+        <td data-label="Hình ảnh">
+          <img
+            src={`/img/danhmuc/${dm.hinhanh}`}
+            alt={dm.tendm}
+            className="w100 trans03"
+          />
+        </td>
+        <td className="text-center align-middle" data-label="Thao tác">
+          <div className="d-flex justify-content-center flex-wrap">
+            <Link to={`/category/edit/${dm.id}`} className="btn btn-light mx-1 mb-1">
+              <i className="text-primary bi-pencil-square" />
+            </Link>
+            <button
+              onClick={() => handleDelete(dm.id)}
+              type="button"
+              className="btn btn-light mx-1 mb-1"
+            >
+              <i className="text-warning bi-trash" />
+            </button>
+            <button onClick={() => toggleLock(dm.id)} type="button" className="btn btn-light mx-1 mb-1">
+              <i className={`bi ${dm.locked ? 'bi-lock-fill text-danger' : 'bi-unlock text-success'}`} />
+              {dm.locked ? 'Mở khóa' : 'Khóa'}
+            </button>
+          </div>
+        </td>
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td colSpan="4" className="text-center">
+        Không có danh mục nào
+      </td>
+    </tr>
+  )}
+</tbody>
 
-                  </div>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="4" className="text-center">
-                Không có danh mục nào
-              </td>
-            </tr>
-          )}
-        </tbody>
       </table>
     </>
   );

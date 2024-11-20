@@ -1,0 +1,139 @@
+@media (max-width: 576px) {
+  .form-select,
+  .form-control {
+    width: 100% !important;
+  }
+}
+/* css narbar */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -250px;
+  width: 250px;
+  height: 100%;
+  background-color: #343a40;
+  transition: left 0.3s ease;
+  padding-top: 60px;
+  z-index: 9999;
+}
+.sidebar.open {
+  left: 0;
+}
+.sidebar p {
+  padding: 10px;
+  margin: 0;
+}
+.navbar-toggler-icon {
+  background-color: #fff;
+}
+
+/* css danh mục */
+/* Đảm bảo hình ảnh trong bảng phù hợp */
+.table img {
+  max-width: 100px;
+  height: auto;
+}
+
+/* Nút hành động gọn gàng trên các màn hình nhỏ */
+.table .btn {
+  padding: 0.5rem;
+  font-size: 0.8rem;
+}
+.navbar {
+  margin-bottom: 15px;
+}
+
+.table-responsive {
+  margin-top: 15px;
+}
+
+/* Bố cục responsive */
+@media (max-width: 768px) {
+  .table thead {
+    display: none;
+  }
+
+  .table tbody tr {
+    display: block;
+    margin-bottom: 1rem;
+    border: 1px solid #dee2e6;
+  }
+
+  .table tbody tr td {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem;
+  }
+
+  .table tbody tr td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    flex-basis: 40%;
+  }
+
+  .table img {
+    max-width: 80px;
+  }
+}
+ 
+/* Slider dành cho mobile */
+@media (max-width: 768px) {
+  .slider-container {
+    display: flex;
+    overflow-x: scroll;
+    padding: 10px 0;
+  }
+
+  .product-card {
+    flex: 0 0 auto;
+    width: 90%; /* Điều chỉnh độ rộng sản phẩm trong slider */
+    margin-right: 15px; /* Khoảng cách giữa các sản phẩm */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+
+  .product-card:hover {
+    transform: scale(1.05); /* Phóng to khi hover */
+  }
+
+  .product-img {
+    width: 100%;
+    height: auto;
+    border-bottom: 1px solid #ddd;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+  }
+
+  .product-details {
+    padding: 10px;
+    text-align: center;
+  }
+
+  .product-details h5 {
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+
+  .product-details p {
+    font-size: 0.9rem;
+  }
+
+  .actions {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 10px;
+  }
+
+  .actions .btn {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+}
+
+/* Giữ cấu trúc bảng cho desktop */
+.table img {
+  max-width: 100px;
+  height: auto;
+}

@@ -179,15 +179,38 @@ module.exports = router;
 
 //show sp
 router.get('/sanPham', async (req, res, next) => {
-  const db = await connectDb()
-  const sanPhamCollection = db.collection('sanPham')
-  const sanPham = await sanPhamCollection.find().toArray()
-  if (sanPham) {
-    res.status(200).json(sanPham)
-  } else {
-    res.status(404).json({ message: 'Không tìm thấy sản phẩm !' })
+  try {
+    const db = await connectDb();
+    const sanPhamCollection = db.collection('sanPham');
+
+    // Lấy từ khóa tìm kiếm từ query string
+    const { keyword, page = 1, limit = 100 } = req.query;
+
+    let filter = {}; // Mặc định không lọc gì, trả về toàn bộ sản phẩm
+
+    // Kiểm tra nếu có từ khóa tìm kiếm
+    if (keyword && keyword.trim() !== '') {
+      const regex = new RegExp(keyword.trim(), 'i'); // 'i' để tìm kiếm không phân biệt hoa/thường
+      filter = { ten_sp: regex }; // Giả sử 'ten_sp' là trường tên sản phẩm trong collection
+    }
+
+    // Pagination logic: skip = (page - 1) * limit, limit = số sản phẩm mỗi trang
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const products = await sanPhamCollection.find(filter).skip(skip).limit(parseInt(limit)).toArray();
+
+    // Kiểm tra nếu có sản phẩm nào tìm thấy
+    if (products.length > 0) {
+      res.status(200).json(products); // Trả về danh sách sản phẩm tìm được
+    } else {
+      res.status(404).json({ message: 'Không tìm thấy sản phẩm nào!' });
+    }
+  } catch (error) {
+    // In lỗi ra console và trả về phản hồi lỗi với status 500
+    console.error('Lỗi khi tìm kiếm sản phẩm:', error);
+    res.status(500).json({ message: 'Đã xảy ra lỗi khi xử lý yêu cầu!', error: error.message });
   }
-})
+});
+
 
 //show 12 sp
 // router.get('/sanPham',async (req, res, next) => {
@@ -463,50 +486,69 @@ router.delete('/sanPham/:id', async (req, res) => {
 
 //Lấy sản phẩm theo mã danh mục
 router.get('/sanPham/id_danhmuc/:id', async (req, res, next) => {
-  const id = parseInt(req.params.id)
-  const db = await connectDb()
-  const sanPhamCollection = db.collection('sanPham')
+  const id = parseInt(req.params.id);
+  const db = await connectDb();
+  const sanPhamCollection = db.collection('sanPham');
+  const danhMucCollection = db.collection('danhMuc');
 
   try {
-    const sanPham = await sanPhamCollection.find({ id_danhmuc: id }).toArray()
-    if (sanPham.length > 0) {
-      res.status(200).json(sanPham)
-    } else {
-      res.status(404).json({ message: 'Không tìm thấy sản phẩm !' })
+    // Kiểm tra trạng thái của danh mục
+    const category = await danhMucCollection.findOne({ id: id });
+
+    if (category && category.locked) {
+      // Nếu danh mục bị khóa, trả về thông báo thông tin
+      return res.status(200).json({
+        message: 'Danh mục này đã bị khóa, không thể hiển thị sản phẩm.',
+        products: [] // Không có sản phẩm nào để hiển thị
+      });
     }
-  } catch (error) {
-    console.log('error', error)
-    res.status(500).send('error')
-  }
-})
 
-//Lấy sản phẩm theo thương hiệu
-router.get('/sanPham/thuong-hieu/:thuonghieu', async (req, res) => {
-  try {
-    const thuonghieu = req.params.thuonghieu.toLowerCase();
-    const db = await connectDb();
-    const sanPhamCollection = db.collection('sanPham');
-    
-    const sanPham = await sanPhamCollection
-      .find({ 
-        thuong_hieu: new RegExp(thuonghieu, 'i'),
-        id_danhmuc: 1 // Chỉ lấy laptop
-      })
-      .toArray();
+    // Nếu danh mục không bị khóa, tiếp tục lấy sản phẩm
+    const sanPham = await sanPhamCollection.find({ id_danhmuc: id }).toArray();
 
     if (sanPham.length > 0) {
       res.status(200).json(sanPham);
     } else {
-      res.status(404).json({ 
-        message: `Không tìm thấy sản phẩm thuộc thương hiệu ${thuonghieu}` 
+      res.status(200).json({
+        message: 'Không có sản phẩm nào trong danh mục này.',
+        products: [] // Không có sản phẩm trong danh mục
       });
     }
   } catch (error) {
-    console.error('Lỗi:', error);
-    res.status(500).json({ message: 'Lỗi server khi tìm sản phẩm' });
+    console.log('error', error);
+    res.status(500).send('error');
   }
 });
 
+//Lấy sản phẩm theo thương hiệu
+router.get('/sanPham/id_danhmuc/:id/thuong_hieu/:thuong_hieu', async (req, res, next) => {
+  const id_danhmuc = parseInt(req.params.id); // Chuyển đổi id_danhmuc sang kiểu số
+  const thuong_hieu = req.params.thuong_hieu; // Lấy giá trị thương hiệu từ tham số URL
+
+  try {
+    const db = await connectDb(); // Kết nối đến database
+    const sanPhamCollection = db.collection('sanPham');
+
+    // Tìm kiếm sản phẩm theo id_danhmuc và thương hiệu
+    const sanPham = await sanPhamCollection
+      .find({
+        $and: [
+          { id_danhmuc: id_danhmuc }, // Điều kiện theo id_danhmuc
+          { thuong_hieu: { $regex: thuong_hieu, $options: 'i' } } // Điều kiện tìm kiếm không phân biệt hoa thường
+        ]
+      })
+      .toArray(); // Chuyển đổi cursor thành mảng
+
+    // Kiểm tra và trả về kết quả
+    res.status(200).json({
+      message: sanPham.length > 0 ? 'Danh sách sản phẩm theo danh mục và thương hiệu' : 'Không tìm thấy sản phẩm nào theo danh mục và thương hiệu này.',
+      products: sanPham
+    });
+  } catch (error) {
+    console.error('Lỗi khi tìm kiếm sản phẩm theo danh mục và thương hiệu:', error);
+    res.status(500).json({ message: 'Đã xảy ra lỗi trong quá trình tìm kiếm.' });
+  }
+});
 //Lấy sản phẩm theo tên danh mục
 router.get('/sanPham/categoryname/:name', async (req, res, next) => {
   const name = req.params.name

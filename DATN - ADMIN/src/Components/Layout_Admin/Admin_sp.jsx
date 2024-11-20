@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { fetchSanpham } from "../../../service/sanphamService.js";
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2';
+import '../../style.css'
 export default function Admin_sp() {
   const [sanPham, setSanpham] = useState([]);
   const [filteredCategoryId, setFilteredCategoryId] = useState(null);
@@ -158,104 +159,143 @@ const renderConfig = (cau_hinh, id_danhmuc) => {
   };
 
  
-    return (
+  return (
     <>
-        <h1 className="text-center" >Quản lý sản phẩm</h1>
-      
+      <h1 className="text-center">Quản lý sản phẩm</h1>
+  
       <div>
         <Link to="/products/add">
           <button className="btn btn-primary">Thêm sản phẩm</button>
         </Link>
       </div>
-
-      {/* Dropdown or buttons for selecting the category to filter by */}
+  
       <div className="d-flex justify-content-between">
-      <div className="my-3 d-flex align-items-center">
-        <label className="me-2 fw-bold">Chọn danh mục: </label>
-        <select className="form-select" style={{ width: 'auto' }} onChange={(e) => setFilteredCategoryId(Number(e.target.value))}>
-          <option value="">Tất cả</option>
-          <option value="1">Laptop</option>
-          <option value="2">PC</option>
-          <option value="3">Màn hình</option>
-          <option value="4">Chuột</option>
-          <option value="5">Bàn phím</option>
-        </select>
+        <div className="my-3 d-flex align-items-center">
+          <label className="me-2 fw-bold">Chọn danh mục: </label>
+          <select className="form-select" style={{ width: 'auto' }} onChange={(e) => setFilteredCategoryId(Number(e.target.value))}>
+            <option value="">Tất cả</option>
+            <option value="1">Laptop</option>
+            <option value="2">PC</option>
+            <option value="3">Màn hình</option>
+            <option value="4">Chuột</option>
+            <option value="5">Bàn phím</option>
+          </select>
+        </div>
+        <div className="my-3 d-flex align-items-center">
+          <label className="me-2 fw-bold">Tìm kiếm: </label>
+          <input
+            type="text"
+            className="form-control"
+            style={{ width: 'auto' }}
+            placeholder="Nhập tên sản phẩm..."
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+          />
+        </div>
       </div>
-      <div className="my-3 d-flex align-items-center">
-      <label className="me-2 fw-bold">Tìm kiếm: </label>
-      <input
-        type="text"
-        className="form-control"
-        style={{ width: 'auto' }}
-        placeholder="Nhập tên sản phẩm..."
-        value={searchKeyword}
-        onChange={(e) => setSearchKeyword(e.target.value)}
-      />
-    </div>
-      </div>
-     
-      <table className="table table-bordered m-2">
-        <thead className="table-dark">
-          <tr>
-            <th className="text-center align-middle " scope="col">ID</th>
-            <th className="text-center align-middle " scope="col">Mã sản phẩm</th>
-            <th className="text-center align-middle " scope="col">Tên sản phẩm</th>
-            <th className="text-center align-middle " scope="col">Hình ảnh</th>
-            <th className="text-center align-middle " scope="col">Giá</th>
-            <th className="text-center align-middle " scope="col">Danh mục</th>
-            <th className="text-center align-middle " scope="col">Cấu hình</th>
-            <th className="text-center align-middle " scope="col">Bảo hành</th>
-            <th className="text-center align-middle " scope="col">Thao tác</th>
-          </tr>
-        </thead>
-        
-        <tbody>
-          {filteredItems.length > 0 ? (
-            filteredItems.map((sanpham, index) => {
-              const imagePath = getImagePath(sanpham.id_danhmuc);
-              return (
-                <tr key={index}>
-                  <td className="align-middle">{sanpham.id}</td>
-                  <td className="align-middle">{sanpham.ma_san_pham}</td>
-                  <td className="align-middle">{sanpham.ten_sp}</td>
-                  <td>
-                    <img
-                      src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.chinh}`}
-                      style={{ width: "150px", height: "auto" }}
-                      alt={sanpham.ten_sp}
-                      className="w100 trans03"
-                    />
-                  </td>
-                  <td className="align-middle">{sanpham.gia_sp}</td>
-                  <td className="align-middle">{sanpham.id_danhmuc}</td>
-                  <td className="align-middle text-left">
-                  {/* {renderConfig(sanpham.cau_hinh, sanpham.id_danhmuc)} */}
-                  {renderConfig(sanpham.cau_hinh, sanpham.id_danhmuc)}
-                  </td>
-                  <td className="align-middle">{sanpham.bao_hanh}</td>
-                  <td className="text-center align-middle  d-flex justify-content-center gap-2 pt-5 " >
-                
-                  <Link to={`/products/edit/${sanpham.id}`} className="btn btn-light ">
-                      <i className="text-primary bi-pencil-square" />
-                      
-                    </Link>
-                   
-                    <button onClick={() => handleDelete(sanpham.id)} type="button" className="btn btn-light">
-                      <i className="text-warning bi-trash" />
-                      
-                    </button>
-    
-                  </td>
-                </tr>
-              );
-            })
-          ) : (
+  
+      {/* Bảng dành cho desktop */}
+      <div className="table-responsive d-none d-md-block">
+        <table className="table table-bordered m-2">
+          <thead className="table-dark">
             <tr>
-              <td colSpan="9" className="text-center">Không có sản phẩm nào</td>
+              <th className="text-center align-middle " scope="col">ID</th>
+              <th className="text-center align-middle " scope="col">Mã sản phẩm</th>
+              <th className="text-center align-middle " scope="col">Tên sản phẩm</th>
+              <th className="text-center align-middle " scope="col">Hình ảnh</th>
+              <th className="text-center align-middle " scope="col">Giá</th>
+              <th className="text-center align-middle " scope="col">Danh mục</th>
+              <th className="text-center align-middle " scope="col">Cấu hình</th>
+              <th className="text-center align-middle " scope="col">Bảo hành</th>
+              <th className="text-center align-middle " scope="col">Thao tác</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          
+          <tbody>
+            {filteredItems.length > 0 ? (
+              filteredItems.map((sanpham, index) => {
+                const imagePath = getImagePath(sanpham.id_danhmuc);
+                return (
+                  <tr key={index}>
+                    <td className="align-middle">{sanpham.id}</td>
+                    <td className="align-middle">{sanpham.ma_san_pham}</td>
+                    <td className="align-middle">{sanpham.ten_sp}</td>
+                    <td>
+                      <img
+                        src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.chinh}`}
+                        style={{ width: "150px", height: "auto" }}
+                        alt={sanpham.ten_sp}
+                        className="w100 trans03"
+                      />
+                    </td>
+                    <td className="align-middle">{sanpham.gia_sp}</td>
+                    <td className="align-middle">{sanpham.id_danhmuc}</td>
+                    <td className="align-middle text-left">
+                      {renderConfig(sanpham.cau_hinh, sanpham.id_danhmuc)}
+                    </td>
+                    <td className="align-middle">{sanpham.bao_hanh}</td>
+                    <td className="text-center align-middle d-flex justify-content-center gap-2 pt-5">
+                      <Link to={`/products/edit/${sanpham.id}`} className="btn btn-light">
+                        <i className="text-primary bi-pencil-square" />
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(sanpham.id)}
+                        type="button"
+                        className="btn btn-light"
+                      >
+                        <i className="text-warning bi-trash" />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <tr>
+                <td colSpan="9" className="text-center">Không có sản phẩm nào</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+  
+      {/* Slider dành cho mobile */}
+      <div className="slider-container d-md-none">
+        {filteredItems.length > 0 ? (
+          filteredItems.map((sanpham, index) => {
+            const imagePath = getImagePath(sanpham.id_danhmuc);
+            return (
+              <div key={index} className="product-card">
+                <img
+                  src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.chinh}`}
+                  alt={sanpham.ten_sp}
+                  className="product-img"
+                />
+                <div className="product-details">
+                  <h5>{sanpham.ten_sp}</h5>
+                  <p><strong>Giá:</strong> {sanpham.gia_sp}</p>
+                  <p><strong>Danh mục:</strong> {sanpham.id_danhmuc}</p>
+                  {renderConfig(sanpham.cau_hinh, sanpham.id_danhmuc)}
+                  <div className="actions">
+                    <Link to={`/products/edit/${sanpham.id}`} className="btn btn-primary">
+                      Sửa
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(sanpham.id)}
+                      className="btn btn-danger"
+                    >
+                      Xóa
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        ) : (
+          <div className="text-center">Không có sản phẩm nào</div>
+        )}
+      </div>
     </>
   );
+  
+  
 }

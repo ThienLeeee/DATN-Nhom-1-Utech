@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from '@/context/AuthContext';
 
 export default function Header() {
-
+  const [keyword, setKeyword] = useState("");
   const { user, logout } = useAuth();
   const [danhMuc, setDanhmuc] = useState([]);
   const [cartItemCount, setCartItemCount] = useState(0);
@@ -49,7 +49,12 @@ export default function Header() {
     logout();
     navigate('/');
   };
-
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (keyword) {
+      navigate(`/sanPham?keyword=${keyword}`);
+    }
+  };
   return (
     <>
       {/* header */}
@@ -101,8 +106,9 @@ export default function Header() {
             </a>
             <div className="header-bottom-right d-flex justify-content-between align-items-center">
               <div id="timkiem">
-                <form
-                  action="tim-kiem.html"
+              <form
+                 onSubmit={handleSubmit}
+                 action="tim-kiem.html"
                   method=""
                   name="frm2"
                   className="frm_timkiem"
@@ -121,6 +127,7 @@ export default function Header() {
                     <option value={40}>THIẾT BỊ KTS</option>
                   </select>
                   <input
+                    onChange={(e) => setKeyword(e.target.value)}
                     type="text"
                     name="timkiem"
                     id="name_tk"

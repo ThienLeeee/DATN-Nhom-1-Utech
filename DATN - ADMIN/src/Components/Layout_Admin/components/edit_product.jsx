@@ -16,10 +16,9 @@ export default function EditProduct() {
   const [imageUrl, setImageUrl] = useState(null);
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
-  
   const [error, setError] = useState('');
   const [cauHinhFields, setCauHinhFields] = useState([]);
-
+  const [categories, setCategories] = useState([]);
   // Hàm để tải thông tin sản phẩm từ API
   const loadProduct = async () => {
     try {
@@ -37,6 +36,21 @@ export default function EditProduct() {
       setError('Có lỗi xảy ra khi tải sản phẩm.');
     }
   };
+  // Hàm để tải danh sách danh mục
+const loadCategories = async () => {
+  try {
+    const response = await fetch('http://localhost:3000/api/danhMuc'); // URL API danh mục
+    const data = await response.json();
+    if (response.ok) {
+      setCategories(data); // Lưu danh mục vào state
+    } else {
+      throw new Error('Không thể tải danh mục');
+    }
+  } catch (error) {
+    console.error("Lỗi khi tải danh mục:", error);
+    setError('Có lỗi xảy ra khi tải danh mục.');
+  }
+};
 
   // Hàm để lấy cấu hình dựa trên ID danh mục
   const getCauHinhFields = (categoryId) => {
@@ -150,6 +164,7 @@ export default function EditProduct() {
   };
   
     useEffect(() => {
+      loadCategories();
       loadProduct(); // Tải thông tin sản phẩm khi component được mount
     }, []);
   
@@ -160,7 +175,34 @@ export default function EditProduct() {
         reader.readAsDataURL(file);
       }
     }, [file]);
-  
+    const danhMucMapping = {
+      1: "Laptop",
+      2: "PC",
+      3: "Màn Hình",
+      4: "Chuột",
+      5: "Bàn Phím",
+    };
+    const handleChange = (e) => {
+      const { name, value } = e.target;
+    
+      if (name === "id_danhmuc") {
+        const newIdDanhMuc = parseInt(value, 10);
+        setFormData({
+          ...formData,
+          id_danhmuc: newIdDanhMuc,
+          ten_danhmuc: danhMucMapping[newIdDanhMuc] || "", // Lấy tên danh mục
+          cau_hinh: {}, // Reset cấu hình khi thay đổi danh mục
+        });
+    
+        setCauHinhFields(getCauHinhFields(newIdDanhMuc)); // Cập nhật trường cấu hình
+      } else {
+        setFormData({
+          ...formData,
+          [name]: value,
+        });
+      }
+    };
+        
     return (
       <div className="container my-4">
         <div className="row">
@@ -231,34 +273,28 @@ export default function EditProduct() {
                 </div>
               </div>
   
-              {/* Danh mục */}
-              <div className="row mb-3">
-  <label className="col-sm-4 col-form-label" htmlFor="id_danhmuc">Danh Mục</label>
+        {/* Danh mục */}
+        <div className="row mb-3">
+  <label className="col-sm-4 col-form-label">Tên Danh Mục</label>
   <div className="col-sm-8">
-    <input
-      className="form-control"
-      id="id_danhmuc"
-      name="id_danhmuc"
-      type="text"
-      value={formData.id_danhmuc}
-      onChange={(e) => {
-        const newIdDanhMuc = e.target.value;
-        setFormData({ ...formData, id_danhmuc: newIdDanhMuc });
-
-        // Chuyển đổi newIdDanhMuc thành số nguyên để truyền vào getCauHinhFields
-        const categoryId = parseInt(newIdDanhMuc, 10);
-        setCauHinhFields(getCauHinhFields(categoryId)); // Cập nhật cấu hình khi danh mục thay đổi
-
-        // Reset cấu hình nếu danh mục thay đổi
-        setFormData(prevData => ({
-          ...prevData,
-          cau_hinh: {} // Xóa cấu hình cũ để nhập mới
-        }));
-      }}
-    />
-    <span className="text-danger"></span>
+  <select
+  className="form-control"
+  id="id_danhmuc"
+  name="id_danhmuc"
+  value={formData.id_danhmuc}
+  onChange={handleChange}
+>
+  <option value="">-- Chọn danh mục --</option>
+  {Object.entries(danhMucMapping).map(([id, name]) => (
+    <option key={id} value={id}>
+      {name}
+    </option>
+  ))}
+</select>
   </div>
 </div>
+
+
 
 {/* Các trường cấu hình động */}
 {cauHinhFields.map((field, index) => (

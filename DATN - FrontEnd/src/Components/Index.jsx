@@ -37,6 +37,8 @@ import "/public/css/slick/slick-theme.css";
 import "/public/css/slick/slick-style.css";
 
 import "/public/js/bootstrap/bootstrap.min.js"
+import SanPhamSearch from "./Layout_User/SanPhamSearch";
+import SanPhamThuongHieu from "./Layout_User/Sanphamtheoth";
 
 
 export default function Index() {
@@ -53,6 +55,8 @@ export default function Index() {
             <Route path="/giohang"  element={<Giohang></Giohang>}></Route>
             <Route path="/Dangnhap" element={<Dangnhap></Dangnhap>}></Route>
             <Route path="/Dangky" element={<Dangky></Dangky>}></Route>
+            <Route path="/sanPham"  element={<SanPhamSearch></SanPhamSearch>}></Route>
+            <Route path="/sanPham/id_danhmuc/:id_danhmuc/thuong_hieu/:thuong_hieu" element={<SanPhamThuongHieu></SanPhamThuongHieu>}></Route>
             <Route path="/thanhtoan" element={<Thanhtoan></Thanhtoan>}></Route>            
         </Routes>
         <Footer/>

@@ -224,20 +224,27 @@ export default function AddProduct() {
             </div>
 
             {/* Danh mục */}
-            <div className="row mb-3">
-              <label className="col-sm-4 col-form-label" htmlFor="id_danhmuc">Danh Mục</label>
-              <div className="col-sm-8">
-                <input
-                  className="form-control"
-                  id="id_danhmuc"
-                  name="id_danhmuc"
-                  type="text"
-                  value={formData.id_danhmuc}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
+<div className="row mb-3">
+  <label className="col-sm-4 col-form-label" htmlFor="id_danhmuc">Danh Mục</label>
+  <div className="col-sm-8">
+    <select
+      className="form-control"
+      id="id_danhmuc"
+      name="id_danhmuc"
+      value={formData.id_danhmuc}
+      onChange={handleChange}
+    >
+      <option value="">-- Chọn danh mục --</option>
+      <option value="1">Laptop</option>
+      <option value="2">PC</option>
+      <option value="3">Màn Hình</option>
+      <option value="4">Chuột</option>
+      <option value="5">Bàn Phím</option>
+    </select>
+  </div>
+</div>
 
+            
             {/* Dynamic configuration fields */}
             {cauHinhFields.map((field, index) => (
               <div className="row mb-3" key={index}>

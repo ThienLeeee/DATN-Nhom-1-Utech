@@ -66,6 +66,11 @@ export default function Trangchu() {
     };
     fetchPromotionalProducts();
   }, []);
+  // Hàm kiểm tra danh mục có bị khóa không
+const isCategoryLocked = (id) => {
+  const category = danhMuc.find((danhmuc) => danhmuc.id === id);
+  return category ? category.locked : false;
+};
 
   const handleAddToCart = (sanPhamMoi) => {
     let cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
@@ -88,9 +93,11 @@ export default function Trangchu() {
   
 
   // Lọc sản phẩm theo categoryId
-  const sanPhamdm1 = sanPham.filter((sanpham) => sanpham.id_danhmuc === 1);
-  const sanPhamdm2 = sanPham.filter((sanpham) => sanpham.id_danhmuc === 2);
-  const sanPhamdm3 = sanPham.filter((sanpham) => sanpham.id_danhmuc === 3);
+  const sanPhamdm1 = sanPham.filter((sanpham) => sanpham.id_danhmuc === 1 && !isCategoryLocked(1));
+  const sanPhamdm2 = sanPham.filter((sanpham) => sanpham.id_danhmuc === 2 && !isCategoryLocked(2));
+  const sanPhamdm3 = sanPham.filter((sanpham) => sanpham.id_danhmuc === 3 && !isCategoryLocked(3));
+  const sanPhamdm4 = sanPham.filter((sanpham) => sanpham.id_danhmuc === 4 && !isCategoryLocked(4));
+  const sanPhamdm5 = sanPham.filter((sanpham) => sanpham.id_danhmuc === 5 && !isCategoryLocked(5));
 
   const handleSlideChange = (slideIndex) => {
     setCurrentSlide(slideIndex);
@@ -1085,48 +1092,38 @@ export default function Trangchu() {
         
         {/* promotional-products end */}
 
-        {/* products 1 */}
-        <div className="sub_main" id="scroll0" style={{ marginBottom: 50 }}>
+     {/* products 1 */}
+     <div className="sub_main" id="scroll0" style={{ marginBottom: 50 }}>
           <div className="wrap-content">
             <div className="title_main">
-              <div>
-                <span style={{}}>LAPTOP</span>
-                <ul>
-                  <li>
-                    <a href="" title="LAPTOP LG">
-                      LAPTOP ASUS
-                    </a>
-                  </li>
-                  <li>
-                    <a href="" title="LAPTOP ASUS">
-                      LAPTOP ACER
-                    </a>
-                  </li>
-                  <li>
-                    <a href="" title="LAPTOP LENOVO">
-                      LAPTOP MSI
-                    </a>
-                  </li>
-                  <li>
-                    <a href="" title="LAPTOP HP">
-                      LAPTOP LENOVO
-                    </a>
-                  </li>
-                  <li>
-                    <a href="" title="LAPTOP DELL">
-                      LAPTOP DELL
-                    </a>
-                  </li>
-                </ul>
+            <div>
+            <span>LAPTOP</span>
+            <ul >
+              {sanPhamdm1.length > 0 &&
+                // Extract unique brand names from sanPhamdm1
+                [...new Set(sanPhamdm1.map((sanpham) => sanpham.thuong_hieu))].map(
+                  (brand, index) => (
+                    <li key={index}>
+                      <Link
+                        to={`/sanPham/id_danhmuc/${sanPhamdm1[0].id_danhmuc}/thuong_hieu/${brand}`}
+                        title={`Sản phẩm ${brand}`}
+                      >
+                        {brand}
+                      </Link>
+                    </li>
+                  )
+                )}
+            </ul>
 
-                <Link to="/sanPham/id_danhmuc/1" className="viewmore">
-                  Xem tất cả
-                </Link>
-              </div>
+            <Link to="/sanPham/id_danhmuc/1" className="viewmore">
+              Xem tất cả
+            </Link>
+          </div>
+
             </div>
             <div className="hidden_tab" id="splist11" rel={11} title="LAPTOP">
               <div className="grid-products">
-                {sanPhamdm1.length > 0 ? (
+              {sanPhamdm1.length > 0 ? (
                   sanPhamdm1.map((sanpham, index) => (
                     <div className="product" key={index}>
                       <div className="box-product">
@@ -1153,12 +1150,12 @@ export default function Trangchu() {
                                 <li>{sanpham.cau_hinh.ocung}</li>
                                 <li>{sanpham.cau_hinh.vga}</li>
                                 <li>{sanpham.cau_hinh.man_hinh}</li>
-                                <li>{sanpham.cau_hinh_chi_tiet.pin}</li>
-                                <li>{sanpham.cau_hinh_chi_tiet.mau_sac}</li>
-                                <li>{sanpham.cau_hinh_chi_tiet.trong_luong}</li>
-                                <li>
+                                {/* <li>{sanpham.cau_hinh_chi_tiet.pin}</li> */}
+                                {/* <li>{sanpham.cau_hinh_chi_tiet.mau_sac}</li> */}
+                                {/* <li>{sanpham.cau_hinh_chi_tiet.trong_luong}</li> */}
+                                {/* <li>
                                   {sanpham.cau_hinh_chi_tiet.he_dieu_hanh}
-                                </li>
+                                </li> */}
                               </ul>
                               <p>&nbsp;</p>
                               <div className="baohanh ">{sanpham.bao_hanh}</div>
@@ -1191,9 +1188,9 @@ export default function Trangchu() {
                         </div>
                       </div>
                     </div>
-                  ))
-                ) : (
-                  <p>Đang tải sản phẩm Laptop...</p>
+                  )))
+                 : (
+                  <p>Sản phẩm đang trong quá trình cập nhật...</p>
                 )}
               </div>
               <div className="pagination" style={{ marginTop: 0 }}>
@@ -1224,18 +1221,21 @@ export default function Trangchu() {
               <div>
                 <span>PC</span>
                 <ul>
-                  <li>
-                    <a href="san-pham/laptop-asus-18/" title="LAPTOP ASUS">
-                      PC INTEL
-                    </a>
-                  </li>
-
-                  <li>
-                    <a href="san-pham/laptop-hp-16/" title="LAPTOP HP">
-                      PC AMD
-                    </a>
-                  </li>
-                </ul>
+              {sanPhamdm2.length > 0 &&
+                // Extract unique brand names from sanPhamdm2
+                [...new Set(sanPhamdm2.map((sanpham) => sanpham.thuong_hieu))].map(
+                  (brand, index) => (
+                    <li key={index}>
+                      <Link
+                        to={`/sanPham/id_danhmuc/${sanPhamdm2[0].id_danhmuc}/thuong_hieu/${brand}`}
+                        title={`Sản phẩm ${brand}`}
+                      >
+                        {brand}
+                      </Link>
+                    </li>
+                  )
+                )}
+            </ul>
                 <a href="/sanPham/id_danhmuc/2" className="viewmore">
                   {" "}
                   Xem tất cả
@@ -1310,7 +1310,7 @@ export default function Trangchu() {
                     </div>
                   ))
                 ) : (
-                  <p>Đang tải sản phẩm PC...</p>
+                  <p>Sản phẩm đang trong quá trình cập nhật...</p>
                 )}
               </div>
               <div className="pagination" style={{ marginTop: 0 }}>
@@ -1341,22 +1341,21 @@ export default function Trangchu() {
               <div>
                 <span>Màn hình</span>
                 <ul>
-                  <li>
-                    <a href="san-pham/laptop-lg-173/" title="LAPTOP LG">
-                      MÀN HÌNH LG
-                    </a>
-                  </li>
-                  <li>
-                    <a href="san-pham/laptop-asus-18/" title="LAPTOP ASUS">
-                      MÀN HÌNH ASUS
-                    </a>
-                  </li>
-                  <li>
-                    <a href="san-pham/laptop-dell-15/" title="LAPTOP DELL">
-                      MÀN HÌNH DELL
-                    </a>
-                  </li>
-                </ul>
+              {sanPhamdm3.length > 0 &&
+                // Extract unique brand names from sanPhamdm3
+                [...new Set(sanPhamdm3.map((sanpham) => sanpham.thuong_hieu))].map(
+                  (brand, index) => (
+                    <li key={index}>
+                      <Link
+                        to={`/sanPham/id_danhmuc/${sanPhamdm3[0].id_danhmuc}/thuong_hieu/${brand}`}
+                        title={`Sản phẩm ${brand}`}
+                      >
+                        {brand}
+                      </Link>
+                    </li>
+                  )
+                )}
+            </ul>
                 <a href="/sanPham/id_danhmuc/3" className="viewmore">
                   {" "}
                   Xem tất cả
@@ -1455,7 +1454,7 @@ export default function Trangchu() {
                     </div>
                   ))
                 ) : (
-                  <p>Đang tải sản phẩm Màn hình...</p>
+                  <p>Sản phẩm đang trong quá trình cập nhật...</p>
                 )}
               </div>
               <div className="pagination" style={{ marginTop: 0 }}>
@@ -1477,7 +1476,282 @@ export default function Trangchu() {
             </div>
           </div>
         </div>
-        {/* products 3 end*/}
+          {/* product4   */}
+          <div className="sub_main" id="scroll0" style={{ marginBottom: 50 }}>
+          <div className="wrap-content">
+            <div className="title_main">
+              <div>
+                <span>Chuột</span>
+                <ul>
+              {sanPhamdm4.length > 0 &&
+                // Extract unique brand names from sanPhamdm4
+                [...new Set(sanPhamdm4.map((sanpham) => sanpham.thuong_hieu))].map(
+                  (brand, index) => (
+                    <li key={index}>
+                      <Link
+                        to={`/sanPham/id_danhmuc/${sanPhamdm4[0].id_danhmuc}/thuong_hieu/${brand}`}
+                        title={`Sản phẩm ${brand}`}
+                      >
+                        {brand}
+                      </Link>
+                    </li>
+                  )
+                )}
+            </ul>
+                <a href="/sanPham/id_danhmuc/4" className="viewmore">
+                  {" "}
+                  Xem tất cả
+                </a>
+              </div>
+            </div>
+            <div className="hidden_tab" id="splist11" rel={11} title="LAPTOP">
+              <div className="grid-products">
+                {sanPhamdm4.length > 0 ? (
+                  sanPhamdm4.map((sanpham, index) => (
+                    <div className="product" key={index}>
+                      <div className="box-product">
+                        <div className="pic-product" data-tooltip="sticky7385">
+                          <Link
+                            to={`/chitietsp/sanPham/${sanpham.id}`}
+                            className="d-block"
+                            href=""
+                            title={`${sanpham.ten_sp}`}
+                          >
+                            <img
+                              src={`/img/sanpham/Chuot/${sanpham.hinh_anh.chinh}`}
+                              alt={`${sanpham.ten_sp}`}
+                              className="w100 trans03"
+                            />
+                          </Link>
+
+                          <div className="hot-icon blink" />
+                          <div className="desc-product">
+                            <div>
+                              <ul>
+                                <li>
+                                  Màu sắc:{" "}
+                                  {sanpham.cau_hinh.mau_sac}
+                                </li>
+                                <li>
+                                  Kết nối:{" "}
+                                  {sanpham.cau_hinh.ket_noi}
+                                </li>
+                                <li>
+                                  Led:{" "}
+                                  {sanpham.cau_hinh.led}
+                                </li>
+                                <li>
+                                  Cảm biến:{" "}
+                                  {sanpham.cau_hinh.cam_bien}
+                                </li>
+                                <li>
+                                  Số nút:{" "}
+                                  {sanpham.cau_hinh.so_nut}
+                                </li>
+                                <li>
+                                  Tuổi thọ:{" "}
+                                  {sanpham.cau_hinh.tuoi_tho}
+                                </li>
+                                <li>
+                                  DPI:{" "}
+                                  {sanpham.cau_hinh.DPI}
+                                </li>
+                                <li>
+                                  IPS:{" "}
+                                  {sanpham.cau_hinh.IPS}
+                                </li>
+                                <li>
+                                  Trọng lượng:{" "}
+                                  {sanpham.cau_hinh.trong_luong}
+                                </li>
+                              </ul>
+                              <p>&nbsp;</p>
+                              <div className="baohanh ">{sanpham.bao_hanh}</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="info-product">
+                          <Link
+                            to="/chitietsp"
+                            className="name-product text-split"
+                            href=""
+                            title={`${sanpham.ten_sp}`}
+                          >
+                            {sanpham.ten_sp}
+                          </Link>
+                          <div className="price-product">
+                            <span className="price-new">{sanpham.gia_sp}đ</span>
+                          </div>
+                          <div className="cart-product d-flex flex-wrap justify-content-between align-items-center">
+                            <span className="status-pro sts2">Còn hàng</span>
+                            <span
+                              className="mua_giohang"
+                              rel={7385}
+                              data-confirm=""
+                              onClick={() => handleAddToCart(sanpham)}
+                            >
+                              Mua ngay
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p>Sản phẩm đang trong quá trình cập nhật...</p>
+                )}
+              </div>
+              <div className="pagination" style={{ marginTop: 0 }}>
+                <ul className="my_pagination">
+                  <li className="inactive">
+                    <span> &lt;&lt; </span>
+                  </li>
+                  <li className="actived">
+                    <a>1</a>
+                  </li>
+                  <li className="active">
+                    <a>2</a>
+                  </li>
+                  <li className="active">
+                    <span> &gt;&gt; </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* product 5 */}
+        <div className="sub_main" id="scroll0" style={{ marginBottom: 50 }}>
+          <div className="wrap-content">
+            <div className="title_main">
+              <div>
+                <span>Bàn Phím</span>
+                <ul>
+              {sanPhamdm5.length > 0 &&
+                // Extract unique brand names from sanPhamdm5
+                [...new Set(sanPhamdm5.map((sanpham) => sanpham.thuong_hieu))].map(
+                  (brand, index) => (
+                    <li key={index}>
+                      <Link
+                        to={`/sanPham/id_danhmuc/${sanPhamdm5[0].id_danhmuc}/thuong_hieu/${brand}`}
+                        title={`Sản phẩm ${brand}`}
+                      >
+                        {brand}
+                      </Link>
+                    </li>
+                  )
+                )}
+            </ul>
+                <a href="/sanPham/id_danhmuc/5" className="viewmore">
+                  {" "}
+                  Xem tất cả
+                </a>
+              </div>
+            </div>
+            <div className="hidden_tab" id="splist11" rel={11} title="LAPTOP">
+              <div className="grid-products">
+                {sanPhamdm5.length > 0 ? (
+                  sanPhamdm5.map((sanpham, index) => (
+                    <div className="product" key={index}>
+                      <div className="box-product">
+                        <div className="pic-product" data-tooltip="sticky7385">
+                          <Link
+                            to={`/chitietsp/sanPham/${sanpham.id}`}
+                            className="d-block"
+                            href=""
+                            title={`${sanpham.ten_sp}`}
+                          >
+                            <img
+                              src={`/img/sanpham/Banphim/${sanpham.hinh_anh.chinh}`}
+                              alt={`${sanpham.ten_sp}`}
+                              className="w100 trans03"
+                            />
+                          </Link>
+
+                          <div className="hot-icon blink" />
+                          <div className="desc-product">
+                            <div>
+                              <ul>
+                                <li>
+                                  Kết nối:{" "}
+                                  {sanpham.cau_hinh.ket_noi}
+                                </li>
+                                <li>
+                                  Switch:{" "}
+                                  {sanpham.cau_hinh.switch}
+                                </li>
+                                <li>
+                                  Keycap:{" "}
+                                  {sanpham.cau_hinh.keycap}
+                                </li>
+                                <li>
+                                  Tương thích:{" "}
+                                  {sanpham.cau_hinh.tuong_thich}
+                                </li>
+                                <li>
+                                  Kích thước:{" "}
+                                  {sanpham.cau_hinh.kich_thuoc}
+                                </li>
+                                <li>
+                                  Trọng lượng:{" "}
+                                  {sanpham.cau_hinh.trong_luong}
+                                </li>
+                              </ul>
+                              <p>&nbsp;</p>
+                              <div className="baohanh ">{sanpham.bao_hanh}</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="info-product">
+                          <Link
+                            to="/chitietsp"
+                            className="name-product text-split"
+                            href=""
+                            title={`${sanpham.ten_sp}`}
+                          >
+                            {sanpham.ten_sp}
+                          </Link>
+                          <div className="price-product">
+                            <span className="price-new">{sanpham.gia_sp}đ</span>
+                          </div>
+                          <div className="cart-product d-flex flex-wrap justify-content-between align-items-center">
+                            <span className="status-pro sts2">Còn hàng</span>
+                            <span
+                              className="mua_giohang"
+                              rel={7385}
+                              data-confirm=""
+                              onClick={() => handleAddToCart(sanpham)}
+                            >
+                              Mua ngay
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p>Sản phẩm đang trong quá trình cập nhật...</p>
+                )}
+              </div>
+              <div className="pagination" style={{ marginTop: 0 }}>
+                <ul className="my_pagination">
+                  <li className="inactive">
+                    <span> &lt;&lt; </span>
+                  </li>
+                  <li className="actived">
+                    <a>1</a>
+                  </li>
+                  <li className="active">
+                    <a>2</a>
+                  </li>
+                  <li className="active">
+                    <span> &gt;&gt; </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       {/* content */}
     </>
