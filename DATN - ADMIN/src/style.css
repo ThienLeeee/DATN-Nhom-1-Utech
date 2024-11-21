@@ -137,3 +137,326 @@
   max-width: 100px;
   height: auto;
 }
+
+/* Common styles for admin pages */
+.admin-page-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #eee;
+}
+
+.admin-actions {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.admin-table {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+}
+
+.admin-table thead th {
+  background-color: #2c3e50 !important;
+  color: white;
+  font-weight: 500;
+  padding: 1rem !important;
+}
+
+.admin-table tbody td {
+  padding: 1rem !important;
+  vertical-align: middle;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.action-button {
+  padding: 0.5rem !important;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.action-button:hover {
+  transform: translateY(-2px);
+}
+
+.search-filter-container {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-label {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .admin-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search-filter-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .admin-table td::before {
+    font-weight: 600;
+    color: #2c3e50;
+  }
+}
+
+/* Card view for mobile */
+.admin-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.admin-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.admin-card-content {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.admin-card-footer {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+/* Dashboard Cards */
+.card {
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
+  border-radius: 1rem;
+  border: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+}
+
+.icon-shape {
+  width: 48px;
+  height: 48px;
+  background-position: center;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  transition: all 0.2s ease;
+}
+
+.icon-shape:hover {
+  transform: scale(1.1);
+}
+
+/* Updated gradients with more professional colors */
+.bg-gradient-primary {
+  background-image: linear-gradient(195deg, #5E72E4 0%, #825EE4 100%);
+}
+
+.bg-gradient-success {
+  background-image: linear-gradient(195deg, #2DCE89 0%, #24A46D 100%);
+}
+
+.bg-gradient-info {
+  background-image: linear-gradient(195deg, #11CDEF 0%, #1171EF 100%);
+}
+
+.bg-gradient-warning {
+  background-image: linear-gradient(195deg, #FB6340 0%, #FBB140 100%);
+}
+
+/* Matching shadows for each card type */
+.shadow-primary {
+  box-shadow: 0 4px 20px 0 rgba(94, 114, 228, 0.14), 0 7px 10px -5px rgba(94, 114, 228, 0.4);
+}
+
+.shadow-success {
+  box-shadow: 0 4px 20px 0 rgba(45, 206, 137, 0.14), 0 7px 10px -5px rgba(45, 206, 137, 0.4);
+}
+
+.shadow-info {
+  box-shadow: 0 4px 20px 0 rgba(17, 205, 239, 0.14), 0 7px 10px -5px rgba(17, 205, 239, 0.4);
+}
+
+.shadow-warning {
+  box-shadow: 0 4px 20px 0 rgba(251, 99, 64, 0.14), 0 7px 10px -5px rgba(251, 99, 64, 0.4);
+}
+
+/* Chart colors */
+.chart-primary {
+  background: linear-gradient(195deg, rgba(94, 114, 228, 0.1) 0%, rgba(94, 114, 228, 0.05) 100%);
+}
+
+.chart-success {
+  background: linear-gradient(195deg, rgba(45, 206, 137, 0.1) 0%, rgba(45, 206, 137, 0.05) 100%);
+}
+
+/* Status badges */
+.badge-success {
+  background: #2DCE89;
+  color: #fff;
+}
+
+.badge-danger {
+  background: #F5365C;
+  color: #fff;
+}
+
+.border-radius-lg {
+  border-radius: 0.75rem;
+}
+
+.border-radius-xl {
+  border-radius: 1rem;
+}
+
+.chart {
+  position: relative;
+  height: 300px;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.table thead th {
+  font-size: .65rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 1rem;
+}
+
+.badge {
+  text-transform: uppercase;
+  padding: 0.55em 0.9em;
+  font-size: 0.75em;
+  transition: all 0.2s ease;
+}
+
+.badge:hover {
+  transform: scale(1.1);
+  cursor: default;
+}
+
+.text-xxs {
+  font-size: .65rem !important;
+}
+
+/* Card Hover Effects */
+.card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* Icon Hover Effects */
+.icon-shape {
+  transition: all 0.2s ease;
+}
+
+.icon-shape:hover {
+  transform: scale(1.1);
+}
+
+/* Table Row Hover */
+.table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.table tbody tr:hover {
+  background-color: rgba(94, 114, 228, 0.05);
+}
+
+/* Badge Hover */
+.badge {
+  transition: all 0.2s ease;
+}
+
+.badge:hover {
+  transform: scale(1.1);
+  cursor: default;
+}
+
+/* Chart Container Hover */
+.chart {
+  transition: all 0.2s ease;
+}
+
+.bg-gradient-primary:hover,
+.bg-gradient-success:hover,
+.bg-gradient-info:hover,
+.bg-gradient-warning:hover {
+  filter: brightness(1.05);
+}
+
+/* Card Footer Hover */
+.card-footer {
+  transition: background-color 0.2s ease;
+}
+
+.card-footer:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Text Hover Effects */
+.text-sm.font-weight-bold {
+  transition: color 0.2s ease;
+}
+
+.text-sm.font-weight-bold:hover {
+  color: #5e72e4;
+}
+
+/* Status Badge Specific Hovers */
+.bg-gradient-success:hover {
+  background-image: linear-gradient(195deg, #34d893 0%, #2ab075 100%);
+}
+
+.bg-gradient-danger:hover {
+  background-image: linear-gradient(195deg, #f55c7d 0%, #f63e69 100%);
+}

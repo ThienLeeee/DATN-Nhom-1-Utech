@@ -5,7 +5,7 @@ import Footer from "./Layout_Admin/Footer";
 import Trangchu from "./Layout_Admin/Trangchu";
 import Admin_dm from "./Layout_Admin/Admin_dm";
 import Admin_sp from "./Layout_Admin/Admin_sp";
-import Admin_tk from "./Layout_Admin/Admin_tk";
+import Admin_thongke from "./Layout_Admin/Admin_thongke";
 import Admin_account from "./Layout_Admin/Admin_account";
 import EditUser from "./Layout_Admin/components/edit_user";
 import AddProduct from "./Layout_Admin/components/add_product";
@@ -15,6 +15,7 @@ import EditCategory from "./Layout_Admin/components/edit_category";
 import Admin_comment from "./Layout_Admin/Admin_comment";
 import Admin_dh from "./Layout_Admin/Admin_dh";
 import ChiTietDonHang from "./Layout_Admin/components/ChiTietDonHang";
+
 
 export default function Admin_Index() {
   return (
@@ -29,7 +30,7 @@ export default function Admin_Index() {
           <div className="row p-5">
             <Routes>
               <Route path="/" element={<Trangchu />} />
-              <Route path="/admin-thongke" element={<Admin_tk />} />
+              <Route path="/admin-thongke" element={<Admin_thongke/>} />
               <Route path="/admin-dm" element={<Admin_dm />} />
               <Route path="/category/add" element={<AddCategory />} />
               <Route path="/category/edit/:id" element={<EditCategory />} />
