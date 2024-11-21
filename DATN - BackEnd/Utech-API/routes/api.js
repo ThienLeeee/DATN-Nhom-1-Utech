@@ -380,7 +380,7 @@ router.put('/sanPham/:id', upload.single('hinh_anh'), async (req, res, next) => 
   // Lấy hình ảnh mới hoặc giữ hình ảnh cũ
   let hinh_anh = {};
   if (req.file) {
-      hinh_anh.chinh = req.file.originalname; // Lưu tên hình ảnh mới
+      hinh_anh.chinh = req.file.originalname; // Lưu tên hình ��nh mới
   } else {
       let product = await sanPhamCollection.findOne({ id: parseInt(id) });
       hinh_anh.chinh = product.hinh_anh.chinh; // Giữ lại hình ảnh cũ nếu không có hình ảnh mới
@@ -1229,6 +1229,59 @@ router.post('/users/login', async (req, res) => {
       message: 'Đã xảy ra lỗi khi đăng nhập!',
       error: error.message
     });
+  }
+});
+
+// Lấy tất cả đơn hàng
+router.get('/donHang', async (req, res) => {
+  try {
+    const db = await connectDb();
+    const donHangCollection = db.collection('donHang');
+    const orders = await donHangCollection.find().sort({ ngayDat: -1 }).toArray();
+    res.status(200).json(orders);
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi lấy danh sách đơn hàng', error });
+  }
+});
+
+// Cập nhật trạng thái đơn hàng
+router.put('/donHang/:id/status', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { trangThai } = req.body;
+    const db = await connectDb();
+    const donHangCollection = db.collection('donHang');
+    
+    const result = await donHangCollection.updateOne(
+      { id: parseInt(id) },
+      { $set: { trangThai } }
+    );
+    
+    if (result.modifiedCount > 0) {
+      res.status(200).json({ message: 'Cập nhật trạng thái thành công' });
+    } else {
+      res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi cập nhật trạng thái đơn hàng', error });
+  }
+});
+
+// Lấy chi tiết đơn hàng
+router.get('/donHang/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const db = await connectDb();
+    const donHangCollection = db.collection('donHang');
+    const order = await donHangCollection.findOne({ id: parseInt(id) });
+    
+    if (order) {
+      res.status(200).json(order);
+    } else {
+      res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi lấy chi tiết đơn hàng', error });
   }
 });
 
