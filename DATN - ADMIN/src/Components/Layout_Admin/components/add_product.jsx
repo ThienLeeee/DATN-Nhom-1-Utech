@@ -101,7 +101,7 @@ export default function AddProduct() {
     e.preventDefault();
     
     // Check if all required fields are filled
-    if (!formData.ma_san_pham || !formData.ten_sp || !formData.gia_sp || !formData.bao_hanh || !formData.id_danhmuc) {
+    if (!formData.ma_san_pham || !formData.ten_sp || !formData.gia_sp || !formData.bao_hanh || !formData.thuong_hieu || !formData.id_danhmuc) {
       return Swal.fire("Lỗi!", "Vui lòng điền đầy đủ thông tin sản phẩm.", "error");
     }
 
@@ -118,6 +118,7 @@ export default function AddProduct() {
     data.append('ma_san_pham', formData.ma_san_pham);
     data.append('ten_sp', formData.ten_sp);
     data.append('gia_sp', formData.gia_sp);
+    data.append('thuong_hieu', formData.thuong_hieu);
     data.append('bao_hanh', formData.bao_hanh);
     data.append('id_danhmuc', formData.id_danhmuc);
     data.append('cau_hinh', JSON.stringify(formData.cau_hinh)); // Convert configuration to JSON string
@@ -218,6 +219,20 @@ export default function AddProduct() {
                   name="bao_hanh"
                   type="text"
                   value={formData.bao_hanh}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+                 {/* thương hiệu */}
+                 <div className="row mb-3">
+              <label className="col-sm-4 col-form-label" htmlFor="thuong_hieu">Thương Hiệu</label>
+              <div className="col-sm-8">
+                <input
+                  className="form-control"
+                  id="thuong_hieu"
+                  name="thuong_hieu"
+                  type="text"
+                  value={formData.thuong_hieu}
                   onChange={handleChange}
                 />
               </div>

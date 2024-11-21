@@ -8,7 +8,7 @@ export default function Admin_sp() {
   const [filteredCategoryId, setFilteredCategoryId] = useState(null);
 const [lockedCategories, setLockedCategories] = useState(true);
 const [searchKeyword, setSearchKeyword] = useState('');
-
+const [categories, setCategories] = useState([]);
 const filteredItems = sanPham.filter((item) => {
   const isCategoryMatched = !filteredCategoryId || item.id_danhmuc === filteredCategoryId;
   const isNotLocked = !lockedCategories.includes(item.id_danhmuc);
@@ -16,16 +16,23 @@ const filteredItems = sanPham.filter((item) => {
   return isCategoryMatched && isNotLocked && isNameMatched;
 });
 
-
 useEffect(() => {
-  const fetchLockedCategories = async () => {
-    const response = await fetch("http://localhost:3000/api/danhMuc");
-    const categories = await response.json();
-    const locked = categories.filter((category) => category.locked).map((category) => category.id);
-    setLockedCategories(locked);
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/danhMuc");
+      const categoriesData = await response.json();
+      setCategories(categoriesData);
+
+      // Lấy danh sách danh mục bị khóa
+      const locked = categoriesData.filter(category => category.locked).map(category => category.id);
+      setLockedCategories(locked);
+    } catch (error) {
+      console.error("Lỗi khi fetch danh mục:", error);
+    }
   };
-  fetchLockedCategories();
+  fetchCategories();
 }, []);
+
 
 // Combine your filtering logic into one filteredItems declaration
 // const filteredItems = sanPham.filter((item) => {
@@ -170,15 +177,19 @@ const renderConfig = (cau_hinh, id_danhmuc) => {
       </div>
   
       <div className="d-flex justify-content-between">
-        <div className="my-3 d-flex align-items-center">
+      <div className="my-3 d-flex align-items-center">
           <label className="me-2 fw-bold">Chọn danh mục: </label>
-          <select className="form-select" style={{ width: 'auto' }} onChange={(e) => setFilteredCategoryId(Number(e.target.value))}>
+          <select
+            className="form-select"
+            style={{ width: 'auto' }}
+            onChange={(e) => setFilteredCategoryId(Number(e.target.value))}
+          >
             <option value="">Tất cả</option>
-            <option value="1">Laptop</option>
-            <option value="2">PC</option>
-            <option value="3">Màn hình</option>
-            <option value="4">Chuột</option>
-            <option value="5">Bàn phím</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.tendm}
+              </option>
+            ))}
           </select>
         </div>
         <div className="my-3 d-flex align-items-center">
@@ -206,6 +217,7 @@ const renderConfig = (cau_hinh, id_danhmuc) => {
               <th className="text-center align-middle " scope="col">Giá</th>
               <th className="text-center align-middle " scope="col">Danh mục</th>
               <th className="text-center align-middle " scope="col">Cấu hình</th>
+              <th className="text-center align-middle " scope="col">Thương hiệu</th>
               <th className="text-center align-middle " scope="col">Bảo hành</th>
               <th className="text-center align-middle " scope="col">Thao tác</th>
             </tr>
@@ -233,7 +245,9 @@ const renderConfig = (cau_hinh, id_danhmuc) => {
                     <td className="align-middle text-left">
                       {renderConfig(sanpham.cau_hinh, sanpham.id_danhmuc)}
                     </td>
+                    <td className="align-middle">{sanpham.thuong_hieu}</td>
                     <td className="align-middle">{sanpham.bao_hanh}</td>
+               
                     <td className="text-center align-middle d-flex justify-content-center gap-2 pt-5">
                       <Link to={`/products/edit/${sanpham.id}`} className="btn btn-light">
                         <i className="text-primary bi-pencil-square" />

@@ -899,7 +899,7 @@ const isCategoryLocked = (id) => {
                   role="listbox"
                 >
                   {danhMuc.length > 0 ? (
-                    danhMuc.slice(0, 5).map((danhmuc) => (
+                    danhMuc.slice(0, 10).map((danhmuc) => (
                       <div
                         className="slick-slide slick-current slick-active"
                         data-slick-index={0}
