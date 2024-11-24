@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from '../../context/AuthContext';
 import "/public/css/thanhtoan.css";
 
 export default function Thanhtoan() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
     ten_thanhtoan: "",
@@ -14,7 +17,18 @@ export default function Thanhtoan() {
   });
 
   const [isSuccess, setIsSuccess] = useState(false);
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        ten_thanhtoan: user.fullname || "",
+        diachi_thanhtoan: user.address || "",
+        dienthoai_thanhtoan: user.phone || "",
+        email_thanhtoan: user.email || "",
+      }));
+    }
+  }, [user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -111,7 +125,7 @@ export default function Thanhtoan() {
                       name="ten_thanhtoan"
                       value={formData.ten_thanhtoan}
                       onChange={handleChange}
-                      placeholder="Nhập họ và tên"
+                      placeholder={user?.fullname ? "" : "Nhập họ và tên"}
                       required
                     />
                   </div>
@@ -123,7 +137,7 @@ export default function Thanhtoan() {
                       name="diachi_thanhtoan"
                       value={formData.diachi_thanhtoan}
                       onChange={handleChange}
-                      placeholder="Nhập địa chỉ"
+                      placeholder={user?.address ? "" : "Nhập địa chỉ"}
                       required
                     />
                   </div>
@@ -135,7 +149,7 @@ export default function Thanhtoan() {
                       name="dienthoai_thanhtoan"
                       value={formData.dienthoai_thanhtoan}
                       onChange={handleChange}
-                      placeholder="Nhập số điện thoại"
+                      placeholder={user?.phone ? "" : "Nhập số điện thoại"}
                       required
                     />
                   </div>
@@ -147,7 +161,7 @@ export default function Thanhtoan() {
                       name="email_thanhtoan"
                       value={formData.email_thanhtoan}
                       onChange={handleChange}
-                      placeholder="Nhập email"
+                      placeholder={user?.email ? "" : "Nhập email"}
                       required
                     />
                   </div>

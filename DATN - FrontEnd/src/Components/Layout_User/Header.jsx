@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import { fetchDanhmuc } from "../../../service/danhmucService";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import '/public/css/header.css';
 export default function Header() {
   const [keyword, setKeyword] = useState("");
@@ -14,6 +14,7 @@ export default function Header() {
   });
   const [showUserMenu, setShowUserMenu] = useState(false);
   const navigate = useNavigate();
+  const menuRef = useRef(null);
 
   useEffect(() => {
     const loadDanhmuc = async () => {
@@ -46,6 +47,19 @@ export default function Header() {
       setShowUserMenu(false);
     }
   }, [user]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowUserMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -150,66 +164,96 @@ export default function Header() {
 
               <div className="hotline-header">
                 {user ? (
-                  <div className="user-menu-container" style={{ position: 'relative' }}>
+                  <div className="user-menu-container" ref={menuRef}>
                     <button
                       onClick={() => setShowUserMenu(!showUserMenu)}
                       className="user-button"
-                      style={{
-                        padding: '10px 20px',
-                        border: '2px solid #000',
-                        borderRadius: '5px',
-                        background: 'none',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px'
-                      }}
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"  viewBox="0 0 16 16">
-  <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
-</svg>
-                     <img src="/public/img/icon/user-icon.png" alt="icon user" style={{ width: '32px', height: '32px', borderRadius: '50%' }} /> <p>{user.username}</p>
+                      <img src="/public/img/icon/user-icon.png" alt="User" />
+                      <span>{user.username}</span>
+                      <i className="fas fa-chevron-down"></i>
                     </button>
+                    
                     {showUserMenu && (
-                      <div className="user-menu" style={{
-                        position: 'absolute',
-                        top: '100%',
-                        right: -45,
-                        background: '#fff',
-                        border: '1px solid #ddd',
-                        borderRadius: '5px',
-                        padding: '10px',
-                        zIndex: 1000
-                      }}>
-                        <div className="menu-item">
-                          <Link to="/Thongtintaikhoan" className="menu-link">Thông tin người dùng</Link>
+                      <div className="user-menu">
+                        <div className="welcome-message">
+                          <p>Xin chào, {user.fullname || user.username}!</p>
                         </div>
-                        <div className="menu-item">
-                          <Link to="/forgot-password" className="menu-link">Quên mật khẩu</Link>
-                        </div>
-                        <div className="menu-item">
-                          <button onClick={handleLogout} className="logout-button">
-                            Đăng xuất
+                        <div className="menu-items">
+                          <Link 
+                            to="/taikhoan" 
+                            className="menu-link"
+                            onClick={() => setShowUserMenu(false)}
+                          >
+                            <i className="fas fa-user-circle"></i>
+                            <span>Thông tin tài khoản</span>
+                          </Link>
+                          <Link 
+                            to="/donhang" 
+                            className="menu-link"
+                            onClick={() => setShowUserMenu(false)}
+                          >
+                            <i className="fas fa-shopping-bag"></i>
+                            <span>Thông tin đơn hàng</span>
+                          </Link>
+                          <div className="menu-separator"></div>
+                          <button 
+                            onClick={() => {
+                              handleLogout();
+                              setShowUserMenu(false);
+                            }} 
+                            className="logout-button"
+                          >
+                            <i className="fas fa-sign-out-alt"></i>
+                            <span>Đăng xuất</span>
                           </button>
                         </div>
                       </div>
                     )}
                   </div>
                 ) : (
-                  <Link
-                    to="/Dangnhap"
-                    className="login-header d-block text-center"
+                  <button 
+                    onClick={() => navigate('/dangnhap')} 
                     style={{
-                      padding: '10px 20px',
-                      border: '2px solid #000',
-                      borderRadius: '5px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '6px 12px',
+                      backgroundColor: '#f8f9fa',
+                      border: '1px solid #ddd',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      height: '36px',
+                      minWidth: '140px',
+                      maxWidth: '200px',
                       textDecoration: 'none',
-                      color: '#000',
-                      fontWeight: 'bold',
+                      transition: 'all 0.2s ease',
+                      boxSizing: 'border-box'
                     }}
                   >
-                    <p style={{ marginBottom: 0 }}>Đăng nhập</p>
-                  </Link>
+                    <img 
+                      src="/public/img/icon/user-icon.png" 
+                      alt="Login" 
+                      style={{ 
+                        width: '24px',
+                        height: '24px',
+                        objectFit: 'contain',
+                        flexShrink: 0,
+                        marginRight: '2px'
+                      }}
+                    />
+                    <span style={{
+                      color: '#333',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      lineHeight: '24px'
+                    }}>
+                      Đăng nhập
+                    </span>
+                  </button>
                 )}
               </div>
 

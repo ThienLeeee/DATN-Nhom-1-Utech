@@ -11,8 +11,6 @@ import Thanhtoan from "./Layout_User/Thanhtoan";
 import Dangnhap from "./DK.DN/Dangnhap";
 import Dangky from "./DK.DN/Dangky";
 import { AuthProvider } from "../context/AuthContext";
-import Thongtintaikhoan from "./Layout_User/Thongtintaikhoan";
-import Thongtindonhang from "./Layout_User/Thongtindonhang";
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
@@ -41,7 +39,10 @@ import "/public/css/slick/slick-style.css";
 import "/public/js/bootstrap/bootstrap.min.js"
 import SanPhamSearch from "./Layout_User/SanPhamSearch";
 import SanPhamThuongHieu from "./Layout_User/Sanphamtheoth";
-
+import Taikhoan from "./Layout_User/taikhoan";
+import Thongtindonhang from "./Layout_User/Thongtindonhang";
+import EditTaikhoan from "./Layout_User/editTaikhoan";
+import ForgotPassword from "./DK.DN/ForgotPassword";
 
 export default function Index() {
   return (
@@ -59,9 +60,11 @@ export default function Index() {
             <Route path="/Dangky" element={<Dangky></Dangky>}></Route>
             <Route path="/sanPham"  element={<SanPhamSearch></SanPhamSearch>}></Route>
             <Route path="/sanPham/id_danhmuc/:id_danhmuc/thuong_hieu/:thuong_hieu" element={<SanPhamThuongHieu></SanPhamThuongHieu>}></Route>
-            <Route path="/thanhtoan" element={<Thanhtoan></Thanhtoan>}></Route>    
-            <Route path="/thongtintaikhoan" element={<Thongtintaikhoan></Thongtintaikhoan>}></Route>       
-            <Route path="/thongtindonhang" element={<Thongtindonhang></Thongtindonhang>}></Route>         
+            <Route path="/thanhtoan" element={<Thanhtoan></Thanhtoan>}></Route>
+            <Route path="/taikhoan" element={<Taikhoan />}></Route>
+            <Route path="/donhang" element={<Thongtindonhang />}></Route>
+            <Route path="/chinhsuathongtin" element={<EditTaikhoan />}></Route>
+            <Route path="/forgot-password" element={<ForgotPassword></ForgotPassword>}></Route>
         </Routes>
         <Footer/>
       </Router>

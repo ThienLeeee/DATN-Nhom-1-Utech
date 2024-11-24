@@ -380,7 +380,7 @@ router.put('/sanPham/:id', upload.single('hinh_anh'), async (req, res, next) => 
   // Lấy hình ảnh mới hoặc giữ hình ảnh cũ
   let hinh_anh = {};
   if (req.file) {
-      hinh_anh.chinh = req.file.originalname; // Lưu tên hình ��nh mới
+      hinh_anh.chinh = req.file.originalname; // Lưu tên hình nh mới
   } else {
       let product = await sanPhamCollection.findOne({ id: parseInt(id) });
       hinh_anh.chinh = product.hinh_anh.chinh; // Giữ lại hình ảnh cũ nếu không có hình ảnh mới
@@ -578,17 +578,25 @@ router.get('/sanPham/ban-chay', async (req, res) => {
     const db = await connectDb();
     const sanPhamCollection = db.collection('sanPham');
     
-    // Giả sử có trường 'sold' để đếm số lượng bán ra
+    // Tìm các sản phẩm có ban_chay = 1
     const bestSellingProducts = await sanPhamCollection
-      .find({}) // Thêm các điều kiện lọc nếu cần
-      .sort({ sold: -1 }) // Sắp xếp giảm dần theo số lượng đã bán
-      .limit(10) // Lấy top 10 sản phẩm bán chạy nhất
+      .find({ ban_chay: 1 }) // Chỉ lấy sản phẩm có ban_chay = 1
       .toArray();
 
-    res.status(200).json(bestSellingProducts);
+    if (bestSellingProducts.length > 0) {
+      res.status(200).json(bestSellingProducts);
+    } else {
+      res.status(404).json({ 
+        message: "Không tìm thấy sản phẩm bán chạy nào",
+        products: []
+      });
+    }
   } catch (error) {
     console.error("Lỗi khi lấy sản phẩm bán chạy:", error);
-    res.status(500).json({ message: 'Lỗi khi lấy sản phẩm bán chạy', error: error.message });
+    res.status(500).json({ 
+      message: 'Đã xảy ra lỗi khi lấy sản phẩm bán chạy', 
+      error: error.message 
+    });
   }
 });
 
@@ -606,43 +614,59 @@ router.get('/sanPham/:id', async (req, res, next) => {
 })
 
 //Sửa đổi thông tin người dùng
-router.put('/user/:id', authenToken, async (req, res) => {
-  const id = parseInt(req.params.id); // Lấy id từ URL và chuyển sang số nguyên
-  const db = await connectDb();
-  const usersCollection = db.collection('users'); // Sử dụng đúng collection người dùng
-
-  // Lấy dữ liệu từ body
-  const { hoten, ngaysinh, gioitinh, sdt, email, diachi } = req.body;
-
-  // Tạo đối tượng cập nhật
-  const editUser = {
-    hoten,
-    ngaysinh,
-    gioitinh,
-    sdt,
-    email,
-    diachi
-  };
-
+router.put('/user/:id', async (req, res) => {
   try {
-    // Thực hiện cập nhật người dùng
+    const { id } = req.params;
+    const updateData = req.body;
+    const db = await connectDb();
+    const usersCollection = db.collection('users');
+
+    // Kiểm tra xem người dùng có tồn tại không
+    const existingUser = await usersCollection.findOne({ id: parseInt(id) });
+    if (!existingUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'Không tìm thấy người dùng'
+      });
+    }
+
+    // Chuẩn bị dữ liệu cập nhật
+    const dataToUpdate = {
+      fullname: updateData.fullname,
+      username: updateData.username,
+      email: updateData.email,
+      phone: updateData.phone || null,
+      birthday: updateData.birthday || null,
+      gender: updateData.gender || null
+    };
+
+    // Thực hiện cập nhật
     const result = await usersCollection.updateOne(
-      { id: id },
-      { $set: editUser }
+      { id: parseInt(id) },
+      { $set: dataToUpdate }
     );
 
-    if (result.matchedCount === 0) {
-      return res.status(404).json({ message: 'Không tìm thấy người dùng để cập nhật.' });
-    }
-
     if (result.modifiedCount > 0) {
-      res.status(200).json({ message: 'Cập nhật người dùng thành công.', user: editUser });
+      // Lấy thông tin user sau khi cập nhật
+      const updatedUser = await usersCollection.findOne({ id: parseInt(id) });
+      res.status(200).json({
+        success: true,
+        message: 'Cập nhật thông tin thành công',
+        user: updatedUser
+      });
     } else {
-      res.status(200).json({ message: 'Không có thay đổi nào được thực hiện.' });
+      res.status(400).json({
+        success: false,
+        message: 'Không có thay đổi nào được thực hiện'
+      });
     }
   } catch (error) {
-    console.error('Lỗi cập nhật người dùng:', error);
-    res.status(500).json({ message: 'Lỗi máy chủ khi cập nhật người dùng.' });
+    console.error('Lỗi khi cập nhật:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Lỗi khi cập nhật thông tin người dùng',
+      error: error.message
+    });
   }
 });
 
@@ -757,7 +781,7 @@ router.post('/accounts/register', async (req, res) => {
         return res.status(409).json({ message: 'Tên đăng nhập đã tồn tại' });
       }
       if (existingUser.email === email) {
-        return res.status(409).json({ message: 'Email đã tồn tại' });
+        return res.status(409).json({ message: 'Email đã tồn t��i' });
       }
     }
 
@@ -812,56 +836,54 @@ router.post('/accounts/register', async (req, res) => {
   }
 });
 
-// Cập nhật API đăng nhập để sử dụng collection users
+// API đăng nhập
 router.post('/accounts/login', async (req, res) => {
-  const { username, password } = req.body;
-  const db = await connectDb();
-  const usersCollection = db.collection('users');
-
   try {
+    const { username, password } = req.body;
+    const db = await connectDb();
+    const usersCollection = db.collection('users');
+
     // Tìm user theo username
     const user = await usersCollection.findOne({ username });
-    
+
     if (!user) {
-      return res.status(401).json({ message: 'Tên đăng nhập không tồn tại!' });
+      return res.status(401).json({
+        success: false,
+        message: 'Tên đăng nhập không tồn tại!'
+      });
     }
 
     // Kiểm tra mật khẩu
-    const isValidPassword = await bcrypt.compare(password, user.password);
-    
-    if (!isValidPassword) {
-      return res.status(401).json({ message: 'Mật khẩu không đúng!' });
+    const validPassword = bcrypt.compareSync(password, user.password);
+    if (!validPassword) {
+      return res.status(401).json({
+        success: false,
+        message: 'Mật khẩu không đúng!'
+      });
     }
 
-    // Tạo token JWT
+    // Tạo token
     const token = jwt.sign(
-      { 
-        userId: user.id, 
-        username: user.username, 
-        role: user.role 
-      },
+      { id: user.id, username: user.username, role: user.role },
       'secretkey',
       { expiresIn: '24h' }
     );
 
-    // Trả về thông tin user (không bao gồm password) và token
-    const userResponse = {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      role: user.role,
-      profile: user.profile
-    };
+    // Loại bỏ password trước khi gửi về client
+    const { password: _, ...userWithoutPassword } = user;
 
     res.status(200).json({
-      message: 'Đăng nhập thành công!',
-      user: userResponse,
+      success: true,
+      message: 'Đăng nhập thành cng!',
+      user: userWithoutPassword,
       token
     });
-
   } catch (error) {
-    console.error('Lỗi đăng nhập:', error);
-    res.status(500).json({ message: 'Lỗi server' });
+    res.status(500).json({
+      success: false,
+      message: 'Đã xảy ra lỗi khi đăng nhập!',
+      error: error.message
+    });
   }
 });
 
@@ -956,7 +978,28 @@ router.post('/binhLuan', async (req, res) => {
   try {
     const db = await connectDb();
     const binhLuanCollection = db.collection('binhLuan');
+    const usersCollection = db.collection('users');
     
+    // Kiểm tra thông tin user từ token
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ 
+        success: false,
+        message: 'Vui lòng đăng nhập để bình luận'
+      });
+    }
+
+    // Giải mã token để lấy thông tin user
+    const decoded = jwt.verify(token, 'secretkey');
+    const user = await usersCollection.findOne({ id: decoded.id });
+    
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Người dùng không tồn tại'
+      });
+    }
+
     const lastComment = await binhLuanCollection
       .find()
       .sort({ id: -1 })
@@ -967,6 +1010,8 @@ router.post('/binhLuan', async (req, res) => {
     
     const newComment = {
       id: newId,
+      userId: user.id,
+      username: user.username, // Thêm username để hiển thị
       productId: parseInt(req.body.productId),
       comment: req.body.comment,
       time: new Date(),
@@ -984,6 +1029,7 @@ router.post('/binhLuan', async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ 
+      success: false,
       message: 'Thêm bình luận không thành công', 
       error: error.message 
     });
@@ -1108,7 +1154,7 @@ router.get('/sanPham/khuyen-mai', async (req, res) => {
           $ne: null,  // không null
           $ne: "",    // không rỗng
           $type: "string",  // kiểu dữ liệu là string
-          $regex: /\S/  // chứa ít nhất một ký tự không phải khoảng trắng
+          $regex: /\S/  // chứa ít nht một ký tự không phải khoảng trắng
         } 
       })
       .toArray();
@@ -1183,55 +1229,6 @@ router.post('/users/register', async (req, res) => {
   }
 });
 
-// API đăng nhập
-router.post('/users/login', async (req, res) => {
-  try {
-    const db = await connectDb();
-    const usersCollection = db.collection('users');
-    
-    // Tìm user theo username
-    const user = await usersCollection.findOne({ username: req.body.username });
-    
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: 'Tên đăng nhập không tồn tại!'
-      });
-    }
-
-    // Kiểm tra mật khẩu
-    const validPassword = bcrypt.compareSync(req.body.password, user.password);
-    if (!validPassword) {
-      return res.status(401).json({
-        success: false,
-        message: 'Mật khẩu không đúng!'
-      });
-    }
-
-    // Tạo JWT token
-    const token = jwt.sign(
-      { id: user.id, username: user.username, role: user.role },
-      'secretkey',
-      { expiresIn: '24h' }
-    );
-
-    // Trả về thông tin user (không bao gồm password) và token
-    const { password, ...userWithoutPassword } = user;
-    
-    res.status(200).json({
-      success: true,
-      user: userWithoutPassword,
-      token
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Đã xảy ra lỗi khi đăng nhập!',
-      error: error.message
-    });
-  }
-});
-
 // Lấy tất cả đơn hàng
 router.get('/donHang', async (req, res) => {
   try {
@@ -1282,6 +1279,490 @@ router.get('/donHang/:id', async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ message: 'Lỗi khi lấy chi tiết đơn hàng', error });
+  }
+});
+
+// API cập nhật thông tin user
+router.put('/users/update/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+    const db = await connectDb();
+    const usersCollection = db.collection('users');
+
+    // Kiểm tra xem người dùng có tồn tại không
+    const existingUser = await usersCollection.findOne({ id: parseInt(id) });
+    if (!existingUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'Không tìm thấy người dùng'
+      });
+    }
+
+    // Chuẩn bị dữ liệu cập nhật
+    const dataToUpdate = {
+      fullname: updateData.fullname,
+      email: updateData.email,
+      birthday: updateData.birthday || null,
+      gender: updateData.gender || null,
+      phone: updateData.phone || null,
+      address: updateData.address || null
+    };
+
+    // Thực hiện cập nhật
+    const result = await usersCollection.updateOne(
+      { id: parseInt(id) },
+      { $set: dataToUpdate }
+    );
+
+    if (result.modifiedCount > 0) {
+      // Lấy thông tin user sau khi cập nhật
+      const updatedUser = await usersCollection.findOne({ id: parseInt(id) });
+      res.status(200).json({
+        success: true,
+        message: 'Cập nhật thông tin thành công',
+        user: updatedUser
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: 'Không có thay đổi nào được thực hiện'
+      });
+    }
+  } catch (error) {
+    console.error('Lỗi khi cập nhật:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Lỗi khi cập nhật thông tin người dùng',
+      error: error.message
+    });
+  }
+});
+
+// API gửi mã xác thực qua email
+router.post('/users/send-verification', async (req, res) => {
+  try {
+    const { email } = req.body;
+    // Tạo mã xác thực ngẫu nhiên
+    const verificationCode = Math.floor(100000 + Math.random() * 900000);
+    
+    // Lưu mã xác thực vào database (có thể thêm thời gian hết hạn)
+    const db = await connectDb();
+    const usersCollection = db.collection('users');
+    await usersCollection.updateOne(
+      { email },
+      { $set: { verificationCode, verificationExpires: new Date(Date.now() + 300000) } } // Hết hạn sau 5 phút
+    );
+
+    // Gửi email chứa mã xác thực
+    // ... Code gửi email ở đây ...
+
+    res.status(200).json({
+      success: true,
+      message: 'Mã xác thực đã được gửi đến email của bạn'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Lỗi khi gửi mã xác thực',
+      error: error.message
+    });
+  }
+});
+
+// API xác thực mã và cập nhật thông tin nhạy cảm (mật khẩu, số điện thoại)
+router.post('/users/verify-and-update/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { verificationCode, newPassword, newPhone } = req.body;
+    
+    const db = await connectDb();
+    const usersCollection = db.collection('users');
+    
+    const user = await usersCollection.findOne({
+      id: parseInt(id),
+      verificationCode: parseInt(verificationCode),
+      verificationExpires: { $gt: new Date() }
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: 'Mã xác thực không hợp lệ hoặc đã hết hạn'
+      });
+    }
+
+    const updateData = {};
+    if (newPassword) {
+      const salt = bcrypt.genSaltSync(10);
+      updateData.password = bcrypt.hashSync(newPassword, salt);
+    }
+    if (newPhone) {
+      updateData.phone = newPhone;
+    }
+
+    await usersCollection.updateOne(
+      { id: parseInt(id) },
+      { 
+        $set: updateData,
+        $unset: { verificationCode: "", verificationExpires: "" }
+      }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Cập nhật thông tin thành công'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Lỗi khi xác thực và cập nhật thông tin',
+      error: error.message
+    });
+  }
+});
+
+// API kiểm tra mật khẩu hiện tại
+router.post('/users/verify-password/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { currentPassword } = req.body;
+    
+    const db = await connectDb();
+    const usersCollection = db.collection('users');
+    
+    const user = await usersCollection.findOne({ id: parseInt(id) });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Không tìm thấy người dùng'
+      });
+    }
+
+    // Kiểm tra mật khẩu
+    const validPassword = bcrypt.compareSync(currentPassword, user.password);
+    if (!validPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Mật khẩu hiện tại không đúng'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Mật khẩu hợp lệ'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Lỗi khi kiểm tra mật khẩu',
+      error: error.message
+    });
+  }
+});
+
+// API lấy tất cả users
+router.get('/users', async (req, res) => {
+  try {
+    const db = await connectDb();
+    const usersCollection = db.collection('users');
+    const users = await usersCollection.find().toArray();
+    
+    // Loại bỏ thông tin nhạy cảm trước khi gửi response
+    const safeUsers = users.map(user => {
+      const { password, verificationCode, verificationExpires, ...safeUser } = user;
+      return safeUser;
+    });
+
+    res.status(200).json(safeUsers);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Lỗi khi lấy danh sách người dùng',
+      error: error.message
+    });
+  }
+});
+
+// API xóa user
+router.delete('/users/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const db = await connectDb();
+    const usersCollection = db.collection('users');
+
+    // Kiểm tra nếu là admin gốc (ID = 1)
+    if (parseInt(id) === 1) {
+      return res.status(403).json({
+        success: false,
+        message: 'Không thể xóa tài khoản Admin gốc!'
+      });
+    }
+
+    const result = await usersCollection.deleteOne({ id: parseInt(id) });
+
+    if (result.deletedCount > 0) {
+      res.status(200).json({
+        success: true,
+        message: 'Xóa người dùng thành công'
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: 'Không tìm thấy người dùng'
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Lỗi khi xóa người dùng',
+      error: error.message
+    });
+  }
+});
+
+// API cập nhật role của user
+router.put('/users/update-role/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { role } = req.body;
+    const db = await connectDb();
+    const usersCollection = db.collection('users');
+
+    // Kiểm tra nếu là admin gốc (ID = 1)
+    if (parseInt(id) === 1) {
+      return res.status(403).json({
+        success: false,
+        message: 'Không thể thay đổi quyền của Admin gốc!'
+      });
+    }
+
+    const result = await usersCollection.updateOne(
+      { id: parseInt(id) },
+      { $set: { role } }
+    );
+
+    if (result.modifiedCount > 0) {
+      res.status(200).json({
+        success: true,
+        message: 'Cập nhật quyền thành cng'
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: 'Không tìm thấy người dùng'
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Lỗi khi cập nhật quyền người dùng',
+      error: error.message
+    });
+  }
+});
+
+// API lấy thông tin user theo ID
+router.get('/user/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const db = await connectDb();
+    const usersCollection = db.collection('users');
+    
+    const user = await usersCollection.findOne({ id: parseInt(id) });
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Không tìm thấy người dùng'
+      });
+    }
+
+    // Loại bỏ password và các thông tin nhạy cảm khác
+    const { password, verificationCode, verificationExpires, ...safeUser } = user;
+    
+    res.status(200).json(safeUser);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Lỗi khi lấy thông tin người dùng',
+      error: error.message
+    });
+  }
+});
+
+// API cập nhật thông tin user
+router.put('/user/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+    const db = await connectDb();
+    const usersCollection = db.collection('users');
+
+    // Kiểm tra xem người dùng có tồn tại không
+    const existingUser = await usersCollection.findOne({ id: parseInt(id) });
+    if (!existingUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'Không tìm thấy người dùng'
+      });
+    }
+
+    // Chuẩn bị dữ liệu cập nhật
+    const dataToUpdate = {
+      fullname: updateData.fullname,
+      username: updateData.username,
+      email: updateData.email,
+      phone: updateData.phone || null,
+      birthday: updateData.birthday || null,
+      gender: updateData.gender || null
+    };
+
+    // Thực hiện cập nhật
+    const result = await usersCollection.updateOne(
+      { id: parseInt(id) },
+      { $set: dataToUpdate }
+    );
+
+    if (result.modifiedCount > 0) {
+      // Lấy thông tin user sau khi cập nhật
+      const updatedUser = await usersCollection.findOne({ id: parseInt(id) });
+      res.status(200).json({
+        success: true,
+        message: 'Cập nhật thông tin thành công',
+        user: updatedUser
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: 'Không có thay đổi nào được thực hiện'
+      });
+    }
+  } catch (error) {
+    console.error('Lỗi khi cập nhật:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Lỗi khi cập nhật thông tin người dùng',
+      error: error.message
+    });
+  }
+});
+
+// API xử lý like bình luận
+router.patch('/binhLuan/like/:id', async (req, res) => {
+  try {
+    const commentId = parseInt(req.params.id);
+    const db = await connectDb();
+    const binhLuanCollection = db.collection('binhLuan');
+    
+    // Tìm và tăng số lượt like
+    const result = await binhLuanCollection.updateOne(
+      { id: commentId },
+      { $inc: { like: 1 } } // Tăng giá trị like lên 1
+    );
+    
+    if (result.modifiedCount > 0) {
+      res.status(200).json({ message: 'Đã like bình luận' });
+    } else {
+      res.status(404).json({ message: 'Không tìm thấy bình luận' });
+    }
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Lỗi khi like bình luận', 
+      error: error.message 
+    });
+  }
+});
+
+// API thêm phản hồi cho bình luận
+router.post('/binhLuan/reply/:id', async (req, res) => {
+  try {
+    const commentId = parseInt(req.params.id);
+    const { userId, username, content } = req.body;
+    const db = await connectDb();
+    const binhLuanCollection = db.collection('binhLuan');
+    
+    // Tạo đối tượng phản hồi mới
+    const newReply = {
+      userId,
+      username,
+      content,
+      time: new Date(),
+      like: 0
+    };
+
+    // Thêm phản hồi vào mảng replies và tăng số lượng cmt
+    const result = await binhLuanCollection.updateOne(
+      { id: commentId },
+      { 
+        $push: { replies: newReply },
+        $inc: { cmt: 1 }
+      }
+    );
+    
+    if (result.modifiedCount > 0) {
+      res.status(200).json({ 
+        message: 'Đã thêm phản hồi',
+        reply: newReply
+      });
+    } else {
+      res.status(404).json({ message: 'Không tìm thấy bình luận' });
+    }
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Lỗi khi thêm phản hồi', 
+      error: error.message 
+    });
+  }
+});
+
+// API xóa phản hồi của bình luận
+router.delete('/binhLuan/:commentId/reply/:replyIndex', async (req, res) => {
+  try {
+    const { commentId, replyIndex } = req.params;
+    const db = await connectDb();
+    const binhLuanCollection = db.collection('binhLuan');
+
+    // Tìm bình luận
+    const comment = await binhLuanCollection.findOne({ id: parseInt(commentId) });
+    if (!comment) {
+      return res.status(404).json({ message: 'Không tìm thấy bình luận' });
+    }
+
+    // Kiểm tra và xóa phản hồi
+    if (!comment.replies || !comment.replies[replyIndex]) {
+      return res.status(404).json({ message: 'Không tìm thấy phản hồi' });
+    }
+
+    // Xóa phản hồi khỏi mảng replies và giảm số lượng cmt
+    comment.replies.splice(replyIndex, 1);
+    comment.cmt = comment.cmt - 1;
+
+    // Cập nhật lại document trong database
+    const result = await binhLuanCollection.updateOne(
+      { id: parseInt(commentId) },
+      { 
+        $set: { 
+          replies: comment.replies,
+          cmt: comment.cmt 
+        } 
+      }
+    );
+
+    if (result.modifiedCount > 0) {
+      res.status(200).json({ 
+        message: 'Xóa phản hồi thành công',
+        updatedComment: comment
+      });
+    } else {
+      res.status(500).json({ message: 'Không thể cập nhật bình luận' });
+    }
+  } catch (error) {
+    console.error('Lỗi khi xóa phản hồi:', error);
+    res.status(500).json({ 
+      message: 'Lỗi khi xóa phản hồi', 
+      error: error.message 
+    });
   }
 });
 

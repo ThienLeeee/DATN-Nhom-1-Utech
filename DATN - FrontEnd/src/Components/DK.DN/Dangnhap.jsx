@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "/public/css/dangnhap.css";
@@ -13,6 +13,14 @@ export default function Dangnhap() {
   const [showAlert, setShowAlert] = useState(false);
   const [error, setError] = useState("");
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [previousPath, setPreviousPath] = useState(null);
+
+  useEffect(() => {
+    const savedPath = localStorage.getItem('previousPath');
+    if (savedPath) {
+      setPreviousPath(savedPath);
+    }
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -26,19 +34,28 @@ export default function Dangnhap() {
 
       const { user, token } = response.data;
 
-      // Sử dụng context để cập nhật trạng thái đăng nhập
+      // Kiểm tra role của user
+      if (user.role === 'admin') {
+        // Nếu là admin, chuyển hướng đến trang admin
+        window.location.href = "http://localhost:5174/"; // URL của trang admin
+        return;
+      }
+
+      // Nếu là user thường, tiếp tục xử lý đăng nhập bình thường
       login(user);
       localStorage.setItem('token', token);
-
-      if (user.role === 'admin') {
-        setShowAlert(true);
-      } else {
-        setShowSuccessPopup(true);
-        setTimeout(() => {
-          setShowSuccessPopup(false);
+      setShowSuccessPopup(true);
+      
+      setTimeout(() => {
+        setShowSuccessPopup(false);
+        if (previousPath) {
+          navigate(previousPath);
+          localStorage.removeItem('previousPath');
+        } else {
           navigate('/');
-        }, 2000);
-      }
+        }
+      }, 2000);
+
     } catch (error) {
       setError(error.response?.data?.message || "Đăng nhập thất bại!");
     }
@@ -55,7 +72,12 @@ export default function Dangnhap() {
 
   const handlePopupClick = () => {
     setShowSuccessPopup(false);
-    navigate('/');
+    if (previousPath) {
+      navigate(previousPath);
+      localStorage.removeItem('previousPath');
+    } else {
+      navigate('/');
+    }
   };
 
   return (
@@ -119,22 +141,6 @@ export default function Dangnhap() {
               <div className="text-center mb-3">
                 Bạn chưa có tài khoản? <Link to="/Dangky">Đăng ký</Link>
               </div>
-              <div className="d-flex justify-content-between">
-                <button className="btn btn-danger social-btn">
-                  <img
-                    src="https://img.icons8.com/color/16/000000/google-logo.png"
-                    alt="Google Icon"
-                  />{" "}
-                  Google
-                </button>
-                <button className="btn btn-primary social-btn">
-                  <img
-                    src="https://img.icons8.com/color/16/000000/facebook-new.png"
-                    alt="Facebook Icon"
-                  />{" "}
-                  Facebook
-                </button>
-              </div>
             </div>
           </div>
         </div>
@@ -167,7 +173,9 @@ export default function Dangnhap() {
           <div className="popup-overlay" onClick={handlePopupClick}>
             <div className="popup-content">
               <h3 className="popup-title">Đăng nhập thành công!</h3>
-              <p className="popup-message">Chào mừng bạn đã quay trở lại.</p>
+              <p className="popup-message">
+                {previousPath ? "Đang chuyển bạn về trang trước đó..." : "Chào mừng bạn đã quay trở lại."}
+              </p>
             </div>
           </div>
         )}

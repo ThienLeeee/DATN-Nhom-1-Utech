@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchSanphamIddm, fetchSanPhamTheoDm } from "../../../service/sanphamService";
-import { Link, useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import "/public/css/chitietsp.css";
@@ -21,6 +20,17 @@ export default function ChiTietSanPham() {
   const [error, setError] = useState(null);
   const [showGallery, setShowGallery] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [user, setUser] = useState(null);
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [replyContent, setReplyContent] = useState('');
+  const [showReplies, setShowReplies] = useState({});
+  const [visibleComments, setVisibleComments] = useState(4);
+  const [showAllComments, setShowAllComments] = useState(false);
+
+  useEffect(() => {
+    const userInfo = JSON.parse(localStorage.getItem('user'));
+    setUser(userInfo);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,17 +77,33 @@ export default function ChiTietSanPham() {
   // Gửi bình luận mới
   const handleSubmitComment = async (e) => {
     e.preventDefault();
+    
+    // Kiểm tra đăng nhập
+    if (!user) {
+      alert('Vui lòng đăng nhập để bình luận');
+      return;
+    }
+
     if (!comment.trim()) return;
 
     try {
       setLoading(true);
       setError(null);
 
-      const response = await axios.post('http://localhost:3000/api/binhLuan', {
-        productId: parseInt(id),
-        comment: comment.trim(),
-        status: 'visible' // Thêm trạng thái mặc định là hiện
-      });
+      // Lấy token từ localStorage
+      const token = localStorage.getItem('token');
+
+      const response = await axios.post('http://localhost:3000/api/binhLuan', 
+        {
+          productId: parseInt(id),
+          comment: comment.trim(),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
       
       if (response.status === 200 && response.data) {
         setComments(prevComments => [response.data, ...prevComments]);
@@ -86,7 +112,11 @@ export default function ChiTietSanPham() {
       }
     } catch (error) {
       console.error('Lỗi khi gửi bình luận:', error);
-      setError('Không thể gửi bình luận. Vui lòng thử lại sau.');
+      if (error.response?.status === 401) {
+        setError('Vui lòng đăng nhập để bình luận');
+      } else {
+        setError('Không thể gi bình luận. Vui lòng thử lại sau.');
+      }
     } finally {
       setLoading(false);
     }
@@ -95,20 +125,54 @@ export default function ChiTietSanPham() {
   // Hàm tăng lượt thích
   const handleLike = async (commentId) => {
     try {
+      if (!user) {
+        alert('Vui lòng đăng nhập để thực hiện chức năng này');
+        return;
+      }
+      
       await axios.patch(`http://localhost:3000/api/binhLuan/like/${commentId}`);
       fetchComments(); // Refresh danh sách bình luận
     } catch (error) {
-      console.error('Error liking comment:', error);
+      console.error('Lỗi khi like bình luận:', error);
     }
   };
 
   // Hàm tăng lượt phản hồi
   const handleReply = async (commentId) => {
+    if (!user) {
+      alert('Vui lòng đăng nhập để thực hiện chức năng này');
+      return;
+    }
+    setReplyingTo(commentId);
+  };
+
+  // Hàm submit reply
+  const handleSubmitReply = async (commentId) => {
     try {
-      await axios.patch(`http://localhost:3000/api/binhLuan/cmt/${commentId}`);
-      fetchComments(); // Refresh danh sách bình luận
+      if (!replyContent.trim()) return;
+
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        `http://localhost:3000/api/binhLuan/reply/${commentId}`,
+        {
+          userId: user.id,
+          username: user.username,
+          content: replyContent
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      if (response.status === 200) {
+        setReplyContent('');
+        setReplyingTo(null);
+        fetchComments(); // Refresh danh sách bình luận
+      }
     } catch (error) {
-      console.error('Error replying to comment:', error);
+      console.error('Lỗi khi gửi phản hồi:', error);
     }
   };
 
@@ -164,6 +228,12 @@ export default function ChiTietSanPham() {
   const handleViewCart = () => {
     setPopupVisible(false); // Đóng popup và đi đến giỏ hàng
     navigate("/giohang");
+  };
+
+  const handleLoginRedirect = () => {
+    // Lưu URL hiện tại vào localStorage để sau khi đăng nhập có thể quay lại
+    localStorage.setItem('previousPath', window.location.pathname);
+    navigate('/dangnhap');
   };
 
   if (!sanpham) {
@@ -236,6 +306,28 @@ export default function ChiTietSanPham() {
   const openGallery = (index) => {
     setCurrentImageIndex(index);
     setShowGallery(true);
+  };
+
+  // Thêm hàm để toggle hiển th replies
+  const toggleReplies = (commentId) => {
+    setShowReplies(prev => ({
+      ...prev,
+      [commentId]: !prev[commentId]
+    }));
+  };
+
+  // Thêm hàm để xử lý việc xem thêm bình luận
+  const handleShowMoreComments = () => {
+    setShowAllComments(true);
+    setVisibleComments(comments.length);
+  };
+
+  // Thêm hàm để xử lý việc ẩn bớt bình luận
+  const handleShowLessComments = () => {
+    setShowAllComments(false);
+    setVisibleComments(4);
+    // Tự động scroll lên đầu phần bình luận
+    document.getElementById('binhluan').scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
@@ -864,7 +956,7 @@ export default function ChiTietSanPham() {
                                   <td>{sanpham.cau_hinh.kieu_man_hinh}</td>
                                 </tr>
                                 <tr>
-                                  <td>Kích thước</td>
+                                  <td>Kch thước</td>
                                   <td>{sanpham.cau_hinh.kich_thuoc}</td>
                                 </tr>
                                 <tr>
@@ -1002,7 +1094,7 @@ export default function ChiTietSanPham() {
                         <div className="comment-stats">
                           <div className="stat-item">
                             <i className="fas fa-comments"></i>
-                            <span className="stat-number">24</span>
+                            <span className="stat-number">{comments.length}</span>
                             <span>Bình luận</span>
                           </div>
                           <div className="stat-item">
@@ -1024,21 +1116,43 @@ export default function ChiTietSanPham() {
                         {/* Comment Form */}
                         {showCommentForm && (
                           <div className="comment-form">
-                            <form onSubmit={handleSubmitComment}>
-                              <textarea 
-                                value={comment}
-                                onChange={(e) => setComment(e.target.value)}
-                                placeholder="Viết bình luận của bạn..."
-                                disabled={loading}
-                                required
-                              />
-                              <button 
-                                type="submit"
-                                disabled={loading || !comment.trim()}
-                              >
-                                {loading ? 'Đang gửi...' : 'Gửi bình luận'}
-                              </button>
-                            </form>
+                            {user ? (
+                              <>
+                                <div className="comment-form-header">
+                                  <span className="current-user">Đang bình luận với tên: <strong>{user.username}</strong></span>
+                                </div>
+                                <form onSubmit={handleSubmitComment}>
+                                  <textarea 
+                                    value={comment}
+                                    onChange={(e) => setComment(e.target.value)}
+                                    placeholder="Viết bình luận của bạn..."
+                                    disabled={loading}
+                                    required
+                                  />
+                                  <button 
+                                    type="submit"
+                                    disabled={loading || !comment.trim()}
+                                  >
+                                    {loading ? 'Đang gửi...' : 'Gửi bình luận'}
+                                  </button>
+                                </form>
+                              </>
+                            ) : (
+                              <div className="login-prompt">
+                                <p>
+                                  Vui lòng <span 
+                                    onClick={handleLoginRedirect} 
+                                    style={{ 
+                                      color: '#007bff', 
+                                      cursor: 'pointer', 
+                                      textDecoration: 'underline'
+                                    }}
+                                  >
+                                    đăng nhập
+                                  </span> để bình luận
+                                </p>
+                              </div>
+                            )}
                           </div>
                         )}
 
@@ -1052,28 +1166,123 @@ export default function ChiTietSanPham() {
                         {/* Comments List */}
                         <div className="comments-list">
                           {loading && <div>Đang tải bình luận...</div>}
-                          {comments.map((item) => (
+                          {comments.slice(0, visibleComments).map((item) => (
                             <div key={item.id} className="comment-item">
                               <div className="comment-content">
                                 <div className="comment-header">
+                                  <span className="comment-author">{item.username}</span>
                                   <span className="comment-date">
                                     {new Date(item.time).toLocaleString()}
                                   </span>
                                 </div>
                                 <div className="comment-text">{item.comment}</div>
                                 <div className="comment-actions">
-                                  <span className="comment-action">
+                                  <span 
+                                    className="comment-action"
+                                    onClick={() => handleLike(item.id)}
+                                    style={{ cursor: 'pointer' }}
+                                  >
                                     <i className="far fa-thumbs-up"></i>
                                     Thích ({item.like})
                                   </span>
-                                  <span className="comment-action">
+                                  <span 
+                                    className="comment-action"
+                                    onClick={() => handleReply(item.id)}
+                                    style={{ cursor: 'pointer' }}
+                                  >
                                     <i className="far fa-comment"></i>
-                                    Trả lời ({item.cmt})
+                                    Trả lời
                                   </span>
+                                  {/* Thêm nút xem phản hồi nếu có replies */}
+                                  {item.replies && item.replies.length > 0 && (
+                                    <span 
+                                      className="comment-action view-replies"
+                                      onClick={() => toggleReplies(item.id)}
+                                      style={{ cursor: 'pointer' }}
+                                    >
+                                      <i className={`fas ${showReplies[item.id] ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
+                                      {showReplies[item.id] ? 'Ẩn phản hồi' : `Xem ${item.replies.length} phản hồi`}
+                                    </span>
+                                  )}
                                 </div>
+
+                                {/* Form trả lời */}
+                                {replyingTo === item.id && (
+                                  <div className="reply-form">
+                                    <textarea
+                                      value={replyContent}
+                                      onChange={(e) => setReplyContent(e.target.value)}
+                                      placeholder="Viết phản hồi của bạn..."
+                                    />
+                                    <div className="reply-actions">
+                                      <button 
+                                        onClick={() => handleSubmitReply(item.id)}
+                                        disabled={!replyContent.trim()}
+                                      >
+                                        Gửi
+                                      </button>
+                                      <button onClick={() => {
+                                        setReplyingTo(null);
+                                        setReplyContent('');
+                                      }}>
+                                        Hủy
+                                      </button>
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Hiển thị các phản hồi */}
+                                {item.replies && item.replies.length > 0 && showReplies[item.id] && (
+                                  <div className="replies-section">
+                                    {item.replies.map((reply, index) => (
+                                      <div key={index} className="reply-item">
+                                        <div className="reply-header">
+                                          <span className="reply-author">{reply.username}</span>
+                                          <span className="reply-date">
+                                            {new Date(reply.time).toLocaleString()}
+                                          </span>
+                                        </div>
+                                        <div className="reply-text">{reply.content}</div>
+                                        <div className="reply-actions">
+                                          <span 
+                                            className="reply-action"
+                                            onClick={() => handleLike(item.id)}
+                                            style={{ cursor: 'pointer' }}
+                                          >
+                                            <i className="far fa-thumbs-up"></i>
+                                            Thích ({reply.like || 0})
+                                          </span>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
                               </div>
                             </div>
                           ))}
+
+                          {/* Nút xem thêm/ẩn bớt bình luận */}
+                          {comments.length > 4 && (
+                            <div className="show-more-comments">
+                              {!showAllComments ? (
+                                <button 
+                                  onClick={handleShowMoreComments}
+                                  className="show-more-btn"
+                                >
+                                  <i className="far fa-comments"></i>
+                                  Xem thêm {comments.length - visibleComments} bình luận khác
+                                </button>
+                              ) : (
+                                <button 
+                                  onClick={handleShowLessComments}
+                                  className="show-less-btn"
+                                >
+                                  <i className="far fa-comments"></i>
+                                  Ẩn bớt bình luận
+                                </button>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>

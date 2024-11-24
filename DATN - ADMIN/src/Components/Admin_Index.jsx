@@ -16,7 +16,6 @@ import Admin_comment from "./Layout_Admin/Admin_comment";
 import Admin_dh from "./Layout_Admin/Admin_dh";
 import ChiTietDonHang from "./Layout_Admin/components/ChiTietDonHang";
 
-
 export default function Admin_Index() {
   return (
     <div className="row">
@@ -41,7 +40,7 @@ export default function Admin_Index() {
                 path="/admin-account"
                 element={<Admin_account></Admin_account>}
               />
-              <Route path="user/edit/:id" element={<EditUser />} />
+              <Route path="/user/edit/:id" element={<EditUser />} />
 
               <Route path="/admin-dh" element={<Admin_dh />} />
               <Route path="/admin-dh/:id" element={<ChiTietDonHang />} />

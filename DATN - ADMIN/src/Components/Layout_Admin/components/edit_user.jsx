@@ -1,206 +1,199 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
 import Swal from "sweetalert2";
 
 export default function EditUser() {
+  const { id } = useParams();
   const navigate = useNavigate();
-  const { id } = useParams(); // Lấy ID từ URL
-  const [formData, setFormData] = useState({
-    ma_san_pham: "",
-    hoten: "",
-    ngaysinh: "",
-    gioitinh: "",
-    sdt: "",
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState({
+    fullname: "",
+    username: "",
     email: "",
-    diachi: "",
+    phone: "",
+    birthday: "",
+    gender: "",
   });
-  const [error, setError] = useState("");
 
-  // Hàm tải thông tin người dùng
-  const loadUser = async () => {
-    try {
-      const response = await fetch(`http://localhost:3000/api/user/${id}`);
-      const userData = await response.json();
-      if (response.ok) {
-        setFormData(userData);
-      } else {
-        setError("Không tìm thấy người dùng.");
+  // Fetch user data
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3000/api/user/${id}`);
+        const userData = response.data;
+        
+        // Format date for input type="date"
+        if (userData.birthday) {
+          userData.birthday = new Date(userData.birthday).toISOString().split('T')[0];
+        }
+        
+        setUser(userData);
+        setLoading(false);
+      } catch (error) {
+        console.error("Lỗi khi tải thông tin người dùng:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Lỗi!",
+          text: "Không thể tải thông tin người dùng",
+        });
+        navigate("/admin-account");
       }
-    } catch (error) {
-      console.error("Lỗi khi tải người dùng:", error);
-      setError("Có lỗi xảy ra khi tải thông tin người dùng.");
-    }
+    };
+
+    fetchUser();
+  }, [id, navigate]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUser((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  // Hàm xử lý gửi form
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (
-      !formData.ma_san_pham ||
-      !formData.hoten ||
-      !formData.ngaysinh ||
-      !formData.gioitinh ||
-      !formData.sdt ||
-      !formData.email ||
-      !formData.diachi
-    ) {
-      return Swal.fire("Lỗi!", "Vui lòng điền đầy đủ thông tin.", "error");
-    }
-
+    
     try {
-      const res = await fetch(`http://localhost:3000/api/user/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
+      // Hiển thị loading
+      Swal.fire({
+        title: 'Đang cập nhật...',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
         },
-        body: JSON.stringify(formData),
       });
 
-      const responseData = await res.json();
-      if (res.ok) {
-        Swal.fire("Thành công!", "Thông tin người dùng đã được cập nhật.", "success");
-        navigate("/admin-account"); // Chuyển hướng sau khi thành công
+      const response = await axios.put(
+        `http://localhost:3000/api/user/${id}`,
+        {
+          fullname: user.fullname,
+          username: user.username,
+          email: user.email,
+          phone: user.phone,
+          birthday: user.birthday,
+          gender: user.gender
+        }
+      );
+
+      if (response.data.success) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Thành công!',
+          text: 'Cập nhật thông tin thành công',
+          showConfirmButton: false,
+          timer: 1500
+        }).then(() => {
+          navigate('/admin-account');
+        });
       } else {
-        throw new Error(responseData.message || "Có lỗi xảy ra khi cập nhật thông tin.");
+        throw new Error(response.data.message);
       }
     } catch (error) {
-      setError(error.message);
-      Swal.fire("Lỗi!", error.message, "error");
+      console.error('Lỗi khi cập nhật:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Lỗi!',
+        text: error.response?.data?.message || 'Không thể cập nhật thông tin người dùng'
+      });
     }
   };
 
-  useEffect(() => {
-    loadUser(); // Tải thông tin người dùng khi component được mount
-  }, []);
+  if (loading) {
+    return <div className="text-center">Đang tải...</div>;
+  }
 
   return (
-    <div className="container my-4">
-      <div className="row">
-        <div className="col-md-8 mx-auto rounded border p-4">
-          <h2 className="text-center mb-5">Edit User</h2>
-          <form onSubmit={handleSubmit}>
-            {/* Mã sản phẩm */}
-            <div className="row mb-3">
-              <label className="col-sm-4 col-form-label" htmlFor="ma_san_pham">Mã Sản Phẩm</label>
-              <div className="col-sm-8">
-                <input
-                  className="form-control"
-                  id="ma_san_pham"
-                  name="ma_san_pham"
-                  type="text"
-                  value={formData.ma_san_pham}
-                  onChange={(e) => setFormData({ ...formData, ma_san_pham: e.target.value })}
-                />
-              </div>
-            </div>
-
-            {/* Họ tên */}
-            <div className="row mb-3">
-              <label className="col-sm-4 col-form-label" htmlFor="hoten">Họ Tên</label>
-              <div className="col-sm-8">
-                <input
-                  className="form-control"
-                  id="hoten"
-                  name="hoten"
-                  type="text"
-                  value={formData.hoten}
-                  onChange={(e) => setFormData({ ...formData, hoten: e.target.value })}
-                />
-              </div>
-            </div>
-
-            {/* Ngày sinh */}
-            <div className="row mb-3">
-              <label className="col-sm-4 col-form-label" htmlFor="ngaysinh">Ngày Sinh</label>
-              <div className="col-sm-8">
-                <input
-                  className="form-control"
-                  id="ngaysinh"
-                  name="ngaysinh"
-                  type="date"
-                  value={formData.ngaysinh}
-                  onChange={(e) => setFormData({ ...formData, ngaysinh: e.target.value })}
-                />
-              </div>
-            </div>
-
-            {/* Giới tính */}
-            <div className="row mb-3">
-              <label className="col-sm-4 col-form-label" htmlFor="gioitinh">Giới Tính</label>
-              <div className="col-sm-8">
-                <select
-                  className="form-control"
-                  id="gioitinh"
-                  name="gioitinh"
-                  value={formData.gioitinh}
-                  onChange={(e) => setFormData({ ...formData, gioitinh: e.target.value })}
-                >
-                  <option value="Nam">Nam</option>
-                  <option value="Nữ">Nữ</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Số điện thoại */}
-            <div className="row mb-3">
-              <label className="col-sm-4 col-form-label" htmlFor="sdt">Số Điện Thoại</label>
-              <div className="col-sm-8">
-                <input
-                  className="form-control"
-                  id="sdt"
-                  name="sdt"
-                  type="text"
-                  value={formData.sdt}
-                  onChange={(e) => setFormData({ ...formData, sdt: e.target.value })}
-                />
-              </div>
-            </div>
-
-            {/* Email */}
-            <div className="row mb-3">
-              <label className="col-sm-4 col-form-label" htmlFor="email">Email</label>
-              <div className="col-sm-8">
-                <input
-                  className="form-control"
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                />
-              </div>
-            </div>
-
-            {/* Địa chỉ */}
-            <div className="row mb-3">
-              <label className="col-sm-4 col-form-label" htmlFor="diachi">Địa Chỉ</label>
-              <div className="col-sm-8">
-                <input
-                  className="form-control"
-                  id="diachi"
-                  name="diachi"
-                  type="text"
-                  value={formData.diachi}
-                  onChange={(e) => setFormData({ ...formData, diachi: e.target.value })}
-                />
-              </div>
-            </div>
-
-            {/* Thông báo lỗi */}
-            {error && <p className="text-danger">{error}</p>}
-
-            {/* Nút Submit */}
-            <div className="row">
-              <div className="offset-sm-4 col-sm-4 d-grid">
-                <button type="submit" className="btn btn-primary">Update</button>
-              </div>
-              <div className="col-sm-4 d-grid">
-                <a className="btn btn-secondary" href="/admin-account">Cancel</a>
-              </div>
-            </div>
-          </form>
+    <div className="container">
+      <h2 className="text-center mb-4">Chỉnh sửa thông tin người dùng</h2>
+      <form onSubmit={handleSubmit}>
+        <div className="mb-3">
+          <label className="form-label">Họ tên:</label>
+          <input
+            type="text"
+            className="form-control"
+            name="fullname"
+            value={user.fullname}
+            onChange={handleChange}
+            required
+          />
         </div>
-      </div>
+
+        <div className="mb-3">
+          <label className="form-label">Username:</label>
+          <input
+            type="text"
+            className="form-control"
+            name="username"
+            value={user.username}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label">Email:</label>
+          <input
+            type="email"
+            className="form-control"
+            name="email"
+            value={user.email}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label">Số điện thoại:</label>
+          <input
+            type="tel"
+            className="form-control"
+            name="phone"
+            value={user.phone || ""}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label">Ngày sinh:</label>
+          <input
+            type="date"
+            className="form-control"
+            name="birthday"
+            value={user.birthday || ""}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label">Giới tính:</label>
+          <select
+            className="form-select"
+            name="gender"
+            value={user.gender || ""}
+            onChange={handleChange}
+          >
+            <option value="">Chọn giới tính</option>
+            <option value="Nam">Nam</option>
+            <option value="Nữ">Nữ</option>
+            <option value="Khác">Khác</option>
+          </select>
+        </div>
+
+        <div className="text-center">
+          <button type="submit" className="btn btn-primary me-2">
+            Cập nhật
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => navigate("/admin-account")}
+          >
+            Hủy
+          </button>
+        </div>
+      </form>
     </div>
   );
 }
