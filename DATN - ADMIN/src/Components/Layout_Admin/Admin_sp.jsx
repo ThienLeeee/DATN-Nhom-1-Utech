@@ -6,7 +6,7 @@ import '../../style.css'
 export default function Admin_sp() {
   const [sanPham, setSanpham] = useState([]);
   const [filteredCategoryId, setFilteredCategoryId] = useState(null);
-const [lockedCategories, setLockedCategories] = useState(true);
+const [lockedCategories, setLockedCategories] = useState([]);
 const [searchKeyword, setSearchKeyword] = useState('');
 const [categories, setCategories] = useState([]);
 const filteredItems = sanPham.filter((item) => {

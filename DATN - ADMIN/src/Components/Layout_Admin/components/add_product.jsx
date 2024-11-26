@@ -162,7 +162,7 @@ export default function AddProduct() {
     <div className="container my-4">
       <div className="row">
         <div className="col-md-8 mx-auto rounded border p-4">
-          <h2 className="text-center mb-5">Create Product</h2>
+          <h2 className="text-center mb-5">Thêm sản phẩm</h2>
           <form onSubmit={handleSubmit} encType="multipart/form-data">
             {/* Mã sản phẩm */}
             <div className="row mb-3">
