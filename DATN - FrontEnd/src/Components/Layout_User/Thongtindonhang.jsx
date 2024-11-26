@@ -193,7 +193,7 @@ export default function Thongtindonhang() {
             </div>
           ) : (
             <div className="empty-state">
-              <img src="/img/icon/empty-order.png" alt="Không có đơn hàng" />
+              <img src="/img/icon/bangboo-cart.gif" alt="Không có đơn hàng" style={{borderRadius: '100%'}}/>
               <h3>Bạn chưa có đơn hàng nào</h3>
               <p>Hãy tiếp tục mua sắm để có những trải nghiệm tuyệt vời</p>
               <Link to="/" className="shop-now-btn">
