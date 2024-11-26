@@ -341,6 +341,7 @@ export default function ChiTietSanPham() {
             itemType="http://schema.org/Product"
           >
             <div className="top_detail">
+              <div>
               <div className="img_detail">
                 <div className="main_img_detail">
                   <a onClick={() => {
@@ -582,6 +583,7 @@ export default function ChiTietSanPham() {
                 <div className="item_info_detail">
                   <div className="addthis_inline_share_toolbox" />
                 </div>
+              </div>
               </div>
 
               <div className="chucnang_detail">
@@ -830,8 +832,7 @@ export default function ChiTietSanPham() {
                 </a>
                 <div className="hotline_hotro">
                   <div className="title_hotline_hotro">Hỗ trợ mua hàng</div>
-                  <div className="content_hotline_hotro">
-                    <i className="call-num" />
+                  <div className="content_hotline_hotro" style={{display:'flex',justifyContent:"center",alignItems:"center"}}>
                     <p>
                       0902 566 839
                       <br />
@@ -844,7 +845,6 @@ export default function ChiTietSanPham() {
                   </div>
                 </div>
               </div>
-              <div className="clear" />
             </div>
             <div className="bottom_detail">
               <div className="left_bottom_detail">

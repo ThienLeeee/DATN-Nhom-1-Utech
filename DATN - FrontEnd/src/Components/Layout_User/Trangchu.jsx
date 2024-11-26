@@ -469,7 +469,7 @@ const isCategoryLocked = (id) => {
                       className="slick-slide slick-cloned"
                       data-slick-index={-1}
                       aria-hidden="true"
-                      style={{ width: 735 }}
+                      style={{ width:"100%", maxWidth: 735}}
                       tabIndex={-1}
                     >
                       <div className="item-slideshow">
@@ -484,7 +484,7 @@ const isCategoryLocked = (id) => {
                       className="slick-slide"
                       data-slick-index={0}
                       aria-hidden="true"
-                      style={{ width: 735 }}
+                      style={{ width:"100%", maxWidth: 735}}
                       tabIndex={-1}
                       role="option"
                     >
@@ -500,7 +500,7 @@ const isCategoryLocked = (id) => {
                       className="slick-slide"
                       data-slick-index={1}
                       aria-hidden="true"
-                      style={{ width: 735 }}
+                      style={{ width:"100%", maxWidth: 735}}
                       tabIndex={-1}
                       role="option"
                     >
@@ -516,7 +516,7 @@ const isCategoryLocked = (id) => {
                       className="slick-slide slick-current slick-active"
                       data-slick-index={2}
                       aria-hidden="false"
-                      style={{ width: 735 }}
+                      style={{width:"100%", maxWidth: 735 }}
                       tabIndex={-1}
                       role="option"
                     >
@@ -532,7 +532,7 @@ const isCategoryLocked = (id) => {
                       className="slick-slide"
                       data-slick-index={3}
                       aria-hidden="true"
-                      style={{ width: 735 }}
+                      style={{ width:"100%", maxWidth: 735}}
                       tabIndex={-1}
                       role="option"
                     >
@@ -548,7 +548,7 @@ const isCategoryLocked = (id) => {
                       className="slick-slide"
                       data-slick-index={4}
                       aria-hidden="true"
-                      style={{ width: 735 }}
+                      style={{ width:"100%", maxWidth: 735}}
                       tabIndex={-1}
                       role="option"
                     >
@@ -564,7 +564,7 @@ const isCategoryLocked = (id) => {
                       className="slick-slide"
                       data-slick-index={5}
                       aria-hidden="true"
-                      style={{ width: 735 }}
+                      style={{ width:"100%", maxWidth: 735}}
                       tabIndex={-1}
                       role="option"
                     >
@@ -580,7 +580,7 @@ const isCategoryLocked = (id) => {
                       className="slick-slide"
                       data-slick-index={6}
                       aria-hidden="true"
-                      style={{ width: 735 }}
+                      style={{ width:"100%", maxWidth: 735}}
                       tabIndex={-1}
                       role="option"
                     >
@@ -596,7 +596,7 @@ const isCategoryLocked = (id) => {
                       className="slick-slide"
                       data-slick-index={7}
                       aria-hidden="true"
-                      style={{ width: 735 }}
+                      style={{ width:"100%", maxWidth: 735}}
                       tabIndex={-1}
                       role="option"
                     >
@@ -612,7 +612,7 @@ const isCategoryLocked = (id) => {
                       className="slick-slide slick-cloned"
                       data-slick-index={8}
                       aria-hidden="true"
-                      style={{ width: 735 }}
+                      style={{ width:"100%", maxWidth: 735}}
                       tabIndex={-1}
                     >
                       <div className="item-slideshow">
@@ -799,6 +799,12 @@ const isCategoryLocked = (id) => {
           </div>
         </div>
       </div>
+      <div className="slideshow_second">
+          <div style={{padding:"15px"}}>
+            <img style={{width:"100%"}} src="/public/img/slideshow/slideshow1.png"
+                          alt="Công ty TNHH Phát Triển Tin Học Utech" />
+          </div>
+      </div>
       {/* slideshow-banner-container end*/}
 
       {/* bannerqc2 */}
@@ -810,7 +816,11 @@ const isCategoryLocked = (id) => {
                 className="slick-track"
                 style={{
                   opacity: 1,
-                  width: 1308,
+                  width:"100%",
+                  maxWidth: 1308,
+                  display:"flex",
+                  justifyContent:"space-between",
+                  gap:5,
                   transform: "translate3d(0px, 0px, 0px)",
                 }}
                 role="listbox"
@@ -819,12 +829,13 @@ const isCategoryLocked = (id) => {
                   className="slick-slide slick-current slick-active"
                   data-slick-index={0}
                   aria-hidden="false"
-                  style={{ height: 150, width: 320 }}
+                  style={{ height: 150, maxWidth: 318,width:"100%" }}
                   tabIndex={-1}
                   role="option"
                 >
                   <div className="item-bannerqc2 effect-1">
                     <img
+                    style={{width:"100%"}}
                       src="/public/img/banner/bannerqc2-1.png"
                       alt="Công ty TNHH Phát Triển Tin Học Utech"
                     />
@@ -834,12 +845,13 @@ const isCategoryLocked = (id) => {
                   className="slick-slide slick-active"
                   data-slick-index={1}
                   aria-hidden="false"
-                  style={{ height: 150, width: 320 }}
+                  style={{ height: 150, maxWidth: 318,width:"100%" }}
                   tabIndex={-1}
                   role="option"
                 >
                   <div className="item-bannerqc2 effect-1">
                     <img
+                    style={{width:"100%"}}
                       src="/public/img/banner/bannerqc2-2.png"
                       alt="Công ty TNHH Phát Triển Tin Học Utech"
                     />
@@ -849,12 +861,13 @@ const isCategoryLocked = (id) => {
                   className="slick-slide slick-active"
                   data-slick-index={2}
                   aria-hidden="false"
-                  style={{ height: 150, width: 320 }}
+                  style={{ height: 150, maxWidth: 318,width:"100%" }}
                   tabIndex={-1}
                   role="option"
                 >
                   <div className="item-bannerqc2 effect-1">
                     <img
+                    style={{width:"100%"}}
                       src="/public/img/banner/bannerqc2-3.png"
                       alt="Công ty TNHH Phát Triển Tin Học Utech"
                     />
@@ -864,12 +877,13 @@ const isCategoryLocked = (id) => {
                   className="slick-slide slick-active"
                   data-slick-index={3}
                   aria-hidden="false"
-                  style={{ height: 150, width: 320 }}
+                  style={{ height: 150, maxWidth: 318,width:"100%" }}
                   tabIndex={-1}
                   role="option"
                 >
                   <div className="item-bannerqc2 effect-1">
                     <img
+                    style={{width:"100%"}}
                       src="/public/img/banner/bannerqc2-4.png"
                       alt="Công ty TNHH Phát Triển Tin Học Utech"
                     />
@@ -893,7 +907,9 @@ const isCategoryLocked = (id) => {
                   className="slick-track"
                   style={{
                     opacity: 1,
-                    width: 1330,
+                    width:"100%",
+                    maxWidth: 1330,
+                    display:"flex",
                     transform: "translate3d(0px, 0px, 0px)",
                   }}
                   role="listbox"

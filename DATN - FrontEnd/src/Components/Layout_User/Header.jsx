@@ -8,6 +8,14 @@ export default function Header() {
   const [keyword, setKeyword] = useState("");
   const { user, logout } = useAuth();
   const [danhMuc, setDanhmuc] = useState([]);
+  const [isActive, setIsActive] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const handleClick = () => {
+    setIsActive(!isActive); 
+  };
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
   const [cartCount, setCartCount] = useState(() => {
     const cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
     return cartItems.reduce((total, item) => total + item.quantity, 0);
@@ -17,6 +25,8 @@ export default function Header() {
   const menuRef = useRef(null);
 
   useEffect(() => {
+    setIsActive(false)
+    setIsOpen(false)
     const loadDanhmuc = async () => {
       try {
         const danhMuc = await fetchDanhmuc();
@@ -43,6 +53,7 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
+
     if (user) {
       setShowUserMenu(false);
     }
@@ -113,7 +124,7 @@ export default function Header() {
         </div>
         <div className="header-bottom">
           <div className="wrap-content d-flex justify-content-between align-items-center">
-            <a className="logo-header d-inline-block" href="">
+            <a className="logo-header" href="">
               <img
                 src="/public/img/logo/logo.png"
                 alt="Công ty TNHH Phát Triển Tin Học Utech"
@@ -282,17 +293,18 @@ export default function Header() {
         <h6 className="vcard">Công ty TNHH Phát Triển Tin Học Utech</h6>
         <div className="menu">
           <div className="wrap-content">
-            <ul className="d-flex align-items-center">
+            <ul className="d-flex align-items-center justify-content-between">
               <li className="danh-muc-sp">
                 <span
                   className="has-child  transition"
                   href="san-pham"
                   title="Danh mục sản phẩm"
+                  onClick={()=>toggleMenu()}
                 >
                   {" "}
                   Danh mục sản phẩm <i />
                 </span>
-                <div className="show-menu isPage">
+                <div className={`show-menu isPage ${isOpen ? 'open-danhmuc' : 'close-danhmuc'}`}>
                   <div className="boxshadown">
                     <ul className="box_menu lst-prd">
 
@@ -630,50 +642,102 @@ export default function Header() {
                   </div>
                 </div>
               </li>
-              <li className="li-normal">
-                <Link to="/" className="" href="" title="Trang chủ">
-                  Trang chủ
-                </Link>
+              <ul className="menu_second d-flex align-items-center justify-content-between">
+                <li className="li-normal">
+                  <Link to="/" className="" href="" title="Trang chủ">
+                    Trang chủ
+                  </Link>
+                </li>
+                <li className="li-normal">
+                  <Link
+                    to="/gioithieu"
+                    className=""
+                    href="gioi-thieu.html"
+                    title="Giới thiệu"
+                  >
+                    Giới thiệu
+                  </Link>
+                </li>
+                <li className="li-normal">
+                  <Link className="" to="/tragop" title="Trả góp">
+                    Trả góp
+                  </Link>
+                </li>
+                <li className="li-normal">
+                  <a
+                    href="bao-gia.html"
+                    className="goto-form"
+                    title="Yêu cầu báo giá"
+                  >
+                    Yêu cầu báo giá
+                  </a>
+                </li>
+                <li className="li-normal">
+                  <a className="" href="tin-tuc.html" title="Tin tức & sự kiện">
+                    Tin tức &amp; Sự kiện
+                  </a>
+                </li>
+                <li className="li-normal">
+                  <Link
+                    to="/lienhe"
+                    className=""
+                    href="lien-he.html"
+                    title="Liên hệ"
+                  >
+                    Liên hệ
+                  </Link>
+                </li>
+              </ul>
+              <li className={`submenu ${isActive ? "active" : ""}`}   onClick={() => handleClick()}>
+                  <img width={45} height={45} src="/public/img/icon/menu (1).png" alt="" />
+                  <ul>
+                      <li className="li-normal">
+                      <Link to="/" className="" href="" title="Trang chủ">
+                        Trang chủ
+                      </Link>
+                    </li>
+                    <li className="li-normal">
+                      <Link
+                        to="/gioithieu"
+                        className=""
+                        href="gioi-thieu.html"
+                        title="Giới thiệu"
+                      >
+                        Giới thiệu
+                      </Link>
+                    </li>
+                    <li className="li-normal">
+                      <Link className="" to="/tragop" title="Trả góp">
+                        Trả góp
+                      </Link>
+                    </li>
+                    <li className="li-normal">
+                      <a
+                        href="bao-gia.html"
+                        className="goto-form"
+                        title="Yêu cầu báo giá"
+                      >
+                        Yêu cầu báo giá
+                      </a>
+                    </li>
+                    <li className="li-normal">
+                      <a className="" href="tin-tuc.html" title="Tin tức & sự kiện">
+                        Tin tức &amp; Sự kiện
+                      </a>
+                    </li>
+                    <li className="li-normal">
+                      <Link
+                        to="/lienhe"
+                        className=""
+                        href="lien-he.html"
+                        title="Liên hệ"
+                      >
+                        Liên hệ
+                      </Link>
+                    </li>
+                  </ul>
               </li>
-              <li className="li-normal">
-                <Link
-                  to="/gioithieu"
-                  className=""
-                  href="gioi-thieu.html"
-                  title="Giới thiệu"
-                >
-                  Giới thiệu
-                </Link>
-              </li>
-              <li className="li-normal">
-                <Link className="" to="/tragop" title="Trả góp">
-                  Trả góp
-                </Link>
-              </li>
-              <li className="li-normal">
-                <a
-                  href="bao-gia.html"
-                  className="goto-form"
-                  title="Yêu cầu báo giá"
-                >
-                  Yêu cầu báo giá
-                </a>
-              </li>
-              <li className="li-normal">
-                <a className="" href="tin-tuc.html" title="Tin tức & sự kiện">
-                  Tin tức &amp; Sự kiện
-                </a>
-              </li>
-              <li className="li-normal">
-                <Link
-                  to="/lienhe"
-                  className=""
-                  href="lien-he.html"
-                  title="Liên hệ"
-                >
-                  Liên hệ
-                </Link>
-              </li>
+              
             </ul>
           </div>
         </div>

@@ -4,7 +4,7 @@ export default function Footer() {
       <div className="clear"></div>
       {/* doitac */}
       <div id="doitac">
-        <div className="contain_owl_doitac inner" style={{ height: 70 }}>
+        <div className="contain_owl_doitac inner" style={{ minHeight: 70,display:"flex",alignItems:"center"}}>
           <div
             id="owl_doitac"
             className="owl-carousel owl-theme"
@@ -14,9 +14,10 @@ export default function Footer() {
               <div
                 className="owl-wrapper"
                 style={{
-                  width: 2556,
+                  maxWidth: 2556,
+                  width: "100%",
                   left: 0,
-                  display: "block",
+                  display: "flex",
                   transition: "1000ms",
                   transform: "translate3d(0px, 0px, 0px)",
                 }}
