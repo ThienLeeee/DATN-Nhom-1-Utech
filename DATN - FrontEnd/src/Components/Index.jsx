@@ -43,6 +43,7 @@ import Taikhoan from "./Layout_User/taikhoan";
 import Thongtindonhang from "./Layout_User/Thongtindonhang";
 import EditTaikhoan from "./Layout_User/editTaikhoan";
 import ForgotPassword from "./DK.DN/ForgotPassword";
+import Tintuc from "./Layout_User/tintuc";
 
 export default function Index() {
   return (
@@ -65,6 +66,7 @@ export default function Index() {
             <Route path="/donhang" element={<Thongtindonhang />}></Route>
             <Route path="/chinhsuathongtin" element={<EditTaikhoan />}></Route>
             <Route path="/forgot-password" element={<ForgotPassword></ForgotPassword>}></Route>
+            <Route path="/tintuc" element={<Tintuc />}></Route>
         </Routes>
         <Footer/>
       </Router>

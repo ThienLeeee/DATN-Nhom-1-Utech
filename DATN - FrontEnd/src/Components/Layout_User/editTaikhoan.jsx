@@ -161,6 +161,12 @@ export default function EditTaikhoan() {
         );
 
         if (updateResponse.data.success) {
+          // Cập nhật thông tin user trong context nhưng giữ nguyên các thông tin khác
+          updateUser({
+            ...user,
+            ...updateResponse.data.user
+          });
+
           setShowPasswordModal(false);
           setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
           toast.success('Mật khẩu đã được thay đổi thành công!', {

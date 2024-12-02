@@ -781,7 +781,7 @@ router.post('/accounts/register', async (req, res) => {
         return res.status(409).json({ message: 'Tên đăng nhập đã tồn tại' });
       }
       if (existingUser.email === email) {
-        return res.status(409).json({ message: 'Email đã tồn t��i' });
+        return res.status(409).json({ message: 'Email đã tồn ti' });
       }
     }
 
@@ -1299,29 +1299,27 @@ router.put('/users/update/:id', async (req, res) => {
       });
     }
 
-    // Chuẩn bị dữ liệu cập nhật
-    const dataToUpdate = {
-      fullname: updateData.fullname,
-      email: updateData.email,
-      birthday: updateData.birthday || null,
-      gender: updateData.gender || null,
-      phone: updateData.phone || null,
-      address: updateData.address || null
-    };
+    // Nếu có password mới, mã hóa nó
+    if (updateData.password) {
+      const salt = bcrypt.genSaltSync(10);
+      updateData.password = bcrypt.hashSync(updateData.password, salt);
+    }
 
     // Thực hiện cập nhật
     const result = await usersCollection.updateOne(
       { id: parseInt(id) },
-      { $set: dataToUpdate }
+      { $set: updateData }
     );
 
     if (result.modifiedCount > 0) {
-      // Lấy thông tin user sau khi cập nhật
+      // Lấy thông tin user sau khi cập nhật (loại bỏ password)
       const updatedUser = await usersCollection.findOne({ id: parseInt(id) });
+      const { password, ...userWithoutPassword } = updatedUser;
+      
       res.status(200).json({
         success: true,
         message: 'Cập nhật thông tin thành công',
-        user: updatedUser
+        user: userWithoutPassword
       });
     } else {
       res.status(400).json({

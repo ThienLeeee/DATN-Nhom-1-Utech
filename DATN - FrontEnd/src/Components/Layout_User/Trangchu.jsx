@@ -107,6 +107,52 @@ const isCategoryLocked = (id) => {
     setCurrentPromotionalSlide(slideIndex);
   };
 
+  const LatestNews = () => {
+    const latestNews = [
+      {
+        id: 1,
+        title: "Laptop Gaming MSI Katana 15 B13VEK 1205VN giảm giá sốc",
+        image: "/public/img/news/news1.jpg",
+        date: "15/03/2024"
+      },
+      {
+        id: 2,
+        title: "Top 5 laptop văn phòng đáng mua nhất 2024",
+        image: "/public/img/news/news2.jpg",
+        date: "14/03/2024"
+      },
+      {
+        id: 3,
+        title: "So sánh RTX 4060 và RTX 3060: Có đáng để nâng cấp?",
+        image: "/public/img/news/news3.jpg",
+        date: "13/03/2024"
+      }
+    ];
+
+    return (
+      <div className="news-section container">
+        <div className="section-header">
+          <h2>Tin tức & Sự kiện</h2>
+          <Link to="/tintuc" className="view-all">Xem tất cả</Link>
+        </div>
+        <div className="news-preview">
+          {latestNews.map(news => (
+            <div key={news.id} className="news-card">
+              <img src={news.image} alt={news.title} />
+              <div className="news-info">
+                <h3>{news.title}</h3>
+                <span className="date">{news.date}</span>
+                <Link to={`/tintuc/${news.id}`} className="read-more">
+                  Đọc thêm
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <>
       {/* slideshow-banner-container */}
@@ -1455,7 +1501,7 @@ const isCategoryLocked = (id) => {
                             <span className="price-new">{sanpham.gia_sp}đ</span>
                           </div>
                           <div className="cart-product d-flex flex-wrap justify-content-between align-items-center">
-                            <span className="status-pro sts2">Còn hàng</span>
+                            <span className="status-pro sts2">Còn h��ng</span>
                             <span
                               className="mua_giohang"
                               rel={7385}
@@ -1769,7 +1815,7 @@ const isCategoryLocked = (id) => {
           </div>
         </div>
       </div>
-      {/* content */}
+      <LatestNews />
     </>
   );
 }

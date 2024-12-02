@@ -673,9 +673,7 @@ export default function Header() {
                   </a>
                 </li>
                 <li className="li-normal">
-                  <a className="" href="tin-tuc.html" title="Tin tức & sự kiện">
-                    Tin tức &amp; Sự kiện
-                  </a>
+                  <Link to="/tintuc">Tin tức & Sự kiện</Link>
                 </li>
                 <li className="li-normal">
                   <Link
@@ -721,9 +719,7 @@ export default function Header() {
                       </a>
                     </li>
                     <li className="li-normal">
-                      <a className="" href="tin-tuc.html" title="Tin tức & sự kiện">
-                        Tin tức &amp; Sự kiện
-                      </a>
+                      <Link to="/tintuc">Tin tức & Sự kiện</Link>
                     </li>
                     <li className="li-normal">
                       <Link
