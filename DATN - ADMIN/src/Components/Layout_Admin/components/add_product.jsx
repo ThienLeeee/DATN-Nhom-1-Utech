@@ -12,14 +12,38 @@ export default function AddProduct() {
     bao_hanh: '',
     cau_hinh: {},
     id_danhmuc: '',
+     thuong_hieu: '',
+    hinh_anh: { chinh: null, phu1: null, phu2: null, phu3: null, phu4: null, phu5: null }, // Thêm các trường hình ảnh
   });
 
   const [file, setFile] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState(null);
+  const [previewUrls, setPreviewUrls] = useState({
+    chinh: null,
+    phu1: null,
+    phu2: null,
+    phu3: null,
+    phu4: null,
+    phu5: null
+  });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [categories, setCategories] = useState([]); // Dynamic categories
   const [cauHinhFields, setCauHinhFields] = useState([]); // Dynamic configuration fields
+  const [isCustomConfig, setIsCustomConfig] = useState(false); // Kiểm tra có phải cấu hình tùy chỉnh hay không
+  useEffect(() => {
+    // Tải danh mục từ API
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/api/danhMuc");
+        const data = await res.json();
+        setCategories(data);
+      } catch (error) {
+        console.error("Lỗi khi tải danh mục:", error);
+      }
+    };
 
+    fetchCategories();
+  }, []);
   const loadSanpham = async () => {
     try {
       const sanPhamData = await fetchSanpham();
@@ -30,6 +54,7 @@ export default function AddProduct() {
   };
 
   useEffect(() => {
+    // Khi thay đổi danh mục, sẽ thay đổi trường cấu hình tương ứng
     if (formData.id_danhmuc) {
       const categoryId = parseInt(formData.id_danhmuc);
       switch (categoryId) {
@@ -41,6 +66,7 @@ export default function AddProduct() {
             { name: 'vga', label: 'VGA' },
             { name: 'man_hinh', label: 'Màn Hình' },
           ]);
+          setIsCustomConfig(false);  // Không cần nhập cấu hình tùy chỉnh
           break;
         case 2: // PC
           setCauHinhFields([
@@ -48,6 +74,7 @@ export default function AddProduct() {
             { name: 'ram', label: 'RAM' },
             { name: 'vga', label: 'VGA' },
           ]);
+          setIsCustomConfig(false);
           break;
         case 3: // Màn Hình
           setCauHinhFields([
@@ -56,10 +83,8 @@ export default function AddProduct() {
             { name: 'do_phan_giai', label: 'Độ Phân Giải' },
             { name: 'tan_so_quet', label: 'Tần Số Quét' },
             { name: 'do_sang', label: 'Độ Sáng' },
-            { name: 'thoi_gian_phan_hoi', label: 'Thời Gian Phản Hồi' },
-            { name: 'phu_kien_trong_hop', label: 'Phụ Kiện Trong Hộp' },
-            { name: 'cong_ket_noi', label: 'Cổng Kết Nối' },
           ]);
+          setIsCustomConfig(false);
           break;
         case 4: // Chuột
           setCauHinhFields([
@@ -68,20 +93,19 @@ export default function AddProduct() {
             { name: 'ket_noi', label: 'Kết Nối' },
             { name: 'mau_sac', label: 'Màu Sắc' },
             { name: 'trong_luong', label: 'Trọng Lượng' },
-            { name: 'cam_bien', label: 'Cảm Biến' },
-            { name: 'led', label: 'Led' },
-            { name: 'tuoi_tho', label: 'Tuổi Thọ' },
           ]);
+          setIsCustomConfig(false);
           break;
         case 5: // Bàn phím
           setCauHinhFields([
             { name: 'ket_noi', label: 'Kết Nối' },
             { name: 'trong_luong', label: 'Trọng Lượng' },
-            { name: 'led', label: 'LED' },
           ]);
+          setIsCustomConfig(false);
           break;
         default:
           setCauHinhFields([]);
+          setIsCustomConfig(true);  // Bật chế độ nhập cấu hình tùy chỉnh
           break;
       }
     }
@@ -89,14 +113,39 @@ export default function AddProduct() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    
+    // Kiểm tra xem đây có phải là trường cấu hình không
+    if (name.startsWith("cau_hinh")) {
+      const field = name.split("[")[1].split("]")[0];
+      setFormData(prevData => ({
+        ...prevData,
+        cau_hinh: {
+          ...prevData.cau_hinh,
+          [field]: value
+        }
+      }));
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
+ // Xử lý thay đổi file
+const handleFileChange = (e, type) => {
+  const selectedFile = e.target.files[0];
 
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    setFile(selectedFile);
-  };
+  // Cập nhật hình ảnh trong state
+  setFormData((prevData) => ({
+    ...prevData,
+    hinh_anh: { ...prevData.hinh_anh, [type]: selectedFile },
+  }));
 
+  // Cập nhật URL preview
+  if (selectedFile) {
+    const reader = new FileReader();
+    reader.onloadend = () =>
+      setPreviewUrls((prevUrls) => ({ ...prevUrls, [type]: reader.result }));
+    reader.readAsDataURL(selectedFile);
+  }
+};
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -109,10 +158,15 @@ export default function AddProduct() {
       if (!formData.cau_hinh[field.name]) {
         return Swal.fire("Lỗi!", `Vui lòng điền đầy đủ thông tin ${field.label}.`, "error");
       }
+      
+    }
+    if (isCustomConfig && !formData.cau_hinh.custom) {
+      return Swal.fire("Lỗi!", "Vui lòng nhập cấu hình cho danh mục này.", "error");
     }
 
-    if (!file) {
-      return Swal.fire("Lỗi!", "Vui lòng chọn một hình ảnh sản phẩm.", "error");
+    const hasImage = formData.hinh_anh.chinh || formData.hinh_anh.phu1 || formData.hinh_anh.phu2 || formData.hinh_anh.phu3 || formData.hinh_anh.phu4 || formData.hinh_anh.phu5;
+    if (!hasImage) {
+      return Swal.fire("Lỗi!", "Vui lòng chọn ít nhất một hình ảnh sản phẩm.", "error");
     }
     const data = new FormData();
     data.append('ma_san_pham', formData.ma_san_pham);
@@ -122,9 +176,12 @@ export default function AddProduct() {
     data.append('bao_hanh', formData.bao_hanh);
     data.append('id_danhmuc', formData.id_danhmuc);
     data.append('cau_hinh', JSON.stringify(formData.cau_hinh)); // Convert configuration to JSON string
-    if (file) {
-      data.append('hinh_anh', file);
-    }
+    if (formData.hinh_anh.chinh) data.append('hinh_anh[chinh]', formData.hinh_anh.chinh);
+  if (formData.hinh_anh.phu1) data.append('hinh_anh[phu1]', formData.hinh_anh.phu1);
+  if (formData.hinh_anh.phu2) data.append('hinh_anh[phu2]', formData.hinh_anh.phu2);
+  if (formData.hinh_anh.phu3) data.append('hinh_anh[phu3]', formData.hinh_anh.phu3);
+  if (formData.hinh_anh.phu4) data.append('hinh_anh[phu4]', formData.hinh_anh.phu4);
+  if (formData.hinh_anh.phu5) data.append('hinh_anh[phu5]', formData.hinh_anh.phu5);
 
     try {
       const res = await fetch('http://localhost:3000/api/sanPham', {
@@ -239,73 +296,92 @@ export default function AddProduct() {
             </div>
 
             {/* Danh mục */}
-<div className="row mb-3">
-  <label className="col-sm-4 col-form-label" htmlFor="id_danhmuc">Danh Mục</label>
-  <div className="col-sm-8">
-    <select
-      className="form-control"
-      id="id_danhmuc"
-      name="id_danhmuc"
-      value={formData.id_danhmuc}
-      onChange={handleChange}
-    >
-      <option value="">-- Chọn danh mục --</option>
-      <option value="1">Laptop</option>
-      <option value="2">PC</option>
-      <option value="3">Màn Hình</option>
-      <option value="4">Chuột</option>
-      <option value="5">Bàn Phím</option>
-    </select>
-  </div>
-</div>
+            <div className="row mb-3">
+              <label className="col-sm-4 col-form-label" htmlFor="id_danhmuc">Danh Mục</label>
+              <div className="col-sm-8">
+                <select
+                  className="form-control"
+                  id="id_danhmuc"
+                  name="id_danhmuc"
+                  value={formData.id_danhmuc}
+                  onChange={handleChange}
+                >
+                  <option value="">-- Chọn danh mục --</option>
+                              {categories.map((cat) => (
+                                <option key={cat.id} value={cat.id}>
+                                  {cat.tendm}
+                                </option>
+                              ))}
+                </select>
+              </div>
+            </div>
 
             
-            {/* Dynamic configuration fields */}
-            {cauHinhFields.map((field, index) => (
-              <div className="row mb-3" key={index}>
+              {/* Các trường cấu hình */}
+              {!isCustomConfig && cauHinhFields.map((field) => (
+              <div className="row mb-3" key={field.name}>
                 <label className="col-sm-4 col-form-label" htmlFor={field.name}>{field.label}</label>
                 <div className="col-sm-8">
                   <input
                     className="form-control"
                     id={field.name}
-                    name={field.name}
+                    name={`cau_hinh[${field.name}]`}
                     type="text"
                     value={formData.cau_hinh[field.name] || ''}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      cau_hinh: { ...formData.cau_hinh, [field.name]: e.target.value },
-                    })}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
             ))}
 
-            {/* Image upload */}
-            <div className="row mb-3">
-              <label className="col-sm-4 col-form-label" htmlFor="hinh_anh">Hình Ảnh</label>
-              <div className="col-sm-8">
-                <input
-                  className="form-control"
-                  id="hinh_anh"
-                  name="hinh_anh"
-                  type="file"
-                  onChange={handleFileChange}
-                />
-                {previewUrl && (
-                  <img
-                    src={previewUrl}
-                    alt="Preview"
-                    style={{
-                      width: '100px',
-                      height: '100px',
-                      borderRadius: '50%',
-                      objectFit: 'cover',
-                      paddingTop: '10px',
-                    }}
-                  />
-                )}
-              </div>
-            </div>
+                  {/* Cấu hình tùy chỉnh */}
+                  {isCustomConfig && (
+                    <div className="row mb-3">
+                      <label className="col-sm-4 col-form-label" htmlFor="customConfig">Cấu Hình Tùy Chỉnh</label>
+                      <div className="col-sm-8">
+                        <input
+                          className="form-control"
+                          id="customConfig"
+                          name="cau_hinh[custom]"
+                          type="text"
+                          value={formData.cau_hinh.custom || ''}
+                          onChange={handleChange}
+                        />
+                      </div>
+                    </div>
+                  )}
+                        {/* Image upload */}
+                        {/* Ảnh chính */}
+                <div className="row mb-3">
+                  <label className="col-sm-4 col-form-label" htmlFor="hinh_anh_chinh">Ảnh Chính</label>
+                  <div className="col-sm-8">
+                    <input
+                      className="form-control"
+                      id="hinh_anh_chinh"
+                      name="hinh_anh[chinh]"
+                      type="file"
+                      onChange={(e) => handleFileChange(e, 'chinh')}
+                    />
+                    {previewUrls.chinh && <img src={previewUrls.chinh} alt="Preview" style={{ width: '100px', height: '100px' }} />}
+                  </div>
+                </div>
+
+                {/* Ảnh phụ */}
+                {['phu1', 'phu2', 'phu3', 'phu4' ,'phu5'].map((type, index) => (
+                  <div className="row mb-3" key={type}>
+                    <label className="col-sm-4 col-form-label" htmlFor={`hinh_anh_${type}`}>Ảnh Phụ {index + 1}</label>
+                    <div className="col-sm-8">
+                      <input
+                        className="form-control"
+                        id={`hinh_anh_${type}`}
+                        name={`hinh_anh[${type}]`}
+                        type="file"
+                        onChange={(e) => handleFileChange(e, type)}
+                      />
+                      {previewUrls[type] && <img src={previewUrls[type]} alt={`Preview ${type}`} style={{ width: '100px', height: '100px' }} />}
+                    </div>
+                  </div>
+                ))}
 
             {/* Error or success messages */}
             {error && <p className="text-danger">{error}</p>}

@@ -135,9 +135,21 @@ const categoryConfigurations = {
     { name: 'IPS', label: 'IPS' },
     { name: 'trong_luong', label: 'TRỌNG LƯỢNG' },
   ],
+  6: [ // khác
+    { name: 'custom', label: 'cấu hình mới' },
+   
+  ],
+
 };
+
+
+
+
+// Hàm render cấu hình cho từng danh mục
 const renderConfig = (cau_hinh, id_danhmuc) => {
-  const configFields = categoryConfigurations[id_danhmuc] || [];
+  // Kiểm tra xem danh mục có tồn tại trong cấu hình không, nếu không thì mặc định là danh mục "khác"
+  const configFields = categoryConfigurations[id_danhmuc] || categoryConfigurations[6];
+  
   return configFields.map((field) => (
     cau_hinh[field.name] && (
       <div key={field.name}>

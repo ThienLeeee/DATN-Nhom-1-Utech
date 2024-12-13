@@ -12,10 +12,25 @@ export default function EditProduct() {
     bao_hanh: '',
     cau_hinh: {},
     id_danhmuc: '',
+     thuong_hieu: ''
   });
   const [imageUrl, setImageUrl] = useState(null);
-  const [file, setFile] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState(null);
+  const [files, setFiles] = useState({
+    chinh: null,
+    phu1: null,
+    phu2: null,
+    phu3: null,
+    phu4: null,
+    phu5: null,
+  });
+  const [previewUrls, setPreviewUrls] = useState({
+    chinh: null,
+    phu1: null,
+    phu2: null,
+    phu3: null,
+    phu4: null,
+    phu5: null,
+  });
   const [error, setError] = useState('');
   const [cauHinhFields, setCauHinhFields] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -27,7 +42,14 @@ export default function EditProduct() {
       if (response.ok) {
         setFormData(productData);
         setCauHinhFields(getCauHinhFields(productData.id_danhmuc)); // Thiết lập các trường cấu hình
-        setPreviewUrl(`/img/sanpham/${getImagePath(productData.id_danhmuc)}/${productData.hinh_anh.chinh}`); // Thiết lập preview hình ảnh
+        setPreviewUrls({
+          chinh: `/img/sanpham/${getImagePath(productData.id_danhmuc)}/${productData.hinh_anh.chinh}`,
+          phu1: productData.hinh_anh.phu1 ? `/img/sanpham/${getImagePath(productData.id_danhmuc)}/${productData.hinh_anh.phu1}` : null,
+          phu2: productData.hinh_anh.phu2 ? `/img/sanpham/${getImagePath(productData.id_danhmuc)}/${productData.hinh_anh.phu2}` : null,
+          phu3: productData.hinh_anh.phu3 ? `/img/sanpham/${getImagePath(productData.id_danhmuc)}/${productData.hinh_anh.phu3}` : null,
+          phu4: productData.hinh_anh.phu4 ? `/img/sanpham/${getImagePath(productData.id_danhmuc)}/${productData.hinh_anh.phu4}` : null,
+          phu5: productData.hinh_anh.phu5 ? `/img/sanpham/${getImagePath(productData.id_danhmuc)}/${productData.hinh_anh.phu5}` : null,
+        });
       } else {
         setError('Không tìm thấy sản phẩm.');
       }
@@ -97,8 +119,15 @@ const loadCategories = async () => {
             { name: 'trong_luong', label: 'Trọng Lượng' },
             { name: 'led', label: 'LED' },
           ];
+          case 6: 
+          return [
+              { name: 'custom', label: 'custom' },
+          
+            ];
         default:
-          return []; // Nếu không có danh mục nào phù hợp, không hiển thị cấu hình
+          return [
+            { name: 'custom', label: 'Cấu Hình Mới' }, // Mặc định trả về cấu hình của danh mục "khác" nếu danh mục không hợp lệ
+          ];
       }
     };
   
@@ -113,6 +142,20 @@ const loadCategories = async () => {
         default: return '';
       }
     };
+
+     // Cập nhật file và preview khi chọn ảnh
+  const handleFileChange = (e, type) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFiles((prevFiles) => ({ ...prevFiles, [type]: file }));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrls((prevUrls) => ({ ...prevUrls, [type]: reader.result }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   
    // Hàm xử lý gửi form sản phẩm
    const handleSubmit = async (e) => {
@@ -136,10 +179,10 @@ const loadCategories = async () => {
     data.append('id_danhmuc', formData.id_danhmuc);
     data.append('cau_hinh', JSON.stringify(formData.cau_hinh));
   
-    // Kiểm tra và thêm file hình ảnh nếu có
-    if (file) {
-      data.append('hinh_anh', file);
-    }
+   // Append hình ảnh
+   Object.keys(files).forEach((key) => {
+    if (files[key]) data.append(`hinh_anh[${key}]`, files[key]);
+  });
   
     try {
       const res = await fetch(`http://localhost:3000/api/sanPham/${id}`, {
@@ -169,13 +212,7 @@ const loadCategories = async () => {
       loadProduct(); // Tải thông tin sản phẩm khi component được mount
     }, []);
   
-    useEffect(() => {
-      if (file) {
-        const reader = new FileReader();
-        reader.onloadend = () => setPreviewUrl(reader.result);
-        reader.readAsDataURL(file);
-      }
-    }, [file]);
+    
     const danhMucMapping = {
       1: "Laptop",
       2: "PC",
@@ -289,104 +326,78 @@ const loadCategories = async () => {
                   <span className="text-danger"></span>
                 </div>
               </div>
-        {/* Danh mục */}
-        <div className="row mb-3">
-  <label className="col-sm-4 col-form-label">Tên Danh Mục</label>
-  <div className="col-sm-8">
-  <select
-  className="form-control"
-  id="id_danhmuc"
-  name="id_danhmuc"
-  value={formData.id_danhmuc}
-  onChange={handleChange}
->
-  <option value="">-- Chọn danh mục --</option>
-  {Object.entries(danhMucMapping).map(([id, name]) => (
-    <option key={id} value={id}>
-      {name}
-    </option>
-  ))}
-</select>
-  </div>
-</div>
+                    {/* Danh mục */}
+                    <div className="row mb-3">
+              <label className="col-sm-4 col-form-label">Tên Danh Mục</label>
+              <div className="col-sm-8">
+              <select
+              className="form-control"
+              id="id_danhmuc"
+              name="id_danhmuc"
+              value={formData.id_danhmuc}
+              onChange={handleChange}
+            >
+                 <option value="">-- Chọn danh mục --</option>
+                  {categories.map(category => (
+                    <option key={category.id} value={category.id}>
+                      {category.tendm}
+                    </option>
+              ))}
+            </select>
+              </div>
+            </div>
 
 
 
-{/* Các trường cấu hình động */}
-{cauHinhFields.map((field, index) => (
-  <div className="row mb-3" key={index}>
-    <label className="col-sm-4 col-form-label" htmlFor={field.name}>{field.label}</label>
-    <div className="col-sm-8">
-      <input
-        className="form-control"
-        id={field.name}
-        name={field.name}
-        type="text"
-        value={formData.cau_hinh[field.name] || ''}
-        onChange={(e) => setFormData({
-          ...formData,
-          cau_hinh: { ...formData.cau_hinh, [field.name]: e.target.value },
-        })}
-      />
-    </div>
-  </div>
-))}
-  
-              {/* Hình ảnh */}
-              <div className="row mb-3">
-  <label className="col-sm-4 col-form-label" htmlFor="hinh_anh">Hình Ảnh</label>
-  <div className="col-sm-8">
-    <input
-      className="form-control"
-      id="hinh_anh"
-      name="hinh_anh"
-      type="file"
-      onChange={(e) => {
-        const file = e.target.files[0];
-        if (file) {
-          setFile(file);
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            setPreviewUrl(reader.result); // Cập nhật previewUrl với hình ảnh mới
-          };
-          reader.readAsDataURL(file); // Đọc tệp hình ảnh
-        }
-      }}
-    />
-    
-    {/* Hiển thị hình ảnh xem trước */}
-    {previewUrl && (
-      <img
-        src={previewUrl}
-        alt="Preview"
-        style={{
-          width: '100px',
-          height: '100px',
-          borderRadius: '50%',
-          objectFit: 'cover',
-          paddingTop: '10px',
-        }}
-      />
-    )}
+              {/* Các trường cấu hình động */}
+              {cauHinhFields.map((field, index) => (
+                <div className="row mb-3" key={index}>
+                  <label className="col-sm-4 col-form-label" htmlFor={field.name}>{field.label}</label>
+                  <div className="col-sm-8">
+                    <input
+                      className="form-control"
+                      id={field.name}
+                      name={field.name}
+                      type="text"
+                      value={formData.cau_hinh[field.name] || ''}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        cau_hinh: { ...formData.cau_hinh, [field.name]: e.target.value },
+                      })}
+                    />
+                  </div>
+                </div>
+              ))}
+   {/* Thêm ảnh chính */}
+   <div className="row mb-3">
+          <label className="col-sm-4 col-form-label" htmlFor="hinh_anh_chinh">Ảnh Chính</label>
+          <div className="col-sm-8">
+            <input
+              type="file"
+              className="form-control"
+              id="hinh_anh_chinh"
+              onChange={(e) => handleFileChange(e, 'chinh')}
+            />
+            {previewUrls.chinh && <img src={previewUrls.chinh} alt="Ảnh chính" style={{ width: '100px' }} />}
+          </div>
+        </div>
 
-    {/* Hiển thị hình ảnh đã tải lên */}
-    {imageUrl &&  (
-      <img
-        src={imageUrl}
-        alt="Uploaded Product"
-        style={{
-          width: '100px',
-          height: '100px',
-          borderRadius: '50%',
-          objectFit: 'cover',
-          paddingTop: '10px',
-        }}
-      />
-    )}
-    
-    <span className="text-danger"></span>
-  </div>
-</div>
+        {/* Thêm ảnh phụ */}
+        {['phu1', 'phu2', 'phu3', 'phu4', 'phu5'].map((type, index) => (
+          <div className="row mb-3" key={type}>
+            <label className="col-sm-4 col-form-label" htmlFor={`hinh_anh_${type}`}>Ảnh Phụ {index + 1}</label>
+            <div className="col-sm-8">
+              <input
+                type="file"
+                className="form-control"
+                id={`hinh_anh_${type}`}
+                onChange={(e) => handleFileChange(e, type)}
+              />
+              {previewUrls[type] && <img src={previewUrls[type]} alt={`Ảnh phụ ${index + 1}`} style={{ width: '100px' }} />}
+            </div>
+          </div>
+        ))}
+             
   
               {/* Thông báo lỗi hoặc thành công */}
               {error && <p className="text-danger">{error}</p>}

@@ -251,7 +251,14 @@ const getImagePath = (id_danhmuc) => {
 };
 
 // Chức năng thêm sản phẩm
-router.post('/sanPham', upload.single('hinh_anh'), async (req, res, next) => {
+router.post('/sanPham',upload.fields([
+  { name: 'hinh_anh[chinh]', maxCount: 1 },
+  { name: 'hinh_anh[phu1]', maxCount: 1 },
+  { name: 'hinh_anh[phu2]', maxCount: 1 },
+  { name: 'hinh_anh[phu3]', maxCount: 1 },
+  { name: 'hinh_anh[phu4]', maxCount: 1 },
+  { name: 'hinh_anh[phu5]', maxCount: 1 }
+]), async (req, res, next) => {
   const db = await connectDb();
   const sanPhamCollection = db.collection('sanPham');
   let { ma_san_pham, ten_sp, gia_sp, bao_hanh, thuong_hieu, id_danhmuc, cau_hinh } = req.body;
@@ -265,7 +272,12 @@ router.post('/sanPham', upload.single('hinh_anh'), async (req, res, next) => {
   const folder = getImagePath(categoryId);
   // Construct hinh_anh object to include the single uploaded image with folder path
   let hinh_anh = {
-    chinh: req.file ? `${req.file.originalname}` : ''
+    chinh: req.files['hinh_anh[chinh]'] ? `${req.files['hinh_anh[chinh]'][0].originalname}` : '',
+    phu1: req.files['hinh_anh[phu1]'] ? `${req.files['hinh_anh[phu1]'][0].originalname}` : '',
+    phu2: req.files['hinh_anh[phu2]'] ? `${req.files['hinh_anh[phu2]'][0].originalname}` : '',
+    phu3: req.files['hinh_anh[phu3]'] ? `${req.files['hinh_anh[phu3]'][0].originalname}` : '',
+    phu4: req.files['hinh_anh[phu4]'] ? `${req.files['hinh_anh[phu4]'][0].originalname}` : '',
+    phu5: req.files['hinh_anh[phu5]'] ? `${req.files['hinh_anh[phu5]'][0].originalname}` : ''
   };
   // Find the last product to generate a new ID
   let lastProduct = await sanPhamCollection
@@ -335,9 +347,12 @@ router.post('/sanPham', upload.single('hinh_anh'), async (req, res, next) => {
         trong_luong: cau_hinh.trong_luong,
         // Thêm các cấu hình khác cho bàn phím
       };
-      break;
+    
     default:
-      customCauHinh = cau_hinh; // Dùng cấu hình mặc định nếu không có trường hợp nào khớp
+      customCauHinh = {
+        ...cau_hinh,
+        custom: cau_hinh.custom || {}, // Thêm trường custom nếu không có
+      };
       break;
   }
   // Create the new product object
@@ -362,7 +377,14 @@ router.post('/sanPham', upload.single('hinh_anh'), async (req, res, next) => {
 });
 
 //sửa sp
-router.put('/sanPham/:id', upload.single('hinh_anh'), async (req, res, next) => {
+router.put('/sanPham/:id',  upload.fields([ // Sử dụng upload.fields() để xử lý nhiều hình ảnh
+  { name: 'hinh_anh[chinh]', maxCount: 1 },
+  { name: 'hinh_anh[phu1]', maxCount: 1 },
+  { name: 'hinh_anh[phu2]', maxCount: 1 },
+  { name: 'hinh_anh[phu3]', maxCount: 1 },
+  { name: 'hinh_anh[phu4]', maxCount: 1 },
+  { name: 'hinh_anh[phu5]', maxCount: 1 }
+]), async (req, res, next) => {
   const id = req.params.id; // id là string
   const db = await connectDb();
   const sanPhamCollection = db.collection('sanPham');
@@ -377,14 +399,23 @@ router.put('/sanPham/:id', upload.single('hinh_anh'), async (req, res, next) => 
   } catch (error) {
       return res.status(400).json({ message: 'Cấu hình sản phẩm không hợp lệ.' });
   }
-  // Lấy hình ảnh mới hoặc giữ hình ảnh cũ
-  let hinh_anh = {};
-  if (req.file) {
-      hinh_anh.chinh = req.file.originalname; // Lưu tên hình nh mới
-  } else {
-      let product = await sanPhamCollection.findOne({ id: parseInt(id) });
-      hinh_anh.chinh = product.hinh_anh.chinh; // Giữ lại hình ảnh cũ nếu không có hình ảnh mới
-  }
+   // Lấy sản phẩm hiện tại
+   let product = await sanPhamCollection.findOne({ id: parseInt(id) });
+   if (!product) {
+     return res.status(404).json({ message: 'Sản phẩm không tồn tại.' });
+   }
+    // Cập nhật hình ảnh (giữ nguyên nếu không có ảnh mới)
+    let hinh_anh = { ...product.hinh_anh }; // Sao chép ảnh hiện tại từ sản phẩm cũ
+    const files = req.files;
+  
+    if (files) {
+      if (files['hinh_anh[chinh]']) hinh_anh.chinh = files['hinh_anh[chinh]'][0].originalname;
+      if (files['hinh_anh[phu1]']) hinh_anh.phu1 = files['hinh_anh[phu1]'][0].originalname;
+      if (files['hinh_anh[phu2]']) hinh_anh.phu2 = files['hinh_anh[phu2]'][0].originalname;
+      if (files['hinh_anh[phu3]']) hinh_anh.phu3 = files['hinh_anh[phu3]'][0].originalname;
+      if (files['hinh_anh[phu4]']) hinh_anh.phu4 = files['hinh_anh[phu4]'][0].originalname;
+      if (files['hinh_anh[phu5]']) hinh_anh.phu4 = files['hinh_anh[phu5]'][0].originalname;
+    }
   const categoryId = parseInt(id_danhmuc);
   let customCauHinh;
   // Tùy chỉnh cấu hình
@@ -442,6 +473,11 @@ router.put('/sanPham/:id', upload.single('hinh_anh'), async (req, res, next) => 
               trong_luong: cau_hinh.trong_luong,
           };
           break;
+           case 6: // khác
+      customCauHinh = {
+        custom:cau_hinh.custom,
+      };break;
+
       default:
           customCauHinh = cau_hinh; // Dùng cấu hình mặc định nếu không có trường hợp nào khớp
           break;
