@@ -91,6 +91,7 @@ export default function Admin_account() {
         if (!value) {
           return 'Bạn cần chọn quyền!';
         }
+        return null; // Thêm return null khi validation passed
       }
     });
 
@@ -159,6 +160,83 @@ export default function Admin_account() {
     setTimeout(() => {
       window.location.href = "http://localhost:5173/dangnhap";
     }, 100);
+  };
+
+  // Thêm hàm xem chi tiết user
+  const handleViewDetails = async (userId) => {
+    try {
+      // Lấy thông tin user
+      const userResponse = await axios.get(`http://localhost:3000/api/user/${userId}`);
+      const user = userResponse.data;
+      
+      // Lấy danh sách đơn hàng
+      const ordersResponse = await axios.get(`http://localhost:3000/api/donHang`);
+      // Lọc đơn hàng dựa trên email hoặc số điện thoại của user
+      const userOrders = ordersResponse.data.filter(order => 
+        order.email === user.email || 
+        (user.phone && order.dienThoai === user.phone)
+      );
+
+      // Hiển thị modal với thông tin chi tiết
+      Swal.fire({
+        title: 'Thông tin chi tiết khách hàng',
+        html: `
+          <div class="text-start">
+            <p><strong>Họ tên:</strong> ${user.fullname || 'Chưa cập nhật'}</p>
+            <p><strong>Username:</strong> ${user.username}</p>
+            <p><strong>Email:</strong> ${user.email}</p>
+            <p><strong>Số điện thoại:</strong> ${user.phone || 'Chưa cập nhật'}</p>
+            <p><strong>Ngày sinh:</strong> ${user.birthday ? formatDate(user.birthday) : 'Chưa cập nhật'}</p>
+            <p><strong>Giới tính:</strong> ${user.gender || 'Chưa cập nhật'}</p>
+            <hr/>
+            <h6 class="mb-3">Lịch sử đơn hàng (${userOrders.length} đơn):</h6>
+            ${userOrders.length > 0 ? 
+              userOrders.map(order => `
+                <div class="mb-2 p-2 border rounded">
+                  <p class="mb-1"><strong>Mã đơn:</strong> #${order.id}</p>
+                  <p class="mb-1"><strong>Ngày đặt:</strong> ${formatDate(order.ngayDat)}</p>
+                  <p class="mb-1"><strong>Tổng tiền:</strong> ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.tongTien)}</p>
+                  <p class="mb-1"><strong>Địa chỉ:</strong> ${order.diaChi}</p>
+                  <p class="mb-0"><strong>Trạng thái:</strong> <span class="badge bg-${getStatusColor(order.trangThai)}">${order.trangThai}</span></p>
+                </div>
+              `).join('') : 
+              '<p class="text-muted">Chưa có đơn hàng nào</p>'
+            }
+          </div>
+        `,
+        width: '600px',
+        confirmButtonText: 'Đóng',
+        showCloseButton: true,
+        customClass: {
+          container: 'custom-swal-container',
+          popup: 'custom-swal-popup',
+          content: 'custom-swal-content'
+        },
+        didOpen: () => {
+          // Thêm custom scrollbar cho modal content
+          const content = document.querySelector('.custom-swal-content');
+          if (content) {
+            content.style.maxHeight = '70vh';
+            content.style.overflowY = 'auto';
+          }
+        }
+      });
+    } catch (error) {
+      console.error("Lỗi khi lấy thông tin chi tiết:", error);
+      Swal.fire('Lỗi!', 'Không thể lấy thông tin chi tiết.', 'error');
+    }
+  };
+
+  // Thêm hàm hỗ trợ lấy màu cho trạng thái đơn hàng
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Chờ xử lý': return 'warning';
+      case 'Đang xử lý': return 'info';
+      case 'Đang giao hàng': return 'primary';
+      case 'Đã giao hàng': return 'success';
+      case 'Đã hủy': return 'danger';
+      default: return 'secondary';
+    }
   };
 
   if (loading) {
@@ -261,13 +339,18 @@ export default function Admin_account() {
                 </td>
                 <td className="text-center align-middle">
                   <div className="d-flex justify-content-center gap-2">
-                    <Link to={`/user/edit/${user.id}`} className="btn btn-primary btn-sm">
-                      <i className="bi bi-pencil-square"></i>
-                    </Link>
+                    <button
+                      onClick={() => handleViewDetails(user.id)}
+                      className="btn btn-info btn-sm"
+                      title="Xem chi tiết"
+                    >
+                      <i className="bi bi-eye"></i>
+                    </button>
                     <button
                       onClick={() => handleDelete(user.id)}
                       className="btn btn-danger btn-sm"
                       disabled={user.id === 1}
+                      title="Xóa người dùng"
                     >
                       <i className="bi bi-trash"></i>
                     </button>

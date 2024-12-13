@@ -128,29 +128,6 @@ const isCategoryLocked = (id) => {
         date: "13/03/2024"
       }
     ];
-
-    return (
-      <div className="news-section container">
-        <div className="section-header">
-          <h2>Tin tức & Sự kiện</h2>
-          <Link to="/tintuc" className="view-all">Xem tất cả</Link>
-        </div>
-        <div className="news-preview">
-          {latestNews.map(news => (
-            <div key={news.id} className="news-card">
-              <img src={news.image} alt={news.title} />
-              <div className="news-info">
-                <h3>{news.title}</h3>
-                <span className="date">{news.date}</span>
-                <Link to={`/tintuc/${news.id}`} className="read-more">
-                  Đọc thêm
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
   };
 
   return (
