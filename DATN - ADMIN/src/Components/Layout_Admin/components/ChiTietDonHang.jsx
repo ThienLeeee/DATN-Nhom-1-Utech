@@ -7,7 +7,7 @@ export default function ChiTietDonHang() {
   const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [imageErrors, setImageErrors] = useState({});
+  // const [imageErrors, setImageErrors] = useState({});
 
   useEffect(() => {
     fetchOrderDetails();
@@ -29,12 +29,12 @@ export default function ChiTietDonHang() {
     }
   };
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND'
-    }).format(amount);
-  };
+  // const formatCurrency = (amount) => {
+  //   return new Intl.NumberFormat('vi-VN', {
+  //     style: 'currency',
+  //     currency: 'VND'
+  //   }).format(amount);
+  // };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -47,19 +47,19 @@ export default function ChiTietDonHang() {
     });
   };
 
-  const calculateTotal = () => {
-    if (!order.sanPham) return 0;
+  // const calculateTotal = () => {
+  //   if (!order.sanPham) return 0;
     
-    return order.sanPham.reduce((total, product) => {
-      if (!product.items) return total;
+  //   return order.sanPham.reduce((total, product) => {
+  //     if (!product.items) return total;
       
-      const productTotal = product.items.reduce((sum, item) => {
-        return sum + (item.gia_sp * item.quantity);
-      }, 0);
+  //     const productTotal = product.items.reduce((sum, item) => {
+  //       return sum + (item.gia_sp * item.quantity);
+  //     }, 0);
       
-      return total + productTotal;
-    }, 0);
-  };
+  //     return total + productTotal;
+  //   }, 0);
+  // };
 
   if (loading) return <div className="loading">Đang tải...</div>;
   if (!order) return <div className="error">Không tìm thấy đơn hàng</div>;
@@ -99,7 +99,7 @@ export default function ChiTietDonHang() {
         </div>
       </div>
 
-      <div className="order-products-card">
+      {/* <div className="order-products-card">
         <h3>Sản phẩm đã đặt</h3>
         <div className="products-table-container">
           <table className="products-table">
@@ -158,7 +158,7 @@ export default function ChiTietDonHang() {
             </tfoot>
           </table>
         </div>
-      </div>
+      </div> */}
 
       {order.ghiChu && (
         <div className="order-note-card">

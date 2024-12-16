@@ -104,13 +104,7 @@ export default function Trangchu() {
     (sanpham) => sanpham.id_danhmuc === 3 && !isCategoryLocked(3)
   );
 
-  const handleSlideChange = (slideIndex) => {
-    setCurrentSlide(slideIndex);
-  };
 
-  const handlePromotionalSlideChange = (slideIndex) => {
-    setCurrentPromotionalSlide(slideIndex);
-  };
 
   return (
     <>
