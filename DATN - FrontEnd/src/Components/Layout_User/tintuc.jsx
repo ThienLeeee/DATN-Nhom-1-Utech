@@ -7,6 +7,7 @@ export default function Tintuc() {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [trendingNews, setTrendingNews] = useState([]);
   const [visibleNews, setVisibleNews] = useState(6);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Thêm useEffect để theo dõi scroll
   useEffect(() => {
@@ -438,6 +439,17 @@ export default function Tintuc() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleCategoryChange = (categoryId) => {
+    setIsLoading(true); // Bắt đầu loading
+    setActiveCategory(categoryId);
+    setVisibleNews(6); // Reset số lượng tin hiển thị về mặc định
+    
+    // Giả lập thời gian loading để tạo hiệu ứng
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+  };
+
   return (
     <div className="news-container">
       {/* Header Section */}
@@ -480,7 +492,7 @@ export default function Tintuc() {
           <button
             key={category.id}
             className={`category-btn ${activeCategory === category.id ? 'active' : ''}`}
-            onClick={() => setActiveCategory(category.id)}
+            onClick={() => handleCategoryChange(category.id)}
           >
             <i className={`bi ${category.icon}`}></i>
             {category.name}
@@ -597,36 +609,43 @@ export default function Tintuc() {
           <i className="bi bi-clock-history"></i> Tin mới nhất
         </h2>
         <div className="news-grid">
-          {filteredNews.map((item, index) => (
-            <a key={index} href={item.link} target="_blank" rel="noopener noreferrer" className="news-link">
-              <div className="news-item">
-                <div className="news-image">
-                  <img src={item.image} alt={item.title} />
-                  <div className="news-category">
-                    {categories.find(c => c.id === item.category)?.name}
+          {isLoading ? (
+            <div className="loading-overlay">
+              <div className="loading-spinner"></div>
+              <p>Đang lọc tin tức...</p>
+            </div>
+          ) : (
+            filteredNews.map((item, index) => (
+              <a key={index} href={item.link} target="_blank" rel="noopener noreferrer" className="news-link">
+                <div className="news-item">
+                  <div className="news-image">
+                    <img src={item.image} alt={item.title} />
+                    <div className="news-category">
+                      {categories.find(c => c.id === item.category)?.name}
+                    </div>
+                  </div>
+                  <div className="news-content">
+                    <h3 className="news-title">{item.title}</h3>
+                    <p className="news-summary">{item.description}</p>
+                    <div className="news-meta">
+                      <span className="news-date">
+                        <i className="bi bi-calendar3"></i>
+                        {item.pubDate.toLocaleDateString('vi-VN', { 
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric'
+                        })}
+                      </span>
+                      <span className="news-views">
+                        <i className="bi bi-eye-fill"></i>
+                        {item.views}
+                      </span>
+                    </div>
                   </div>
                 </div>
-                <div className="news-content">
-                  <h3 className="news-title">{item.title}</h3>
-                  <p className="news-summary">{item.description}</p>
-                  <div className="news-meta">
-                    <span className="news-date">
-                      <i className="bi bi-calendar3"></i>
-                      {item.pubDate.toLocaleDateString('vi-VN', { 
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric'
-                      })}
-                    </span>
-                    <span className="news-views">
-                      <i className="bi bi-eye-fill"></i>
-                      {item.views}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </a>
-          ))}
+              </a>
+            ))
+          )}
         </div>
         
         {/* Nút "Xem thêm" */}
@@ -639,18 +658,7 @@ export default function Tintuc() {
         )}
       </div>
 
-      {/* Newsletter Subscription */}
-      <div className="newsletter-section">
-        <div className="newsletter-content">
-          <i className="bi bi-envelope-paper"></i>
-          <h3>Đăng ký nhận tin</h3>
-          <p>Nhận thông báo về những tin tức công nghệ mới nhất</p>
-          <div className="newsletter-form">
-            <input type="email" placeholder="Nhập email của bạn" />
-            <button className="subscribe-btn">Đăng ký</button>
-          </div>
-        </div>
-      </div>
+     
 
       {/* Scroll to Top Button */}
       {showScrollTop && (

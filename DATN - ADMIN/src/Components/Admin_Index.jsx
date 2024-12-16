@@ -1,8 +1,7 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import NavBar from "./Layout_Admin/NavBar";
 import Header from "./Layout_Admin/Header";
 import Footer from "./Layout_Admin/Footer";
-import Trangchu from "./Layout_Admin/Trangchu";
 import Admin_dm from "./Layout_Admin/Admin_dm";
 import Admin_sp from "./Layout_Admin/Admin_sp";
 import Admin_thongke from "./Layout_Admin/Admin_thongke";
@@ -28,7 +27,7 @@ export default function Admin_Index() {
           <Header />
           <div className="row p-5">
             <Routes>
-              <Route path="/" element={<Trangchu />} />
+              <Route path="/" element={<Navigate to="/admin-thongke" replace />} />
               <Route path="/admin-thongke" element={<Admin_thongke/>} />
               <Route path="/admin-dm" element={<Admin_dm />} />
               <Route path="/category/add" element={<AddCategory />} />
@@ -41,7 +40,6 @@ export default function Admin_Index() {
                 element={<Admin_account></Admin_account>}
               />
               <Route path="/user/edit/:id" element={<EditUser />} />
-
               <Route path="/admin-dh" element={<Admin_dh />} />
               <Route path="/admin-dh/:id" element={<ChiTietDonHang />} />
               <Route path="/admin-comment" element={<Admin_comment />} />
