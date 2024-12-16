@@ -130,9 +130,7 @@ export default function Dangnhap() {
                 {error && (
                   <div className="alert alert-danger text-center">{error}</div>
                 )}
-                <div className="text-end mb-3">
-                  <Link to="/forgot-password">Quên mật khẩu?</Link>
-                </div>
+               
                 <button type="submit" className="btn btn-primary w-100">
                   Đăng nhập
                 </button>
