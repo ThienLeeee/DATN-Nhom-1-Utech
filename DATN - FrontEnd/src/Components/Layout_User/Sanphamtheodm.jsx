@@ -239,21 +239,7 @@ export default function SanPhamTheodm() {
                                       <li>
                                         Màn hình: {sanpham.cau_hinh.man_hinh}
                                       </li>
-                                      <li>
-                                        Pin: {sanpham.cau_hinh_chi_tiet.pin}
-                                      </li>
-                                      <li>
-                                        Màu sắc:{" "}
-                                        {sanpham.cau_hinh_chi_tiet.mau_sac}
-                                      </li>
-                                      <li>
-                                        Trọng lượng:{" "}
-                                        {sanpham.cau_hinh_chi_tiet.trong_luong}
-                                      </li>
-                                      <li>
-                                        Hệ điều hành:{" "}
-                                        {sanpham.cau_hinh_chi_tiet.he_dieu_hanh}
-                                      </li>
+                                      
                                     </>
                                   )}
                                   {sanpham.id_danhmuc === 2 && (
@@ -411,19 +397,7 @@ export default function SanPhamTheodm() {
             <div className="clear" />
           </div>
           <div className="clear" />
-          <div style={{ align: "center" }} className="show_tool1">
-            <button
-              className="load_more"
-              data-page={0}
-              data-id={1}
-              data-total={354}
-            >
-              Xem thêm <i className="fa fa-arrow-down" aria-hidden="true" />
-            </button>
-            <div className="animation_image1" style={{ display: "none" }}>
-              <i className="fa fa-spinner fa-spin fa-3x" />
-            </div>
-          </div>
+        
         </div>
       </div>
     </div>

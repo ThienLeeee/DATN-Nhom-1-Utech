@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "/public/css/trangchu.css";
 
-
 export default function Trangchu() {
   const [sanPham, setSanpham] = useState([]);
   const [danhMuc, setDanhmuc] = useState([]);
@@ -46,7 +45,9 @@ export default function Trangchu() {
   useEffect(() => {
     const fetchHotProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/sanPham/ban-chay');
+        const response = await axios.get(
+          "http://localhost:3000/api/sanPham/ban-chay"
+        );
         setHotProducts(response.data);
       } catch (error) {
         console.error("Lỗi khi lấy sản phẩm bán chạy:", error);
@@ -58,46 +59,50 @@ export default function Trangchu() {
   useEffect(() => {
     const fetchPromotionalProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/api/sanPham/khuyen-mai');
+        const response = await axios.get(
+          "http://localhost:4000/api/sanPham/khuyen-mai"
+        );
         setPromotionalProducts(response.data);
       } catch (error) {
-        console.error('Error fetching promotional products:', error);
+        console.error("Error fetching promotional products:", error);
       }
     };
     fetchPromotionalProducts();
   }, []);
   // Hàm kiểm tra danh mục có bị khóa không
-const isCategoryLocked = (id) => {
-  const category = danhMuc.find((danhmuc) => danhmuc.id === id);
-  return category ? category.locked : false;
-};
+  const isCategoryLocked = (id) => {
+    const category = danhMuc.find((danhmuc) => danhmuc.id === id);
+    return category ? category.locked : false;
+  };
 
   const handleAddToCart = (sanPhamMoi) => {
     let cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
     const itemIndex = cartItems.findIndex((item) => item.id === sanPhamMoi.id);
-  
+
     if (itemIndex > -1) {
       cartItems[itemIndex].quantity += 1;
     } else {
       const priceAsNumber = parseInt(sanPhamMoi.gia_sp.replace(/\./g, ""));
       cartItems.push({ ...sanPhamMoi, gia_sp: priceAsNumber, quantity: 1 });
     }
-  
+
     localStorage.setItem("cartItem", JSON.stringify(cartItems));
-    
+
     window.dispatchEvent(new Event("cartUpdated"));
-    
+
     navigate("/giohang");
   };
-  
-  
 
   // Lọc sản phẩm theo categoryId
-  const sanPhamdm1 = sanPham.filter((sanpham) => sanpham.id_danhmuc === 1 && !isCategoryLocked(1));
-  const sanPhamdm2 = sanPham.filter((sanpham) => sanpham.id_danhmuc === 2 && !isCategoryLocked(2));
-  const sanPhamdm3 = sanPham.filter((sanpham) => sanpham.id_danhmuc === 3 && !isCategoryLocked(3));
-  const sanPhamdm4 = sanPham.filter((sanpham) => sanpham.id_danhmuc === 4 && !isCategoryLocked(4));
-  const sanPhamdm5 = sanPham.filter((sanpham) => sanpham.id_danhmuc === 5 && !isCategoryLocked(5));
+  const sanPhamdm1 = sanPham.filter(
+    (sanpham) => sanpham.id_danhmuc === 1 && !isCategoryLocked(1)
+  );
+  const sanPhamdm2 = sanPham.filter(
+    (sanpham) => sanpham.id_danhmuc === 2 && !isCategoryLocked(2)
+  );
+  const sanPhamdm3 = sanPham.filter(
+    (sanpham) => sanpham.id_danhmuc === 3 && !isCategoryLocked(3)
+  );
 
   const handleSlideChange = (slideIndex) => {
     setCurrentSlide(slideIndex);
@@ -105,29 +110,6 @@ const isCategoryLocked = (id) => {
 
   const handlePromotionalSlideChange = (slideIndex) => {
     setCurrentPromotionalSlide(slideIndex);
-  };
-
-  const LatestNews = () => {
-    const latestNews = [
-      {
-        id: 1,
-        title: "Laptop Gaming MSI Katana 15 B13VEK 1205VN giảm giá sốc",
-        image: "/public/img/news/news1.jpg",
-        date: "15/03/2024"
-      },
-      {
-        id: 2,
-        title: "Top 5 laptop văn phòng đáng mua nhất 2024",
-        image: "/public/img/news/news2.jpg",
-        date: "14/03/2024"
-      },
-      {
-        id: 3,
-        title: "So sánh RTX 4060 và RTX 3060: Có đáng để nâng cấp?",
-        image: "/public/img/news/news3.jpg",
-        date: "13/03/2024"
-      }
-    ];
   };
 
   return (
@@ -473,6 +455,7 @@ const isCategoryLocked = (id) => {
               </div>
             </div>
           </div>
+
           {/* empty-site end */}
           <div className="slideshow-right d-flex justify-content-between">
             {/* slideshow  */}
@@ -492,7 +475,7 @@ const isCategoryLocked = (id) => {
                       className="slick-slide slick-cloned"
                       data-slick-index={-1}
                       aria-hidden="true"
-                      style={{ width:"100%", maxWidth: 735}}
+                      style={{ width: "100%", maxWidth: 735 }}
                       tabIndex={-1}
                     >
                       <div className="item-slideshow">
@@ -507,7 +490,7 @@ const isCategoryLocked = (id) => {
                       className="slick-slide"
                       data-slick-index={0}
                       aria-hidden="true"
-                      style={{ width:"100%", maxWidth: 735}}
+                      style={{ width: "100%", maxWidth: 735 }}
                       tabIndex={-1}
                       role="option"
                     >
@@ -523,7 +506,7 @@ const isCategoryLocked = (id) => {
                       className="slick-slide"
                       data-slick-index={1}
                       aria-hidden="true"
-                      style={{ width:"100%", maxWidth: 735}}
+                      style={{ width: "100%", maxWidth: 735 }}
                       tabIndex={-1}
                       role="option"
                     >
@@ -539,7 +522,7 @@ const isCategoryLocked = (id) => {
                       className="slick-slide slick-current slick-active"
                       data-slick-index={2}
                       aria-hidden="false"
-                      style={{width:"100%", maxWidth: 735 }}
+                      style={{ width: "100%", maxWidth: 735 }}
                       tabIndex={-1}
                       role="option"
                     >
@@ -555,7 +538,7 @@ const isCategoryLocked = (id) => {
                       className="slick-slide"
                       data-slick-index={3}
                       aria-hidden="true"
-                      style={{ width:"100%", maxWidth: 735}}
+                      style={{ width: "100%", maxWidth: 735 }}
                       tabIndex={-1}
                       role="option"
                     >
@@ -571,7 +554,7 @@ const isCategoryLocked = (id) => {
                       className="slick-slide"
                       data-slick-index={4}
                       aria-hidden="true"
-                      style={{ width:"100%", maxWidth: 735}}
+                      style={{ width: "100%", maxWidth: 735 }}
                       tabIndex={-1}
                       role="option"
                     >
@@ -587,7 +570,7 @@ const isCategoryLocked = (id) => {
                       className="slick-slide"
                       data-slick-index={5}
                       aria-hidden="true"
-                      style={{ width:"100%", maxWidth: 735}}
+                      style={{ width: "100%", maxWidth: 735 }}
                       tabIndex={-1}
                       role="option"
                     >
@@ -603,7 +586,7 @@ const isCategoryLocked = (id) => {
                       className="slick-slide"
                       data-slick-index={6}
                       aria-hidden="true"
-                      style={{ width:"100%", maxWidth: 735}}
+                      style={{ width: "100%", maxWidth: 735 }}
                       tabIndex={-1}
                       role="option"
                     >
@@ -619,7 +602,7 @@ const isCategoryLocked = (id) => {
                       className="slick-slide"
                       data-slick-index={7}
                       aria-hidden="true"
-                      style={{ width:"100%", maxWidth: 735}}
+                      style={{ width: "100%", maxWidth: 735 }}
                       tabIndex={-1}
                       role="option"
                     >
@@ -635,7 +618,7 @@ const isCategoryLocked = (id) => {
                       className="slick-slide slick-cloned"
                       data-slick-index={8}
                       aria-hidden="true"
-                      style={{ width:"100%", maxWidth: 735}}
+                      style={{ width: "100%", maxWidth: 735 }}
                       tabIndex={-1}
                     >
                       <div className="item-slideshow">
@@ -651,6 +634,7 @@ const isCategoryLocked = (id) => {
               </div>
             </div>
             {/* slideshow end  */}
+
             {/* banner1 */}
             <div className="boxbannerslide">
               <div className="slick-bannerqc1 none slick-initialized slick-slider slick-vertical">
@@ -822,12 +806,17 @@ const isCategoryLocked = (id) => {
           </div>
         </div>
       </div>
+
       <div className="slideshow_second">
-          <div style={{padding:"15px"}}>
-            <img style={{width:"100%"}} src="/public/img/slideshow/slideshow1.png"
-                          alt="Công ty TNHH Phát Triển Tin Học Utech" />
-          </div>
+        <div style={{ padding: "15px" }}>
+          <img
+            style={{ width: "100%" }}
+            src="/public/img/slideshow/slideshow1.png"
+            alt="Công ty TNHH Phát Triển Tin Học Utech"
+          />
+        </div>
       </div>
+
       {/* slideshow-banner-container end*/}
 
       {/* bannerqc2 */}
@@ -839,11 +828,11 @@ const isCategoryLocked = (id) => {
                 className="slick-track"
                 style={{
                   opacity: 1,
-                  width:"100%",
+                  width: "100%",
                   maxWidth: 1308,
-                  display:"flex",
-                  justifyContent:"space-between",
-                  gap:5,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  gap: 5,
                   transform: "translate3d(0px, 0px, 0px)",
                 }}
                 role="listbox"
@@ -852,13 +841,13 @@ const isCategoryLocked = (id) => {
                   className="slick-slide slick-current slick-active"
                   data-slick-index={0}
                   aria-hidden="false"
-                  style={{ height: 150, maxWidth: 318,width:"100%" }}
+                  style={{ height: 150, maxWidth: 318, width: "100%" }}
                   tabIndex={-1}
                   role="option"
                 >
                   <div className="item-bannerqc2 effect-1">
                     <img
-                    style={{width:"100%"}}
+                      style={{ width: "100%" }}
                       src="/public/img/banner/bannerqc2-1.png"
                       alt="Công ty TNHH Phát Triển Tin Học Utech"
                     />
@@ -868,13 +857,13 @@ const isCategoryLocked = (id) => {
                   className="slick-slide slick-active"
                   data-slick-index={1}
                   aria-hidden="false"
-                  style={{ height: 150, maxWidth: 318,width:"100%" }}
+                  style={{ height: 150, maxWidth: 318, width: "100%" }}
                   tabIndex={-1}
                   role="option"
                 >
                   <div className="item-bannerqc2 effect-1">
                     <img
-                    style={{width:"100%"}}
+                      style={{ width: "100%" }}
                       src="/public/img/banner/bannerqc2-2.png"
                       alt="Công ty TNHH Phát Triển Tin Học Utech"
                     />
@@ -884,13 +873,13 @@ const isCategoryLocked = (id) => {
                   className="slick-slide slick-active"
                   data-slick-index={2}
                   aria-hidden="false"
-                  style={{ height: 150, maxWidth: 318,width:"100%" }}
+                  style={{ height: 150, maxWidth: 318, width: "100%" }}
                   tabIndex={-1}
                   role="option"
                 >
                   <div className="item-bannerqc2 effect-1">
                     <img
-                    style={{width:"100%"}}
+                      style={{ width: "100%" }}
                       src="/public/img/banner/bannerqc2-3.png"
                       alt="Công ty TNHH Phát Triển Tin Học Utech"
                     />
@@ -900,13 +889,13 @@ const isCategoryLocked = (id) => {
                   className="slick-slide slick-active"
                   data-slick-index={3}
                   aria-hidden="false"
-                  style={{ height: 150, maxWidth: 318,width:"100%" }}
+                  style={{ height: 150, maxWidth: 318, width: "100%" }}
                   tabIndex={-1}
                   role="option"
                 >
                   <div className="item-bannerqc2 effect-1">
                     <img
-                    style={{width:"100%"}}
+                      style={{ width: "100%" }}
                       src="/public/img/banner/bannerqc2-4.png"
                       alt="Công ty TNHH Phát Triển Tin Học Utech"
                     />
@@ -920,6 +909,7 @@ const isCategoryLocked = (id) => {
       {/* bannerqc2 end */}
 
       {/* content */}
+
       <div className="wrap-main wrap-home">
         {/* categories-list-content */}
         <div className="wrap-prolistnb">
@@ -930,9 +920,9 @@ const isCategoryLocked = (id) => {
                   className="slick-track"
                   style={{
                     opacity: 1,
-                    width:"100%",
+                    width: "100%",
                     maxWidth: 1330,
-                    display:"flex",
+                    display: "flex",
                     transform: "translate3d(0px, 0px, 0px)",
                   }}
                   role="listbox"
@@ -984,185 +974,90 @@ const isCategoryLocked = (id) => {
         {/* categories-list-content end*/}
 
         {/* hot-products */}
-        <div className="wrap-bestseller">
-          <div className="wrap-content">
-            <div className="boxBestseller">
-              <div className="title-bestseller">
-                <span>Sản phẩm bán chạy</span>
-              </div>
-              <div className="hidden_tab">
-                <div className="grid-products-slider">
-                  <div 
-                    className="slider-container"
-                    style={{
-                      transform: `translateX(-${currentSlide * 100}%)`,
-                      transition: 'transform 0.5s ease-in-out'
-                    }}
-                  >
-                    {hotProducts.map((sanpham) => (
-                      <div className="product" key={sanpham.id}>
-                        <div className="box-product">
-                          <div className="pic-product" data-tooltip={`sticky${sanpham.id}`}>
-                            <Link
-                              to={`/chitietsp/sanPham/${sanpham.id}`}
-                              className="d-block"
-                              title={sanpham.ten_sp}
-                            >
-                              <img
-                                src={`/img/sanpham/${
-                                  sanpham.id_danhmuc === 1 ? 'Laptop' : 
-                                  sanpham.id_danhmuc === 2 ? 'PC' : 
-                                  sanpham.id_danhmuc === 3 ? 'Manhinh' : 
-                                  sanpham.id_danhmuc === 4 ? 'Chuot' : 
-                                  'Banphim'}/${sanpham.hinh_anh.chinh}`}
-                                alt={sanpham.ten_sp}
-                                className="w100 trans03"
-                              />
-                            </Link>
-                            <div className="hot-icon blink" />
-                            <div className="desc-product">
-                              <div>
-                                <ul>
-                                  {/* Cấu hình cho Laptop */}
-                                  {sanpham.id_danhmuc === 1 && (
-                                    <>
-                                      <li>CPU: {sanpham.cau_hinh.cpu}</li>
-                                      <li>RAM: {sanpham.cau_hinh.ram}</li>
-                                      <li>Ổ cứng: {sanpham.cau_hinh.o_cung}</li>
-                                      <li>Card đồ họa: {sanpham.cau_hinh.card_do_hoa}</li>
-                                      <li>Màn hình: {sanpham.cau_hinh.man_hinh}</li>
-                                    </>
-                                  )}
-
-                                  {/* Cấu hình cho PC */}
-                                  {sanpham.id_danhmuc === 2 && (
-                                    <>
-                                      <li>CPU: {sanpham.cau_hinh.cpu}</li>
-                                      <li>Mainboard: {sanpham.cau_hinh.mainboard}</li>
-                                      <li>RAM: {sanpham.cau_hinh.ram}</li>
-                                      <li>VGA: {sanpham.cau_hinh.vga}</li>
-                                      <li>Nguồn: {sanpham.cau_hinh.nguon}</li>
-                                      <li>Case: {sanpham.cau_hinh.case}</li>
-                                    </>
-                                  )}
-
-                                  {/* Cấu hình cho Màn hình */}
-                                  {sanpham.id_danhmuc === 3 && (
-                                    <>
-                                      <li>Kiểu màn hình: {sanpham.cau_hinh.kieu_man_hinh}</li>
-                                      <li>Kích thước: {sanpham.cau_hinh.kich_thuoc}</li>
-                                      <li>Độ phân giải: {sanpham.cau_hinh.do_phan_giai}</li>
-                                      <li>Tần số quét: {sanpham.cau_hinh.tan_so_quet}</li>
-                                      <li>Tấm nền: {sanpham.cau_hinh.tam_nen}</li>
-                                      <li>Độ sáng: {sanpham.cau_hinh.do_sang}</li>
-                                      <li>Thời gian phản hồi: {sanpham.cau_hinh.thoi_gian_phan_hoi}</li>
-                                    </>
-                                  )}
-
-                                  {/* Cấu hình cho Chuột */}
-                                  {sanpham.id_danhmuc === 4 && (
-                                    <>
-                                      <li>DPI: {sanpham.cau_hinh.dpi}</li>
-                                      <li>Kết nối: {sanpham.cau_hinh.ket_noi}</li>
-                                      <li>Thời gian phản hồi: {sanpham.cau_hinh.thoi_gian_phan_hoi}</li>
-                                      <li>Số nút bấm: {sanpham.cau_hinh.so_nut_bam}</li>
-                                      <li>Trọng lượng: {sanpham.cau_hinh.trong_luong}</li>
-                                    </>
-                                  )}
-
-                                  {/* Cấu hình cho Bàn phím */}
-                                  {sanpham.id_danhmuc === 5 && (
-                                    <>
-                                      <li>Switch: {sanpham.cau_hinh.switch}</li>
-                                      <li>Kết nối: {sanpham.cau_hinh.ket_noi}</li>
-                                      <li>Layout: {sanpham.cau_hinh.layout}</li>
-                                      <li>Keycap: {sanpham.cau_hinh.keycap}</li>
-                                      <li>Led: {sanpham.cau_hinh.led}</li>
-                                    </>
-                                  )}
-                                </ul>
-                                <p>&nbsp;</p>
-                                <div className="baohanh">Bảo hành: {sanpham.bao_hanh} tháng</div>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="info-product">
-                            <Link
-                              to={`/chitietsp/sanPham/${sanpham.id}`}
-                              className="name-product text-split"
-                              title={sanpham.ten_sp}
-                            >
-                              {sanpham.ten_sp}
-                            </Link>
-                            <div className="price-product">
-                              <span className="price-new">{sanpham.gia_sp}đ</span>
-                            </div>
-                            <div className="cart-product d-flex flex-wrap justify-content-between align-items-center">
-                              <span className="status-pro sts2">Còn hàng</span>
-                              <span
-                                className="mua_giohang"
-                                onClick={() => handleAddToCart(sanpham)}
-                              >
-                                Mua ngay
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+        <div className="wrap-bestsell">
+          <div className="title-bestsell">SẢN PHẨM BÁN CHẠY</div>
+          <div className="bestsell-products">
+            {hotProducts.map((product) => (
+              <div className="product" key={product.id}>
+                <div className="box-product">
+                  <div className="pic-product">
+                    <Link to={`/chitietsp/sanPham/${product.id}`}>
+                      <img
+                        src={`/img/sanpham/${
+                          product.id_danhmuc === 1
+                            ? "Laptop"
+                            : product.id_danhmuc === 2
+                            ? "PC"
+                            : product.id_danhmuc === 3
+                            ? "Manhinh"
+                            : product.id_danhmuc === 4
+                            ? "Chuot"
+                            : "Banphim"
+                        }/${product.hinh_anh.chinh}`}
+                        alt={product.ten_sp}
+                      />
+                    </Link>
+                  </div>
+                  <div className="info-product">
+                    <Link
+                      to={`/chitietsp/sanPham/${product.id}`}
+                      className="name-product"
+                    >
+                      {product.ten_sp}
+                    </Link>
+                    <div className="price-product">{product.gia_sp}đ</div>
+                    <div className="cart-product">
+                      <span className="status-pro">Còn hàng</span>
+                      <span
+                        className="mua_giohang"
+                        onClick={() => handleAddToCart(product)}
+                      >
+                        MUA NGAY
+                      </span>
+                    </div>
                   </div>
                 </div>
-                <div className="slider-dots">
-                  {[...Array(totalSlides)].map((_, index) => (
-                    <button
-                      key={index}
-                      className={`dot ${currentSlide === index ? 'active' : ''}`}
-                      onClick={() => handleSlideChange(index)}
-                    />
-                  ))}
-                </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
         {/* hot-products end */}
 
         {/* promotional-products */}
-        
+
         {/* promotional-products end */}
 
-     {/* products 1 */}
-     <div className="sub_main" id="scroll0" style={{ marginBottom: 50 }}>
+        {/* products 1 */}
+        <div className="sub_main" id="scroll0" style={{ marginBottom: 50 }}>
           <div className="wrap-content">
             <div className="title_main">
-            <div>
-            <span>LAPTOP</span>
-            <ul >
-              {sanPhamdm1.length > 0 &&
-                // Extract unique brand names from sanPhamdm1
-                [...new Set(sanPhamdm1.map((sanpham) => sanpham.thuong_hieu))].map(
-                  (brand, index) => (
-                    <li key={index}>
-                      <Link
-                        to={`/sanPham/id_danhmuc/${sanPhamdm1[0].id_danhmuc}/thuong_hieu/${brand}`}
-                        title={`Sản phẩm ${brand}`}
-                      >
-                        {brand}
-                      </Link>
-                    </li>
-                  )
-                )}
-            </ul>
+              <div>
+                <span>LAPTOP</span>
+                <ul>
+                  {sanPhamdm1.length > 0 &&
+                    // Extract unique brand names from sanPhamdm1
+                    [
+                      ...new Set(
+                        sanPhamdm1.map((sanpham) => sanpham.thuong_hieu)
+                      ),
+                    ].map((brand, index) => (
+                      <li key={index}>
+                        <Link
+                          to={`/sanPham/id_danhmuc/${sanPhamdm1[0].id_danhmuc}/thuong_hieu/${brand}`}
+                          title={`Sản phẩm ${brand}`}
+                        >
+                          {brand}
+                        </Link>
+                      </li>
+                    ))}
+                </ul>
 
-            <Link to="/sanPham/id_danhmuc/1" className="viewmore">
-              Xem tất cả
-            </Link>
-          </div>
-
+               
+              </div>
             </div>
             <div className="hidden_tab" id="splist11" rel={11} title="LAPTOP">
               <div className="grid-products">
-              {sanPhamdm1.length > 0 ? (
+                {sanPhamdm1.length > 0 ? (
                   sanPhamdm1.map((sanpham, index) => (
                     <div className="product" key={index}>
                       <div className="box-product">
@@ -1227,27 +1122,12 @@ const isCategoryLocked = (id) => {
                         </div>
                       </div>
                     </div>
-                  )))
-                 : (
+                  ))
+                ) : (
                   <p>Sản phẩm đang trong quá trình cập nhật...</p>
                 )}
               </div>
-              <div className="pagination" style={{ marginTop: 0 }}>
-                <ul className="my_pagination">
-                  <li className="inactive">
-                    <span> &lt;&lt; </span>
-                  </li>
-                  <li className="actived">
-                    <a>1</a>
-                  </li>
-                  <li className="active">
-                    <a>2</a>
-                  </li>
-                  <li className="active">
-                    <span> &gt;&gt; </span>
-                  </li>
-                </ul>
-              </div>
+             
             </div>
           </div>
         </div>
@@ -1260,25 +1140,23 @@ const isCategoryLocked = (id) => {
               <div>
                 <span>PC</span>
                 <ul>
-              {sanPhamdm2.length > 0 &&
-                // Extract unique brand names from sanPhamdm2
-                [...new Set(sanPhamdm2.map((sanpham) => sanpham.thuong_hieu))].map(
-                  (brand, index) => (
-                    <li key={index}>
-                      <Link
-                        to={`/sanPham/id_danhmuc/${sanPhamdm2[0].id_danhmuc}/thuong_hieu/${brand}`}
-                        title={`Sản phẩm ${brand}`}
-                      >
-                        {brand}
-                      </Link>
-                    </li>
-                  )
-                )}
-            </ul>
-                <a href="/sanPham/id_danhmuc/2" className="viewmore">
-                  {" "}
-                  Xem tất cả
-                </a>
+                  {sanPhamdm2.length > 0 &&
+                    // Extract unique brand names from sanPhamdm2
+                    [
+                      ...new Set(
+                        sanPhamdm2.map((sanpham) => sanpham.thuong_hieu)
+                      ),
+                    ].map((brand, index) => (
+                      <li key={index}>
+                        <Link
+                          to={`/sanPham/id_danhmuc/${sanPhamdm2[0].id_danhmuc}/thuong_hieu/${brand}`}
+                          title={`Sản phẩm ${brand}`}
+                        >
+                          {brand}
+                        </Link>
+                      </li>
+                    ))}
+                </ul>
               </div>
             </div>
             <div className="hidden_tab" id="splist11" rel={11} title="LAPTOP">
@@ -1339,7 +1217,6 @@ const isCategoryLocked = (id) => {
                               rel={7385}
                               data-confirm=""
                               onClick={() => handleAddToCart(sanpham)}
-                              
                             >
                               Mua ngay
                             </span>
@@ -1352,7 +1229,7 @@ const isCategoryLocked = (id) => {
                   <p>Sản phẩm đang trong quá trình cập nhật...</p>
                 )}
               </div>
-              <div className="pagination" style={{ marginTop: 0 }}>
+              {/* <div className="pagination" style={{ marginTop: 0 }}>
                 <ul className="my_pagination">
                   <li className="inactive">
                     <span> &lt;&lt; </span>
@@ -1367,7 +1244,7 @@ const isCategoryLocked = (id) => {
                     <span> &gt;&gt; </span>
                   </li>
                 </ul>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -1380,25 +1257,23 @@ const isCategoryLocked = (id) => {
               <div>
                 <span>Màn hình</span>
                 <ul>
-              {sanPhamdm3.length > 0 &&
-                // Extract unique brand names from sanPhamdm3
-                [...new Set(sanPhamdm3.map((sanpham) => sanpham.thuong_hieu))].map(
-                  (brand, index) => (
-                    <li key={index}>
-                      <Link
-                        to={`/sanPham/id_danhmuc/${sanPhamdm3[0].id_danhmuc}/thuong_hieu/${brand}`}
-                        title={`Sản phẩm ${brand}`}
-                      >
-                        {brand}
-                      </Link>
-                    </li>
-                  )
-                )}
-            </ul>
-                <a href="/sanPham/id_danhmuc/3" className="viewmore">
-                  {" "}
-                  Xem tất cả
-                </a>
+                  {sanPhamdm3.length > 0 &&
+                    // Extract unique brand names from sanPhamdm3
+                    [
+                      ...new Set(
+                        sanPhamdm3.map((sanpham) => sanpham.thuong_hieu)
+                      ),
+                    ].map((brand, index) => (
+                      <li key={index}>
+                        <Link
+                          to={`/sanPham/id_danhmuc/${sanPhamdm3[0].id_danhmuc}/thuong_hieu/${brand}`}
+                          title={`Sản phẩm ${brand}`}
+                        >
+                          {brand}
+                        </Link>
+                      </li>
+                    ))}
+                </ul>
               </div>
             </div>
             <div className="hidden_tab" id="splist11" rel={11} title="LAPTOP">
@@ -1478,150 +1353,6 @@ const isCategoryLocked = (id) => {
                             <span className="price-new">{sanpham.gia_sp}đ</span>
                           </div>
                           <div className="cart-product d-flex flex-wrap justify-content-between align-items-center">
-                            <span className="status-pro sts2">Còn h��ng</span>
-                            <span
-                              className="mua_giohang"
-                              rel={7385}
-                              data-confirm=""
-                              onClick={() => handleAddToCart(sanpham)}
-                            >
-                              Mua ngay
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <p>Sản phẩm đang trong quá trình cập nhật...</p>
-                )}
-              </div>
-              <div className="pagination" style={{ marginTop: 0 }}>
-                <ul className="my_pagination">
-                  <li className="inactive">
-                    <span> &lt;&lt; </span>
-                  </li>
-                  <li className="actived">
-                    <a>1</a>
-                  </li>
-                  <li className="active">
-                    <a>2</a>
-                  </li>
-                  <li className="active">
-                    <span> &gt;&gt; </span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-          {/* product4   */}
-          <div className="sub_main" id="scroll0" style={{ marginBottom: 50 }}>
-          <div className="wrap-content">
-            <div className="title_main">
-              <div>
-                <span>Chuột</span>
-                <ul>
-              {sanPhamdm4.length > 0 &&
-                // Extract unique brand names from sanPhamdm4
-                [...new Set(sanPhamdm4.map((sanpham) => sanpham.thuong_hieu))].map(
-                  (brand, index) => (
-                    <li key={index}>
-                      <Link
-                        to={`/sanPham/id_danhmuc/${sanPhamdm4[0].id_danhmuc}/thuong_hieu/${brand}`}
-                        title={`Sản phẩm ${brand}`}
-                      >
-                        {brand}
-                      </Link>
-                    </li>
-                  )
-                )}
-            </ul>
-                <a href="/sanPham/id_danhmuc/4" className="viewmore">
-                  {" "}
-                  Xem tất cả
-                </a>
-              </div>
-            </div>
-            <div className="hidden_tab" id="splist11" rel={11} title="LAPTOP">
-              <div className="grid-products">
-                {sanPhamdm4.length > 0 ? (
-                  sanPhamdm4.map((sanpham, index) => (
-                    <div className="product" key={index}>
-                      <div className="box-product">
-                        <div className="pic-product" data-tooltip="sticky7385">
-                          <Link
-                            to={`/chitietsp/sanPham/${sanpham.id}`}
-                            className="d-block"
-                            href=""
-                            title={`${sanpham.ten_sp}`}
-                          >
-                            <img
-                              src={`/img/sanpham/Chuot/${sanpham.hinh_anh.chinh}`}
-                              alt={`${sanpham.ten_sp}`}
-                              className="w100 trans03"
-                            />
-                          </Link>
-
-                          <div className="hot-icon blink" />
-                          <div className="desc-product">
-                            <div>
-                              <ul>
-                                <li>
-                                  Màu sắc:{" "}
-                                  {sanpham.cau_hinh.mau_sac}
-                                </li>
-                                <li>
-                                  Kết nối:{" "}
-                                  {sanpham.cau_hinh.ket_noi}
-                                </li>
-                                <li>
-                                  Led:{" "}
-                                  {sanpham.cau_hinh.led}
-                                </li>
-                                <li>
-                                  Cảm biến:{" "}
-                                  {sanpham.cau_hinh.cam_bien}
-                                </li>
-                                <li>
-                                  Số nút:{" "}
-                                  {sanpham.cau_hinh.so_nut}
-                                </li>
-                                <li>
-                                  Tuổi thọ:{" "}
-                                  {sanpham.cau_hinh.tuoi_tho}
-                                </li>
-                                <li>
-                                  DPI:{" "}
-                                  {sanpham.cau_hinh.DPI}
-                                </li>
-                                <li>
-                                  IPS:{" "}
-                                  {sanpham.cau_hinh.IPS}
-                                </li>
-                                <li>
-                                  Trọng lượng:{" "}
-                                  {sanpham.cau_hinh.trong_luong}
-                                </li>
-                              </ul>
-                              <p>&nbsp;</p>
-                              <div className="baohanh ">{sanpham.bao_hanh}</div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="info-product">
-                          <Link
-                            to="/chitietsp"
-                            className="name-product text-split"
-                            href=""
-                            title={`${sanpham.ten_sp}`}
-                          >
-                            {sanpham.ten_sp}
-                          </Link>
-                          <div className="price-product">
-                            <span className="price-new">{sanpham.gia_sp}đ</span>
-                          </div>
-                          <div className="cart-product d-flex flex-wrap justify-content-between align-items-center">
                             <span className="status-pro sts2">Còn hàng</span>
                             <span
                               className="mua_giohang"
@@ -1640,159 +1371,11 @@ const isCategoryLocked = (id) => {
                   <p>Sản phẩm đang trong quá trình cập nhật...</p>
                 )}
               </div>
-              <div className="pagination" style={{ marginTop: 0 }}>
-                <ul className="my_pagination">
-                  <li className="inactive">
-                    <span> &lt;&lt; </span>
-                  </li>
-                  <li className="actived">
-                    <a>1</a>
-                  </li>
-                  <li className="active">
-                    <a>2</a>
-                  </li>
-                  <li className="active">
-                    <span> &gt;&gt; </span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* product 5 */}
-        <div className="sub_main" id="scroll0" style={{ marginBottom: 50 }}>
-          <div className="wrap-content">
-            <div className="title_main">
-              <div>
-                <span>Bàn Phím</span>
-                <ul>
-              {sanPhamdm5.length > 0 &&
-                // Extract unique brand names from sanPhamdm5
-                [...new Set(sanPhamdm5.map((sanpham) => sanpham.thuong_hieu))].map(
-                  (brand, index) => (
-                    <li key={index}>
-                      <Link
-                        to={`/sanPham/id_danhmuc/${sanPhamdm5[0].id_danhmuc}/thuong_hieu/${brand}`}
-                        title={`Sản phẩm ${brand}`}
-                      >
-                        {brand}
-                      </Link>
-                    </li>
-                  )
-                )}
-            </ul>
-                <a href="/sanPham/id_danhmuc/5" className="viewmore">
-                  {" "}
-                  Xem tất cả
-                </a>
-              </div>
-            </div>
-            <div className="hidden_tab" id="splist11" rel={11} title="LAPTOP">
-              <div className="grid-products">
-                {sanPhamdm5.length > 0 ? (
-                  sanPhamdm5.map((sanpham, index) => (
-                    <div className="product" key={index}>
-                      <div className="box-product">
-                        <div className="pic-product" data-tooltip="sticky7385">
-                          <Link
-                            to={`/chitietsp/sanPham/${sanpham.id}`}
-                            className="d-block"
-                            href=""
-                            title={`${sanpham.ten_sp}`}
-                          >
-                            <img
-                              src={`/img/sanpham/Banphim/${sanpham.hinh_anh.chinh}`}
-                              alt={`${sanpham.ten_sp}`}
-                              className="w100 trans03"
-                            />
-                          </Link>
-
-                          <div className="hot-icon blink" />
-                          <div className="desc-product">
-                            <div>
-                              <ul>
-                                <li>
-                                  Kết nối:{" "}
-                                  {sanpham.cau_hinh.ket_noi}
-                                </li>
-                                <li>
-                                  Switch:{" "}
-                                  {sanpham.cau_hinh.switch}
-                                </li>
-                                <li>
-                                  Keycap:{" "}
-                                  {sanpham.cau_hinh.keycap}
-                                </li>
-                                <li>
-                                  Tương thích:{" "}
-                                  {sanpham.cau_hinh.tuong_thich}
-                                </li>
-                                <li>
-                                  Kích thước:{" "}
-                                  {sanpham.cau_hinh.kich_thuoc}
-                                </li>
-                                <li>
-                                  Trọng lượng:{" "}
-                                  {sanpham.cau_hinh.trong_luong}
-                                </li>
-                              </ul>
-                              <p>&nbsp;</p>
-                              <div className="baohanh ">{sanpham.bao_hanh}</div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="info-product">
-                          <Link
-                            to="/chitietsp"
-                            className="name-product text-split"
-                            href=""
-                            title={`${sanpham.ten_sp}`}
-                          >
-                            {sanpham.ten_sp}
-                          </Link>
-                          <div className="price-product">
-                            <span className="price-new">{sanpham.gia_sp}đ</span>
-                          </div>
-                          <div className="cart-product d-flex flex-wrap justify-content-between align-items-center">
-                            <span className="status-pro sts2">Còn hàng</span>
-                            <span
-                              className="mua_giohang"
-                              rel={7385}
-                              data-confirm=""
-                              onClick={() => handleAddToCart(sanpham)}
-                            >
-                              Mua ngay
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <p>Sản phẩm đang trong quá trình cập nhật...</p>
-                )}
-              </div>
-              <div className="pagination" style={{ marginTop: 0 }}>
-                <ul className="my_pagination">
-                  <li className="inactive">
-                    <span> &lt;&lt; </span>
-                  </li>
-                  <li className="actived">
-                    <a>1</a>
-                  </li>
-                  <li className="active">
-                    <a>2</a>
-                  </li>
-                  <li className="active">
-                    <span> &gt;&gt; </span>
-                  </li>
-                </ul>
-              </div>
+           
             </div>
           </div>
         </div>
       </div>
-      <LatestNews />
     </>
   );
 }

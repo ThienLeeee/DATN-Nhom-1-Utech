@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from "../../context/AuthContext";
 import "/public/css/thanhtoan.css";
+import axios from "axios";
 
 export default function Thanhtoan() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  
+
   const [formData, setFormData] = useState({
     ten_thanhtoan: "",
     diachi_thanhtoan: "",
@@ -20,7 +21,7 @@ export default function Thanhtoan() {
 
   useEffect(() => {
     if (user) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         ten_thanhtoan: user.fullname || "",
         diachi_thanhtoan: user.address || "",
@@ -37,70 +38,38 @@ export default function Thanhtoan() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Kiểm tra form
-    if (
-      !formData.ten_thanhtoan ||
-      !formData.diachi_thanhtoan ||
-      !formData.dienthoai_thanhtoan ||
-      !formData.email_thanhtoan ||
-      !formData.ht_thanhtoan
-    ) {
-      alert("Vui lòng điền đầy đủ thông tin.");
-      return;
-    }
-
     try {
-      // Lấy thông tin giỏ hàng và đảm bảo nó là một mảng
-      let checkoutItems = JSON.parse(localStorage.getItem("checkoutItems"));
-      if (!Array.isArray(checkoutItems)) {
-        checkoutItems = checkoutItems ? [checkoutItems] : [];
-      }
-      
-      // Tính tổng tiền
-      const tongTien = checkoutItems.reduce((total, item) => {
-        const soLuong = Number(item.soLuong) || 0;
-        const giaSp = Number(item.gia_sp) || 0;
-        return total + (giaSp * soLuong);
-      }, 0);
-
-      // Tạo đối tượng đơn hàng
+      const cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
       const orderData = {
-        hoTen: formData.ten_thanhtoan,
-        diaChi: formData.diachi_thanhtoan,
-        dienThoai: formData.dienthoai_thanhtoan,
-        email: formData.email_thanhtoan,
-        ghiChu: formData.noidung_thanhtoan,
-        hinhThucThanhToan: formData.ht_thanhtoan,
-        sanPham: checkoutItems,
-        tongTien: tongTien
+        hoTen: formData.ten_thanhtoan, // Đổi tên field
+        diaChi: formData.diachi_thanhtoan, // Đổi tên field
+        dienThoai: formData.dienthoai_thanhtoan, // Đổi tên field
+        email: formData.email_thanhtoan, // Đổi tên field
+        ghiChu: formData.noidung_thanhtoan, // Đổi tên field
+        hinhThucThanhToan: formData.ht_thanhtoan, // Đổi tên field
+        sanPham: cartItems.map((item) => ({
+          id: item.id,
+          ten_sp: item.ten_sp,
+          gia_sp: item.gia_sp,
+          soLuong: item.quantity,
+          id_danhmuc: item.id_danhmuc,
+          hinh_anh: item.hinh_anh,
+        })),
+        tongTien: cartItems.reduce(
+          (total, item) => total + item.gia_sp * item.quantity,
+          0
+        ),
+        trangThai: "Chờ xử lý",
+        ngayDat: new Date(),
       };
 
-      // Gọi API để lưu đơn hàng
-      const response = await fetch('http://localhost:3000/api/donHang', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderData)
-      });
-
-      if (!response.ok) {
-        throw new Error('Lỗi khi tạo đơn hàng');
-      }
-
-      // Sửa lại key name để match với Giohang.jsx
-      localStorage.removeItem("checkoutItems");
-      localStorage.removeItem("cartItem"); // Thay đổi từ cartItems thành cartItem
-      
-      // Dispatch event để cập nhật số lượng trong Header
+      await axios.post("http://localhost:3000/api/donHang", orderData);
+      localStorage.removeItem("cartItem");
       window.dispatchEvent(new Event("cartUpdated"));
-      
-      // Hiển thị thông báo thành công
       setIsSuccess(true);
     } catch (error) {
-      console.error('Lỗi:', error);
-      alert('Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại.');
+      console.error("Lỗi:", error);
+      alert("Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại.");
     }
   };
 
@@ -188,7 +157,9 @@ export default function Thanhtoan() {
                       value="THANH TOÁN KHI NHẬN HÀNG"
                       onChange={handleChange}
                     />
-                    <label htmlFor="payment_cod">Thanh toán khi nhận hàng</label>
+                    <label htmlFor="payment_cod">
+                      Thanh toán khi nhận hàng
+                    </label>
                   </div>
                   <div className="form-group submit-button">
                     <button type="submit" className="btn-thanhtoan">
@@ -204,15 +175,14 @@ export default function Thanhtoan() {
         <div className="success-page">
           <div className="success-container">
             <div className="success-content">
-
-            <div className="success-image">
+              <div className="success-image">
                 <img src="/public/img/icon/bangboo-pay.gif" alt="Thank you" />
               </div>
-              
+
               <h1 className="success-title">THANH TOÁN THÀNH CÔNG!</h1>
-              <p className="success-message">Cảm ơn bạn đã quan tâm đến sản phẩm của chúng tôi</p>
-              
-              
+              <p className="success-message">
+                Cảm ơn bạn đã quan tâm đến sản phẩm của chúng tôi
+              </p>
 
               <button className="back-home-btn" onClick={() => navigate("/")}>
                 <i className="fas fa-home"></i>

@@ -466,13 +466,34 @@
 }
 
 .quantity-input {
-  width: 40px;
+  width: 150px;
   text-align: center;
   font-size: 15px;
   font-weight: 600;
   color: #0000a3;
-  border: none;
-  background: transparent;
+  border: 1px solid #eef0f5;
+  border-radius: 4px;
+  padding: 4px;
+  background: white;
+}
+
+/* Ẩn mũi tên tăng giảm mặc định của input type number */
+.quantity-input::-webkit-outer-spin-button,
+.quantity-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.quantity-input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* Style khi focus */
+.quantity-input:focus {
+  outline: none;
+  border-color: #0000a3;
+  box-shadow: 0 0 0 2px rgba(0, 0, 163, 0.1);
 }
 
 /* Total Price Column */
@@ -570,4 +591,31 @@
     flex-direction: column;
     width: 100%;
   }
+}
+
+.cart-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: #ff4444;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Đảm bảo parent element có position relative */
+.cart-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
 }

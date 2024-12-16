@@ -53,7 +53,7 @@ export default function Giohang() {
     const updatedItems = sanPham.map((item) =>
       item.id === id ? { ...item, quantity: Math.max(1, newQuantity) } : item
     );
-    
+
     setSanpham(updatedItems);
     localStorage.setItem("cartItem", JSON.stringify(updatedItems));
 
@@ -73,7 +73,7 @@ export default function Giohang() {
 
     // Cập nhật state sau khi xóa
     setSanpham(updatedItems);
-    
+
     // Dispatch event để cập nhật số lượng trong Header
     window.dispatchEvent(new Event("cartUpdated"));
   };
@@ -119,8 +119,6 @@ export default function Giohang() {
     navigate("/thanhtoan");
   };
 
-  
-
   return (
     <div className="wrap-main wrap-page">
       <link href="css/giohang.css" rel="stylesheet" type="text/css" />
@@ -130,11 +128,19 @@ export default function Giohang() {
         </div>
         <div className="content_main">
           <div id="giohang_ct">
-            <form name="form1" method="post" onSubmit={(e) => e.preventDefault()}>
+            <form
+              name="form1"
+              method="post"
+              onSubmit={(e) => e.preventDefault()}
+            >
               {sanPham.length === 0 ? (
                 <div className="empty-cart">
                   <div className="empty-cart-content">
-                    <img src="/img/icon/bangboo-cart.gif" alt="Bangboo Cart" className="empty-cart-image" />
+                    <img
+                      src="/img/icon/bangboo-cart.gif"
+                      alt="Bangboo Cart"
+                      className="empty-cart-image"
+                    />
                     <h2>Giỏ hàng hiện tại đang trống</h2>
                     <p>Hãy thêm sản phẩm vào giỏ hàng của bạn</p>
                     <Link to="/" className="shop-now-btn">
@@ -161,14 +167,22 @@ export default function Giohang() {
                         return (
                           <tr key={index}>
                             <td>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "16px",
+                                }}
+                              >
                                 <img
                                   src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.chinh}`}
                                   alt={sanpham.ten_sp}
                                   className="cart-product-image"
                                 />
                                 <div className="cart-product-info">
-                                  <div className="cart-product-name">{sanpham.ten_sp}</div>
+                                  <div className="cart-product-name">
+                                    {sanpham.ten_sp}
+                                  </div>
                                 </div>
                               </div>
                             </td>
@@ -179,21 +193,39 @@ export default function Giohang() {
                             </td>
                             <td>
                               <div className="quantity-controls">
-                                <button 
+                                <button
                                   className="quantity-btn"
-                                  onClick={() => updateQuantity(sanpham.id, sanpham.quantity - 1)}
+                                  onClick={() =>
+                                    updateQuantity(
+                                      sanpham.id,
+                                      sanpham.quantity - 1
+                                    )
+                                  }
                                 >
                                   <i className="fas fa-minus"></i>
                                 </button>
                                 <input
-                                  type="text"
+                                  type="number" // Thay đổi type thành number
                                   className="quantity-input"
                                   value={sanpham.quantity}
-                                  readOnly
+                                  onChange={(e) => {
+                                    const newValue =
+                                      parseInt(e.target.value) || 1; // Đảm bảo giá trị là số, mặc định là 1
+                                    if (newValue >= 1) {
+                                      // Kiểm tra giá trị tối thiểu
+                                      updateQuantity(sanpham.id, newValue);
+                                    }
+                                  }}
+                                  min="1" // Giá trị tối thiểu
                                 />
-                                <button 
+                                <button
                                   className="quantity-btn"
-                                  onClick={() => updateQuantity(sanpham.id, sanpham.quantity + 1)}
+                                  onClick={() =>
+                                    updateQuantity(
+                                      sanpham.id,
+                                      sanpham.quantity + 1
+                                    )
+                                  }
                                 >
                                   <i className="fas fa-plus"></i>
                                 </button>
@@ -201,11 +233,14 @@ export default function Giohang() {
                             </td>
                             <td>
                               <div className="cart-total-price">
-                                {(sanpham.gia_sp * sanpham.quantity).toLocaleString("vi-VN")} VNĐ
+                                {(
+                                  sanpham.gia_sp * sanpham.quantity
+                                ).toLocaleString("vi-VN")}{" "}
+                                VNĐ
                               </div>
                             </td>
                             <td>
-                              <button 
+                              <button
                                 className="cart-delete-btn"
                                 onClick={() => removeItem(sanpham.id)}
                               >
@@ -237,7 +272,10 @@ export default function Giohang() {
                         <i className="fas fa-trash"></i> Xóa tất cả
                       </button>
                       <Link to="/thanhtoan" state={{ cartItems: sanPham }}>
-                        <button className="btnc btn-success" onClick={handleCheckout}>
+                        <button
+                          className="btnc btn-success"
+                          onClick={handleCheckout}
+                        >
                           <i className="fas fa-check"></i> Thanh toán
                         </button>
                       </Link>
@@ -252,7 +290,7 @@ export default function Giohang() {
       </div>
 
       {/*sub main*/}
-      
+
       {/* Popup xóa tất cả */}
       {showDeletePopup && (
         <div className="delete-popup-overlay">
@@ -261,17 +299,14 @@ export default function Giohang() {
               <i className="fas fa-exclamation-triangle"></i>
             </div>
             <h2>Xác nhận xóa</h2>
-            <p style={{ textAlign: 'center' }}>
+            <p style={{ textAlign: "center" }}>
               Bạn muốn xóa tất cả sản phẩm khỏi giỏ hàng?
             </p>
             <div className="delete-popup-buttons">
-              <button 
-                className="confirm-delete"
-                onClick={handleConfirmDelete}
-              >
+              <button className="confirm-delete" onClick={handleConfirmDelete}>
                 Xóa tất cả
               </button>
-              <button 
+              <button
                 className="cancel-delete"
                 onClick={() => setShowDeletePopup(false)}
               >

@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 import { fetchDanhmuc } from "../../../service/danhmucService";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from '../../context/AuthContext';
-import '/public/css/header.css';
+import { useAuth } from "../../context/AuthContext";
+import "/public/css/header.css";
 export default function Header() {
   const [keyword, setKeyword] = useState("");
   const { user, logout } = useAuth();
@@ -11,7 +11,7 @@ export default function Header() {
   const [isActive, setIsActive] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const handleClick = () => {
-    setIsActive(!isActive); 
+    setIsActive(!isActive);
   };
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -25,8 +25,8 @@ export default function Header() {
   const menuRef = useRef(null);
 
   useEffect(() => {
-    setIsActive(false)
-    setIsOpen(false)
+    setIsActive(false);
+    setIsOpen(false);
     const loadDanhmuc = async () => {
       try {
         const danhMuc = await fetchDanhmuc();
@@ -40,20 +40,22 @@ export default function Header() {
     // Lắng nghe sự kiện cartUpdated
     const handleCartUpdate = () => {
       const cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
-      const newCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+      const newCount = cartItems.reduce(
+        (total, item) => total + item.quantity,
+        0
+      );
       setCartCount(newCount);
     };
 
-    window.addEventListener('cartUpdated', handleCartUpdate);
+    window.addEventListener("cartUpdated", handleCartUpdate);
 
     // Cleanup
     return () => {
-      window.removeEventListener('cartUpdated', handleCartUpdate);
+      window.removeEventListener("cartUpdated", handleCartUpdate);
     };
   }, []);
 
   useEffect(() => {
-
     if (user) {
       setShowUserMenu(false);
     }
@@ -66,15 +68,15 @@ export default function Header() {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   const handleLogout = () => {
     logout();
-    navigate('/');
+    navigate("/");
   };
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -90,38 +92,41 @@ export default function Header() {
         style={{ position: "relative", left: 0, right: 0, top: 0, zIndex: 100 }}
       >
         <div className="header-top">
-          <div className="wrap-content d-flex justify-content-between align-items-center">
-            <div className="info-header diachi">
-              Huỳnh Thị Hai, Tân Chánh Hiệp, Quận 12
-            </div>
-            <div className="info-header timeWork">
-              Mở cửa: 8:00 đến 18:00 từ Thứ 2 đến Thứ 7
-            </div>
-            <div className="info-header email">
-              <i className="fa fa-envelope-o" aria-hidden="true" /> Email:
-              ultratech199@utech.vn
-            </div>
-            <div className="social-footer d-flex">
-              <a
-                className="d-block"
-                href=""
-                target="blank"
-              >
-                <img src="/public/img/logo/logo facebook.png" alt="Facebook" />
-              </a>
-              <a className="d-block" href="" target="blank">
-              <img src="/public/img/logo/logo instagram.png" alt="Instagram" />
-              </a>
-              <a
-                className="d-block"
-                href=""
-                target="blank"
-              >
-                <img src="/public/img/logo/logo youtobe.png" alt="G+" />
-              </a>
+          <div className="wrap-content">
+            <div className="header-top-content">
+              <div className="header-top-left">
+                <div className="info-header location">
+                  <i className="fas fa-map-marker-alt"></i>
+                  <span>Huỳnh Thị Hai, Tân Chánh Hiệp, Quận 12</span>
+                </div>
+                <div className="info-header working-hours">
+                  <i className="far fa-clock"></i>
+                  <span>Giờ làm việc: 8:00 - 18:00 (T2 - T7)</span>
+                </div>
+              </div>
+              <div className="header-top-right">
+                <div className="info-header contact">
+                  <a href="mailto:ultratech199@utech.vn">
+                    <i className="far fa-envelope"></i>
+                    <span>ultratech199@utech.vn</span>
+                  </a>
+                </div>
+                <div className="social-links">
+                  <a href="#" className="social-link">
+                    <i className="fab fa-facebook-f"></i>
+                  </a>
+                  <a href="#" className="social-link">
+                    <i className="fab fa-twitter"></i>
+                  </a>
+                  <a href="#" className="social-link">
+                    <i className="fab fa-linkedin-in"></i>
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+
         <div className="header-bottom">
           <div className="wrap-content d-flex justify-content-between align-items-center">
             <a className="logo-header" href="">
@@ -133,26 +138,14 @@ export default function Header() {
             </a>
             <div className="header-bottom-right d-flex justify-content-between align-items-center">
               <div id="timkiem">
-              <form
-                 onSubmit={handleSubmit}
-                 action="tim-kiem.html"
+                <form
+                  onSubmit={handleSubmit}
+                  action="tim-kiem.html"
                   method=""
                   name="frm2"
                   className="frm_timkiem"
                 >
-                  <select className="list">
-                    <option value={0}>Tất cả</option>
-                    <option value={11}>LAPTOP</option>
-                    <option value={14}>MÁY BỘ PC</option>
-                    <option value={15}>LINH KIỆN PC</option>
-                    <option value={16}>LCD-TIVI</option>
-                    <option value={17}>TB VĂN PHÒNG</option>
-                    <option value={18}>THIẾT BỊ MẠNG</option>
-                    <option value={19}>PHẦN MỀM</option>
-                    <option value={22}>LINH PHỤ KIỆN</option>
-                    <option value={38}>APPLE</option>
-                    <option value={40}>THIẾT BỊ KTS</option>
-                  </select>
+                 
                   <input
                     onChange={(e) => setKeyword(e.target.value)}
                     type="text"
@@ -181,26 +174,26 @@ export default function Header() {
                       className="user-button"
                     >
                       <img src="/public/img/icon/user-icon.png" alt="User" />
-                      <span>{user.username}</span>
+                      <span className="username">{user.username}</span>
                       <i className="fas fa-chevron-down"></i>
                     </button>
-                    
+
                     {showUserMenu && (
-                      <div className="user-menu">
+                      <div className={`user-menu ${showUserMenu ? 'active' : ''}`}>
                         <div className="welcome-message">
                           <p>Xin chào, {user.fullname || user.username}!</p>
                         </div>
                         <div className="menu-items">
-                          <Link 
-                            to="/taikhoan" 
+                          <Link
+                            to="/taikhoan"
                             className="menu-link"
                             onClick={() => setShowUserMenu(false)}
                           >
                             <i className="fas fa-user-circle"></i>
                             <span>Thông tin tài khoản</span>
                           </Link>
-                          <Link 
-                            to="/donhang" 
+                          <Link
+                            to="/donhang"
                             className="menu-link"
                             onClick={() => setShowUserMenu(false)}
                           >
@@ -208,11 +201,11 @@ export default function Header() {
                             <span>Thông tin đơn hàng</span>
                           </Link>
                           <div className="menu-separator"></div>
-                          <button 
+                          <button
                             onClick={() => {
                               handleLogout();
                               setShowUserMenu(false);
-                            }} 
+                            }}
                             className="logout-button"
                           >
                             <i className="fas fa-sign-out-alt"></i>
@@ -223,45 +216,47 @@ export default function Header() {
                     )}
                   </div>
                 ) : (
-                  <button 
-                    onClick={() => navigate('/dangnhap')} 
+                  <button
+                    onClick={() => navigate("/dangnhap")}
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      padding: '6px 12px',
-                      backgroundColor: '#f8f9fa',
-                      border: '1px solid #ddd',
-                      borderRadius: '6px',
-                      cursor: 'pointer',
-                      height: '36px',
-                      minWidth: '140px',
-                      maxWidth: '200px',
-                      textDecoration: 'none',
-                      transition: 'all 0.2s ease',
-                      boxSizing: 'border-box'
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      padding: "6px 12px",
+                      backgroundColor: "#f8f9fa",
+                      border: "1px solid #ddd",
+                      borderRadius: "6px",
+                      cursor: "pointer",
+                      height: "36px",
+                      minWidth: "140px",
+                      maxWidth: "200px",
+                      textDecoration: "none",
+                      transition: "all 0.2s ease",
+                      boxSizing: "border-box",
                     }}
                   >
-                    <img 
-                      src="/public/img/icon/user-icon.png" 
-                      alt="Login" 
-                      style={{ 
-                        width: '24px',
-                        height: '24px',
-                        objectFit: 'contain',
+                    <img
+                      src="/public/img/icon/user-icon.png"
+                      alt="Login"
+                      style={{
+                        width: "24px",
+                        height: "24px",
+                        objectFit: "contain",
                         flexShrink: 0,
-                        marginRight: '2px'
+                        marginRight: "2px",
                       }}
                     />
-                    <span style={{
-                      color: '#333',
-                      fontSize: '14px',
-                      fontWeight: '500',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      lineHeight: '24px'
-                    }}>
+                    <span
+                      style={{
+                        color: "#333",
+                        fontSize: "14px",
+                        fontWeight: "500",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        lineHeight: "24px",
+                      }}
+                    >
                       Đăng nhập
                     </span>
                   </button>
@@ -270,27 +265,22 @@ export default function Header() {
 
               <Link
                 to="/giohang"
-                className="cart-header d-block d-flex"
-                style={{ overflow: "hidden" }}
+                className="cart-header"
               >
                 <img
                   width="32px"
                   src="/public/img/icon/bag_icon.png"
                   alt=""
-                  style={{ float: "left", marginRight: 10 }}
                 />
-                <p style={{ float: "left" }}>
-                  Giỏ hàng (<strong>{cartCount}</strong>)
-                </p>
+                <p>Giỏ hàng</p>
+                
+                <span className="cart-count">{cartCount}</span>
               </Link>
+              
             </div>
           </div>
         </div>
-        <h2 className="vcard">Công ty TNHH Phát Triển Tin Học Utech</h2>
-        <h3 className="vcard">Công ty TNHH Phát Triển Tin Học Utech</h3>
-        <h4 className="vcard">Công ty TNHH Phát Triển Tin Học Utech</h4>
-        <h5 className="vcard">Công ty TNHH Phát Triển Tin Học Utech</h5>
-        <h6 className="vcard">Công ty TNHH Phát Triển Tin Học Utech</h6>
+
         <div className="menu">
           <div className="wrap-content">
             <ul className="d-flex align-items-center justify-content-between">
@@ -299,27 +289,31 @@ export default function Header() {
                   className="has-child  transition"
                   href="san-pham"
                   title="Danh mục sản phẩm"
-                  onClick={()=>toggleMenu()}
+                  onClick={() => toggleMenu()}
                 >
-                  {" "}
-                  Danh mục sản phẩm <i />
+                 
+                  Danh mục sản phẩm 
+                  <i className="fas fa-chevron-down" style={{ marginLeft: "8px" }}></i>
                 </span>
-                <div className={`show-menu isPage ${isOpen ? 'open-danhmuc' : 'close-danhmuc'}`}>
+                <div
+                  className={`show-menu isPage ${
+                    isOpen ? "open-danhmuc" : "close-danhmuc"
+                  }`}
+                >
                   <div className="boxshadown">
                     <ul className="box_menu lst-prd">
+                      {danhMuc.length > 0 ? (
+                        danhMuc.map((danhmuc) => (
+                          <li className="mega-dropdown" key={danhmuc.id}>
+                            <Link
+                              to={`/sanPham/id_danhmuc/${danhmuc.id}`}
+                              className="has-child transition"
+                              title="LAPTOP"
+                            >
+                              {danhmuc.tendm}
+                            </Link>
 
-                    {danhMuc.length > 0 ? (
-                    danhMuc.map((danhmuc) => (
-                      <li className="mega-dropdown" key={danhmuc.id}>
-                        <Link
-                          to={`/sanPham/id_danhmuc/${danhmuc.id}`}
-                          className="has-child transition"
-                          title="LAPTOP"
-                        >
-                          {danhmuc.tendm}
-                        </Link>
-                        
-                        {/* <div className="boxMainDropdown">
+                            {/* <div className="boxMainDropdown">
                          <ul className="dropdown-prod-lv2">
                          <li>
                           <a
@@ -632,12 +626,11 @@ export default function Header() {
             </li>
           </ul>
         </div> */}
-                      </li>
-                    ))
-                  ) : (
-                    <p>Đang tải danh mục...</p>
-                  )}
-                     
+                          </li>
+                        ))
+                      ) : (
+                        <p>Đang tải danh mục...</p>
+                      )}
                     </ul>
                   </div>
                 </div>
@@ -658,20 +651,8 @@ export default function Header() {
                     Giới thiệu
                   </Link>
                 </li>
-                <li className="li-normal">
-                  <Link className="" to="/tragop" title="Trả góp">
-                    Trả góp
-                  </Link>
-                </li>
-                <li className="li-normal">
-                  <a
-                    href="bao-gia.html"
-                    className="goto-form"
-                    title="Yêu cầu báo giá"
-                  >
-                    Yêu cầu báo giá
-                  </a>
-                </li>
+                
+                
                 <li className="li-normal">
                   <Link to="/tintuc">Tin tức & Sự kiện</Link>
                 </li>
@@ -686,54 +667,61 @@ export default function Header() {
                   </Link>
                 </li>
               </ul>
-              <li className={`submenu ${isActive ? "active" : ""}`}   onClick={() => handleClick()}>
-                  <img width={45} height={45} src="/public/img/icon/menu (1).png" alt="" />
-                  <ul>
-                      <li className="li-normal">
-                      <Link to="/" className="" href="" title="Trang chủ">
-                        Trang chủ
-                      </Link>
-                    </li>
-                    <li className="li-normal">
-                      <Link
-                        to="/gioithieu"
-                        className=""
-                        href="gioi-thieu.html"
-                        title="Giới thiệu"
-                      >
-                        Giới thiệu
-                      </Link>
-                    </li>
-                    <li className="li-normal">
-                      <Link className="" to="/tragop" title="Trả góp">
-                        Trả góp
-                      </Link>
-                    </li>
-                    <li className="li-normal">
-                      <a
-                        href="bao-gia.html"
-                        className="goto-form"
-                        title="Yêu cầu báo giá"
-                      >
-                        Yêu cầu báo giá
-                      </a>
-                    </li>
-                    <li className="li-normal">
-                      <Link to="/tintuc">Tin tức & Sự kiện</Link>
-                    </li>
-                    <li className="li-normal">
-                      <Link
-                        to="/lienhe"
-                        className=""
-                        href="lien-he.html"
-                        title="Liên hệ"
-                      >
-                        Liên hệ
-                      </Link>
-                    </li>
-                  </ul>
+              <li
+                className={`submenu ${isActive ? "active" : ""}`}
+                onClick={() => handleClick()}
+              >
+                <img
+                  width={45}
+                  height={45}
+                  src="/public/img/icon/menu (1).png"
+                  alt=""
+                />
+                <ul>
+                  <li className="li-normal">
+                    <Link to="/" className="" href="" title="Trang chủ">
+                      Trang chủ
+                    </Link>
+                  </li>
+                  <li className="li-normal">
+                    <Link
+                      to="/gioithieu"
+                      className=""
+                      href="gioi-thieu.html"
+                      title="Giới thiệu"
+                    >
+                      Giới thiệu
+                    </Link>
+                  </li>
+                  <li className="li-normal">
+                    <Link className="" to="/tragop" title="Trả góp">
+                      Trả góp
+                    </Link>
+                  </li>
+                  <li className="li-normal">
+                    <a
+                      href="bao-gia.html"
+                      className="goto-form"
+                      title="Yêu cầu báo giá"
+                    >
+                      Yêu cầu báo giá
+                    </a>
+                  </li>
+                  <li className="li-normal">
+                    <Link to="/tintuc">Tin tức & Sự kiện</Link>
+                  </li>
+                  <li className="li-normal">
+                    <Link
+                      to="/lienhe"
+                      className=""
+                      href="lien-he.html"
+                      title="Liên hệ"
+                    >
+                      Liên hệ
+                    </Link>
+                  </li>
+                </ul>
               </li>
-              
             </ul>
           </div>
         </div>

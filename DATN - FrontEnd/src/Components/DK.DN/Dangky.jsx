@@ -109,23 +109,7 @@ export default function Dangky() {
                 <button type="submit" className="btn btn-primary w-100">Tạo tài khoản</button>
               </form>
               <hr />
-              <div className="text-center mb-3">Hoặc đăng ký bằng</div>
-              <div className="d-flex justify-content-between">
-                <button className="btn btn-danger social-btn">
-                  <img
-                    src="https://img.icons8.com/color/16/000000/google-logo.png"
-                    alt="Google Icon"
-                  />{" "}
-                  Google
-                </button>
-                <button className="btn btn-primary social-btn">
-                  <img
-                    src="https://img.icons8.com/color/16/000000/facebook-new.png"
-                    alt="Facebook Icon"
-                  />{" "}
-                  Facebook
-                </button>
-              </div>
+             
               <div className="text-center mb-3">
                 Bạn đã có tài khoản?<Link to="/Dangnhap">Đăng Nhập</Link>
               </div>
