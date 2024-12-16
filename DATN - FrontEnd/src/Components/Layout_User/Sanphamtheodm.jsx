@@ -1,102 +1,125 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 import { fetchSanPhamTheoDm } from "../../../service/sanphamService";
 import { fetchDanhMucById } from "../../../service/danhmucService";
 import { useNavigate } from "react-router-dom";
 
-
 export default function SanPhamTheodm() {
-  const [sanPham, setSanpham] = useState([]);
-  const [tenDanhMuc, setTenDanhMuc] = useState("");
+  const [sanPham, setSanPham] = useState([]);
+  const [tenDanhMuc, setTenDanhMuc] = useState("Đang tải danh mục...");
+  const [priceRange, setPriceRange] = useState(0);
+  const [brandFilter, setBrandFilter] = useState("");
+  const [warrantyFilter, setWarrantyFilter] = useState(0);
+  const [sortBy, setSortBy] = useState(0);
+  const [brands, setBrands] = useState([]);
   const navigate = useNavigate();
-
   const { id } = useParams();
 
-  // Thêm state để lưu khoảng giá đã chọn
-  const [priceRange, setPriceRange] = useState(0);
-  const [filteredProducts, setFilteredProducts] = useState([]);
-
-  // Hàm xử lý khi thay đổi khoảng giá
-  const handlePriceFilter = (event) => {
-    const selectedValue = parseInt(event.target.value);
-    setPriceRange(selectedValue);
-      
-    if (selectedValue === 0) {
-      // Nếu chọn "Mức giá" (giá trị 0), hiển thị tất cả sản phẩm
-      setFilteredProducts(sanPham);
-      return;
-    }
-
-    // Lọc sản phẩm theo khoảng giá
-    const filtered = sanPham.filter(product => {
-      const price = parseInt(product.gia_sp.replace(/\./g, ''));
-      switch (selectedValue) {
-        case 19: // Dưới 3 triệu
-          return price < 3000000;
-        case 20: // Dưới 5 triệu
-          return price < 5000000;
-        case 21: // Dưới 8 triệu
-          return price < 8000000;
-        case 22: // Dưới 10 triệu
-          return price < 10000000;
-        case 49: // Dưới 15 triệu
-          return price < 15000000;
-        case 50: // Dưới 20 triệu
-          return price < 20000000;
-        case 51: // Dưới 25 triệu
-          return price < 25000000;
-        case 52: // Trên 25 triệu
-          return price >= 25000000;
-        default:
-          return true;
-      }
-    });
-    
-    setFilteredProducts(filtered);
-  };
-
   useEffect(() => {
-    const loadSanpham = async () => {
+    const loadSanPham = async () => {
       try {
-        const sanPham = await fetchSanPhamTheoDm(id);
-        setSanpham(sanPham);
-        setFilteredProducts(sanPham); // Khởi tạo filteredProducts
+        const fetchedSanPham = await fetchSanPhamTheoDm(id);
+        setSanPham(fetchedSanPham);
+        const uniqueBrands = Array.from(new Set(fetchedSanPham.map((sp) => sp.thuong_hieu)));
+        setBrands(uniqueBrands);
       } catch (error) {
-        console.error("Lỗi:", error);
+        console.error("Lỗi tải sản phẩm:", error);
       }
     };
-    loadSanpham();
-  }, [id]);
 
-  useEffect(() => {
     const loadTenDanhMuc = async () => {
       try {
         const danhMucData = await fetchDanhMucById(id);
-        setTenDanhMuc(danhMucData.tendm); // Lưu tên danh mục
+        setTenDanhMuc(danhMucData?.tendm || "Danh mục không tồn tại");
       } catch (error) {
-        console.error("Lỗi:", error);
+        console.error("Lỗi tải tên danh mục:", error);
       }
     };
+
+    loadSanPham();
     loadTenDanhMuc();
   }, [id]);
+
+  // Lọc và sắp xếp sản phẩm
+  const filteredProducts = useMemo(() => {
+    let products = sanPham.filter((product) => {
+      const price = parseInt(product.gia_sp.replace(/\./g, ""));
+      const warranty = parseInt(product.bao_hanh); // Giả sử thuộc tính bảo hành là "bao_hanh"
+
+      const matchesPrice = (() => {
+        switch (priceRange) {
+          case 19:
+            return price < 3000000;
+          case 20:
+            return price < 5000000;
+          case 21:
+            return price < 8000000;
+          case 22:
+            return price < 10000000;
+          case 49:
+            return price < 15000000;
+          case 50:
+            return price < 20000000;
+          case 51:
+            return price < 25000000;
+          case 52:
+            return price >= 25000000;
+          default:
+            return true;
+        }
+      })();
+
+      const matchesBrand = brandFilter ? product.thuong_hieu === brandFilter : true;
+      const matchesWarranty = warrantyFilter ? warranty === warrantyFilter : true;
+
+      return matchesPrice && matchesBrand && matchesWarranty;
+    });
+
+    // Sắp xếp sản phẩm
+    if (sortBy === 1) {
+      products.sort((a, b) => parseInt(a.gia_sp.replace(/\./g, "")) - parseInt(b.gia_sp.replace(/\./g, "")));
+    } else if (sortBy === 2) {
+      products.sort((a, b) => parseInt(b.gia_sp.replace(/\./g, "")) - parseInt(a.gia_sp.replace(/\./g, "")));
+    } else if (sortBy === 3) {
+      products.sort((a, b) => b.luot_xem - a.luot_xem); // Giả sử có thuộc tính "luot_xem"
+    }
+
+    return products;
+  }, [priceRange, brandFilter, warrantyFilter, sortBy, sanPham]);
+
+  const handlePriceFilter = (event) => {
+    setPriceRange(parseInt(event.target.value));
+  };
+
+  const handleBrandFilter = (event) => {
+    setBrandFilter(event.target.value);
+  };
+
+  const handleWarrantyFilter = (event) => {
+    setWarrantyFilter(parseInt(event.target.value));
+  };
+
+  const handleSortBy = (event) => {
+    setSortBy(parseInt(event.target.value));
+  };
+
   const handleAddToCart = (sanPhamMoi) => {
-    let cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
+    const cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
     const itemIndex = cartItems.findIndex((item) => item.id === sanPhamMoi.id);
-  
+
     if (itemIndex > -1) {
       cartItems[itemIndex].quantity += 1;
     } else {
-      const priceAsNumber = parseInt(sanPhamMoi.gia_sp.replace(/\./g, ''));
+      const priceAsNumber = parseInt(sanPhamMoi.gia_sp.replace(/\./g, ""));
       cartItems.push({ ...sanPhamMoi, gia_sp: priceAsNumber, quantity: 1 });
     }
-  
+
     localStorage.setItem("cartItem", JSON.stringify(cartItems));
-    
     window.dispatchEvent(new Event("cartUpdated"));
-    
     navigate("/giohang");
   };
-  // Tìm kiếm tên danh mục tương ứng với ID hiện tại
+
+
 
   return (
     <div className="wrap-main wrap-page">
@@ -110,29 +133,13 @@ export default function SanPhamTheodm() {
             <input type="hidden" defaultValue="" name="id_cat" />
             <input type="hidden" defaultValue="" name="id_item" />
             <div className="item_filter">
-              <select name="filter[]" className="filter">
-                <option value={0}>Thương hiệu</option>
-                <option value={336}>Kingmax</option>
-                <option value={335}>G.Skill</option>
-                <option value={334}>Lexar</option>
-                <option value={165}>Dell</option>
-                <option value={166}>HP</option>
-                <option value={167}>Asus</option>
-                <option value={169}>Lenovo</option>
-                <option value={333}>Kingston</option>
-                <option value={168}>Acer</option>
-                <option value={176}>MSI</option>
-                <option value={282}>Samsung</option>
-                <option value={184}>LG</option>
-                <option value={285}>Philips</option>
-                <option value={287}>Viewsonic</option>
-                <option value={288}>AOC</option>
-                <option value={200}>Gigabyte</option>
-                <option value={229}>Canon</option>
-                <option value={231}>Epson</option>
-                <option value={230}>Brother</option>
-              </select>
-            </div>
+            <select onChange={handleBrandFilter} value={brandFilter} className="filter">
+              <option value="">Thương hiệu</option>
+              {brands.map((brand) => (
+                <option key={brand} value={brand}>{brand}</option>
+              ))}
+            </select>
+          </div>
             <div className="item_filter">
               <select 
                 name="filter[]" 
@@ -151,120 +158,25 @@ export default function SanPhamTheodm() {
                 <option value={52}>Trên 25 triệu</option>
               </select>
             </div>
+      
             <div className="item_filter">
-              <select name="filter[]" className="filter">
-                <option value={0}>CPU</option>
-                <option value={53}>Intel Celeron</option>
-                <option value={28}>Intel Pentium</option>
-                <option value={24}>Intel Core i3</option>
-                <option value={25}>Intel Core i5</option>
-                <option value={26}>Intel Core i7</option>
-                <option value={290}>Intel Core i9</option>
-                <option value={332}>Intel Core Ultra 5</option>
-                <option value={357}>Intel Core Ultra 7</option>
-                <option value={358}>Intel Core Ultra 9</option>
-              </select>
-            </div>
-            <div className="item_filter">
-              <select name="filter[]" className="filter">
-                <option value={0}>Bộ nhớ RAM</option>
-                <option value={57}>2Gb</option>
-                <option value={58}>4Gb</option>
-                <option value={59}>6Gb</option>
-                <option value={60}>8Gb</option>
-                <option value={61}>16Gb</option>
-                <option value={62}>32Gb</option>
-              </select>
-            </div>
-            <div className="item_filter">
-              <select name="filter[]" className="filter">
-                <option value={0}>Dung lượng ổ cứng</option>
-                <option value={362}>250 Gb</option>
-                <option value={361}>960 Gb</option>
-                <option value={360}>480 Gb</option>
-                <option value={359}>240 Gb</option>
-                <option value={353}>500 Gb</option>
-                <option value={145}>128 Gb</option>
-                <option value={146}>256 Gb</option>
-                <option value={147}>512 Gb</option>
-                <option value={149}>1 Tb</option>
-                <option value={171}>2 Tb</option>
-                <option value={340}>3 Tb</option>
-                <option value={342}>4 Tb</option>
-                <option value={350}>5 Tb</option>
-                <option value={343}>6 Tb</option>
-                <option value={344}>Trên 6 Tb</option>
-              </select>
-            </div>
-            <div className="item_filter">
-              <select name="filter[]" className="filter">
-                <option value={0}>Kích thước màn hình</option>
-                <option value={63}>11.6 inch</option>
-                <option value={64}>13.3 inch</option>
-                <option value={65}>14.0 inch</option>
-                <option value={66}>15.6 inch</option>
-                <option value={208}>16.0 inch</option>
-                <option value={67}>17.3 inch</option>
-                <option value={68}>19 inch</option>
-                <option value={237}>20 inch</option>
-                <option value={235}>22 inch</option>
-                <option value={236}>24 inch</option>
-                <option value={289}>25 inch</option>
-                <option value={366}>26 inch</option>
-                <option value={238}>27 inch</option>
-                <option value={284}>28 inch</option>
-                <option value={279}>29 inch</option>
-                <option value={239}>32 inch</option>
-                <option value={240}>34 inch</option>
-                <option value={241}>38 inch</option>
-                <option value={242}>43 inch</option>
-                <option value={278}>45 inch</option>
-                <option value={277}>48 inch</option>
-              </select>
-            </div>
-            <div className="item_filter">
-              <select name="filter[]" className="filter">
-                <option value={0}>Bảo hành</option>
-                <option value={159}>12 tháng</option>
-                <option value={160}>24 tháng</option>
-                <option value={161}>36 tháng</option>
-              </select>
-            </div>
-            <div className="item_filter">
-              <select name="filter[]" className="filter">
-                <option value={0}>Card đồ họa</option>
-                <option value={365}>Intel® Graphics</option>
-                <option value={364}>Integrated - Intel®Arc™ Graphics</option>
-                <option value={363}>
-                  Integrated - Intel® Iris® Xe Graphics
-                </option>
-                <option value={69}>Integrated - Intel® UHD Graphics</option>
-                <option value={70}>VGA rời 2Gb</option>
-                <option value={71}>VGA rời 4Gb</option>
-                <option value={73}>VGA rời 6Gb</option>
-                <option value={74}>VGA rời 8Gb</option>
-                <option value={331}>Vga rời 12Gb</option>
-                <option value={75}>VGA rời 16Gb</option>
-              </select>
-            </div>
-            <div className="item_filter">
-              <select name="filter[]" className="filter">
-                <option value={0}>Màu sắc</option>
-                <option value={76}>Đen (black)</option>
-                <option value={162}>Xám (grey)</option>
-                <option value={164}>Bạc (silver)</option>
-                <option value={77}>Vàng (gold)</option>
-                <option value={170}>Hồng (Pink)</option>
-                <option value={163}>Trắng (white)</option>
-                <option value={217}>Xanh (Blue)</option>
-              </select>
-            </div>
-            <select name="sort_by" id="sort_by" className="filter">
-              <option value={0}>Sắp xếp theo</option>
-              <option value={1}>Giá: Thấp -&gt; Cao</option>
-              <option value={2}>Giá: Cao -&gt; Thấp</option>
-              <option value={3}>Xem nhiều nhất</option>
+            <select onChange={handleWarrantyFilter} value={warrantyFilter} className="filter">
+              <option value={0}>Bảo hành</option>
+              <option value={12}>12 tháng</option>
+              <option value={24}>24 tháng</option>
+              <option value={36}>36 tháng</option>
             </select>
+          </div>
+          
+            
+          <div className="item_filter">
+            <select onChange={handleSortBy} value={sortBy} className="filter">
+              <option value={0}>Sắp xếp theo</option>
+              <option value={1}>Giá: Thấp -&gt; Cao</option>
+              <option value={2}>Giá: Cao -&gt; Thấp</option>
+              <option value={3}>Xem nhiều nhất</option>
+            </select>
+          </div>
             <div className="clear" />
           </form>
         </div>
