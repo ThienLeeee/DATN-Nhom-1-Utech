@@ -25,25 +25,13 @@ export default function LienHe() {
               <i className="fas fa-phone-alt"></i>
               <div>
                 <h3>Điện thoại</h3>
-                <p>028.38 333 667 - 0902 566 839</p>
+                <p>0822104408 - 0906733731</p>
               </div>
             </div>
 
-            <div className="lh-info-item">
-              <i className="fas fa-envelope"></i>
-              <div>
-                <h3>Email</h3>
-                <p>utechq3@utech.vn</p>
-              </div>
-            </div>
+            
 
-            <div className="lh-info-item">
-              <i className="fas fa-globe"></i>
-              <div>
-                <h3>Website</h3>
-                <p>www.utech.vn</p>
-              </div>
-            </div>
+            
           </div>
 
           <div className="lh-map">

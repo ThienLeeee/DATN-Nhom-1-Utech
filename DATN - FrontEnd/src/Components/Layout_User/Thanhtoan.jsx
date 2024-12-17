@@ -41,12 +41,12 @@ export default function Thanhtoan() {
     try {
       const cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
       const orderData = {
-        hoTen: formData.ten_thanhtoan, // Đổi tên field
-        diaChi: formData.diachi_thanhtoan, // Đổi tên field
-        dienThoai: formData.dienthoai_thanhtoan, // Đổi tên field
-        email: formData.email_thanhtoan, // Đổi tên field
-        ghiChu: formData.noidung_thanhtoan, // Đổi tên field
-        hinhThucThanhToan: formData.ht_thanhtoan, // Đổi tên field
+        hoTen: formData.ten_thanhtoan, 
+        diaChi: formData.diachi_thanhtoan, 
+        dienThoai: formData.dienthoai_thanhtoan, 
+        email: formData.email_thanhtoan, 
+        ghiChu: formData.noidung_thanhtoan, 
+        hinhThucThanhToan: formData.ht_thanhtoan, 
         sanPham: cartItems.map((item) => ({
           id: item.id,
           ten_sp: item.ten_sp,

@@ -484,14 +484,8 @@ export default function ChiTietSanPham() {
                         <li>Ổ cứng: {sanpham.cau_hinh.o_cung}</li>
                         <li>VGA: {sanpham.cau_hinh.vga}</li>
                         <li>Màn hình: {sanpham.cau_hinh.man_hinh}</li>
-                        <li>Pin: {sanpham.cau_hinh_chi_tiet.pin}</li>
-                        <li>Màu sắc: {sanpham.cau_hinh_chi_tiet.mau_sac}</li>
-                        <li>
-                          Trọng lượng: {sanpham.cau_hinh_chi_tiet.trong_luong}
-                        </li>
-                        <li>
-                          Hệ điều hành: {sanpham.cau_hinh_chi_tiet.he_dieu_hanh}
-                        </li>
+                        <li>Bảo hành: {sanpham.bao_hanh}</li>
+                       
                       </ul>
                     )}
                     {sanpham.id_danhmuc === 2 && (
@@ -557,9 +551,7 @@ export default function ChiTietSanPham() {
                     )}
                     <p></p>
                   </div>
-                  <div className="baohanh_detail">
-                    <strong>Bảo hành: </strong>12 tháng
-                  </div>
+                  
                 </div>
 
                 <div
@@ -790,7 +782,7 @@ export default function ChiTietSanPham() {
                   data-confirm=""
                   onClick={() => handleAddToCart(sanpham)}
                 >
-                  Thêm vào gio hàng
+                  Thêm vào giỏ hàng
                 </a>
 
                 {/* Thay thế phần popup cũ bằng popup mới */}
@@ -893,26 +885,7 @@ export default function ChiTietSanPham() {
                                   <td>Màn hình</td>
                                   <td>{sanpham.cau_hinh.man_hinh}</td>
                                 </tr>
-                                <tr>
-                                  <td>Pin</td>
-                                  <td>{sanpham.cau_hinh_chi_tiet.pin}</td>
-                                </tr>
-                                <tr>
-                                  <td>Màu sắc</td>
-                                  <td>{sanpham.cau_hinh_chi_tiet.mau_sac}</td>
-                                </tr>
-                                <tr>
-                                  <td>Trọng lượng</td>
-                                  <td>
-                                    {sanpham.cau_hinh_chi_tiet.trong_luong}
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td>Hệ điều hành</td>
-                                  <td>
-                                    {sanpham.cau_hinh_chi_tiet.he_dieu_hanh}
-                                  </td>
-                                </tr>
+                                
                               </tbody>
                             </>
                           )}
