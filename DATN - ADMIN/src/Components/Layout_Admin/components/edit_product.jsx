@@ -43,12 +43,12 @@ export default function EditProduct() {
         setFormData(productData);
         setCauHinhFields(getCauHinhFields(productData.id_danhmuc)); // Thiết lập các trường cấu hình
         setPreviewUrls({
-          chinh: `/img/sanpham/${getImagePath(productData.id_danhmuc)}/${productData.hinh_anh.chinh}`,
-          phu1: productData.hinh_anh.phu1 ? `/img/sanpham/${getImagePath(productData.id_danhmuc)}/${productData.hinh_anh.phu1}` : null,
-          phu2: productData.hinh_anh.phu2 ? `/img/sanpham/${getImagePath(productData.id_danhmuc)}/${productData.hinh_anh.phu2}` : null,
-          phu3: productData.hinh_anh.phu3 ? `/img/sanpham/${getImagePath(productData.id_danhmuc)}/${productData.hinh_anh.phu3}` : null,
-          phu4: productData.hinh_anh.phu4 ? `/img/sanpham/${getImagePath(productData.id_danhmuc)}/${productData.hinh_anh.phu4}` : null,
-          phu5: productData.hinh_anh.phu5 ? `/img/sanpham/${getImagePath(productData.id_danhmuc)}/${productData.hinh_anh.phu5}` : null,
+          chinh: `/img/sanpham/${productData.hinh_anh.chinh}`,
+          phu1: productData.hinh_anh.phu1 ? `/img/sanpham/${productData.hinh_anh.phu1}` : null,
+          phu2: productData.hinh_anh.phu2 ? `/img/sanpham/${productData.hinh_anh.phu2}` : null,
+          phu3: productData.hinh_anh.phu3 ? `/img/sanpham/${productData.hinh_anh.phu3}` : null,
+          phu4: productData.hinh_anh.phu4 ? `/img/sanpham/${productData.hinh_anh.phu4}` : null,
+          phu5: productData.hinh_anh.phu5 ? `/img/sanpham/${productData.hinh_anh.phu5}` : null,
         });
       } else {
         setError('Không tìm thấy sản phẩm.');

@@ -61,32 +61,37 @@ useEffect(() => {
 
  
 
-const handleDelete = async (id) => {
-  Swal.fire({
-    title: 'Bạn có chắc chắn muốn xóa sản phẩm này?',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Xóa',
-    cancelButtonText: 'Hủy',
-  }).then(async (result) => {
-    if (result.isConfirmed) {
-      try {
-        const response = await fetch(`http://localhost:3000/api/sanPham/${id}`, {
-          method: 'DELETE',
-        });
-        if (response.ok) {
-          setSanpham(sanPham.filter((item) => item.id !== id));
-          Swal.fire('Đã xóa!', 'Sản phẩm đã được xóa thành công.', 'success');
-        } else {
-          Swal.fire('Lỗi!', 'Xóa không thành công.', 'error');
+  const handleDelete = async (id) => {
+    Swal.fire({
+      title: 'Bạn có chắc chắn muốn xóa sản phẩm này?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Xóa',
+      cancelButtonText: 'Hủy',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await fetch(`http://localhost:3000/api/sanPham/${id}`, {
+            method: 'DELETE',
+          });
+          
+          const resultData = await response.json(); // Đọc dữ liệu phản hồi từ API
+  
+          if (response.ok) {
+            setSanpham(sanPham.filter((item) => item.id !== id));
+            Swal.fire('Đã xóa!', 'Sản phẩm đã được xóa thành công.', 'success');
+          } else {
+            // Xử lý lỗi khi sản phẩm không thể xóa
+            Swal.fire('Lỗi!', resultData.message || 'Xóa không thành công.', 'error');
+          }
+        } catch (error) {
+          console.error("Lỗi:", error);
+          Swal.fire('Lỗi!', 'Đã xảy ra lỗi khi xóa sản phẩm.', 'error');
         }
-      } catch (error) {
-        console.error("Lỗi:", error);
-        Swal.fire('Lỗi!', 'Đã xảy ra lỗi khi xóa sản phẩm.', 'error');
       }
-    }
-  });
-};
+    });
+  };
+  
 
 
   
@@ -159,23 +164,23 @@ const renderConfig = (cau_hinh, id_danhmuc) => {
   ));
 };
 
-  // Function to get the image path based on the category ID
-  const getImagePath = (categoryId) => {
-    switch (categoryId) {
-      case 1:
-        return "Laptop";
-      case 2:
-        return "PC";
-      case 3:
-        return "Manhinh";
-      case 4:
-        return "Chuot";
-      case 5:
-        return "Banphim";
-      default:
-        return "Khac";
-    }
-  };
+  // // Function to get the image path based on the category ID
+  // const getImagePath = (categoryId) => {
+  //   switch (categoryId) {
+  //     case 1:
+  //       return "Laptop";
+  //     case 2:
+  //       return "PC";
+  //     case 3:
+  //       return "Manhinh";
+  //     case 4:
+  //       return "Chuot";
+  //     case 5:
+  //       return "Banphim";
+  //     default:
+  //       return "Khac";
+  //   }
+  // };
 
  
   return (
@@ -187,7 +192,7 @@ const renderConfig = (cau_hinh, id_danhmuc) => {
           <button className="btn btn-primary">Thêm sản phẩm</button>
         </Link>
       </div>
-  
+    
       <div className="d-flex justify-content-between">
       <div className="my-3 d-flex align-items-center">
           <label className="me-2 fw-bold">Chọn danh mục: </label>
@@ -231,6 +236,7 @@ const renderConfig = (cau_hinh, id_danhmuc) => {
               <th className="text-center align-middle " scope="col">Cấu hình</th>
               <th className="text-center align-middle " scope="col">Thương hiệu</th>
               <th className="text-center align-middle " scope="col">Bảo hành</th>
+              <th className="text-center align-middle " scope="col">Số lượng</th>
               <th className="text-center align-middle " scope="col">Thao tác</th>
             </tr>
           </thead>
@@ -238,7 +244,7 @@ const renderConfig = (cau_hinh, id_danhmuc) => {
           <tbody>
             {filteredItems.length > 0 ? (
               filteredItems.map((sanpham, index) => {
-                const imagePath = getImagePath(sanpham.id_danhmuc);
+              
                 return (
                   <tr key={index}>
                     <td className="align-middle">{sanpham.id}</td>
@@ -246,7 +252,7 @@ const renderConfig = (cau_hinh, id_danhmuc) => {
                     <td className="align-middle">{sanpham.ten_sp}</td>
                     <td>
                       <img
-                        src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.chinh}`}
+                        src={`/img/sanpham/${sanpham.hinh_anh.chinh}`}
                         style={{ width: "150px", height: "auto" }}
                         alt={sanpham.ten_sp}
                         className="w100 trans03"
@@ -259,7 +265,7 @@ const renderConfig = (cau_hinh, id_danhmuc) => {
                     </td>
                     <td className="align-middle">{sanpham.thuong_hieu}</td>
                     <td className="align-middle">{sanpham.bao_hanh}</td>
-               
+                    <td className="align-middle">{sanpham.soluong}</td>
                     <td className="text-center align-middle d-flex justify-content-center gap-2 pt-5">
                       <Link to={`/products/edit/${sanpham.id}`} className="btn btn-light">
                         <i className="text-primary bi-pencil-square" />
@@ -288,11 +294,11 @@ const renderConfig = (cau_hinh, id_danhmuc) => {
       <div className="slider-container d-md-none">
         {filteredItems.length > 0 ? (
           filteredItems.map((sanpham, index) => {
-            const imagePath = getImagePath(sanpham.id_danhmuc);
+         
             return (
               <div key={index} className="product-card">
                 <img
-                  src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.chinh}`}
+                  src={`/img/sanpham/${sanpham.hinh_anh.chinh}`}
                   alt={sanpham.ten_sp}
                   className="product-img"
                 />

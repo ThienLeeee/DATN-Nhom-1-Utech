@@ -26,21 +26,42 @@ export default function Admin_dh() {
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/donHang/${orderId}/status`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ trangThai: newStatus }),
-      });
-
+      // Lấy đơn hàng hiện tại
+      const currentOrder = orders.find((order) => order.id === orderId);
+  
+      // Lấy chỉ số của trạng thái hiện tại và trạng thái mới
+      const currentStatusIndex = validStatusOrder.indexOf(currentOrder.trangThai);
+      const newStatusIndex = validStatusOrder.indexOf(newStatus);
+  
+      // Kiểm tra nếu trạng thái mới không hợp lệ (quay ngược lại trạng thái trước)
+      if (newStatusIndex < currentStatusIndex) {
+        alert("Bạn không thể quay lại trạng thái trước đó.");
+        return;
+      }
+  
+      // Gửi yêu cầu cập nhật trạng thái lên server
+      const response = await fetch(
+        `http://localhost:3000/api/donHang/${orderId}/status`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ trangThai: newStatus }),
+        }
+      );
+  
       if (response.ok) {
-        fetchOrders(); // Refresh danh sách đơn hàng
+        // Cập nhật danh sách đơn hàng sau khi thay đổi trạng thái
+        fetchOrders();
+      } else {
+        console.error("Lỗi khi cập nhật trạng thái:", await response.text());
       }
     } catch (error) {
-      console.error('Lỗi khi cập nhật trạng thái:', error);
+      console.error("Lỗi khi cập nhật trạng thái:", error);
     }
   };
+  
 
   const filterOrders = () => {
     if (selectedStatus === 'all') return orders;
@@ -68,7 +89,13 @@ export default function Admin_dh() {
   if (loading) {
     return <div className="loading">Đang tải...</div>;
   }
-
+  const validStatusOrder = [
+    "Đang xử lý",
+    "Đang vận chuyển",
+    "Hoàn thành",
+    "Hủy",
+  ];
+  
   return (
     <div className="admin-orders">
       <h2 className="page-title">Quản lý đơn hàng</h2>
@@ -80,11 +107,10 @@ export default function Admin_dh() {
           className="status-filter"
         >
           <option value="all">Tất cả đơn hàng</option>
-          <option value="Chờ xử lý">Chờ xử lý</option>
           <option value="Đang xử lý">Đang xử lý</option>
-          <option value="Đang giao hàng">Đang giao hàng</option>
-          <option value="Đã giao hàng">Đã giao hàng</option>
-          <option value="Đã hủy">Đã hủy</option>
+          <option value="Đang giao hàng">Đang vận chuyển</option>
+          <option value="Đã giao hàng">Hoàn thành</option>
+          <option value="Đã hủy">Hủy</option>
         </select>
       </div>
 
@@ -126,11 +152,10 @@ export default function Admin_dh() {
                     onChange={(e) => handleStatusChange(order.id, e.target.value)}
                     className="status-select"
                   >
-                    <option value="Chờ xử lý">Chờ xử lý</option>
                     <option value="Đang xử lý">Đang xử lý</option>
-                    <option value="Đang giao hàng">Đang giao hàng</option>
-                    <option value="Đã giao hàng">Đã giao hàng</option>
-                    <option value="Đã hủy">Đã hủy</option>
+                    <option value="Đang vận chuyển">Đang vận chuyển</option>
+                    <option value="Hoàn thành">Hoàn Thành</option>
+                    <option value="Hủy">Hủy</option>
                   </select>
                   <button 
                     className="view-detail-btn"
