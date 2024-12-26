@@ -33,8 +33,16 @@ export default function Thongtindonhang() {
   }, [user]);
 
   const handleLogout = () => {
+    // Xóa giỏ hàng khỏi localStorage
+    const cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
+    if (cartItems.length > 0) {
+      localStorage.removeItem("cartItem");
+    }
+  // Dispatch event để cập nhật số lượng trong Header
+  window.dispatchEvent(new Event("cartUpdated"));
+    // Gọi hàm logout và chuyển hướng trang
     logout();
-    navigate('/');
+    navigate("/");
   };
 
   // Hàm format tiền tệ
@@ -48,13 +56,13 @@ export default function Thongtindonhang() {
   // Hàm lấy màu cho trạng thái
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Chờ xử lý':
+      case 'Đang xử lý':
         return 'warning';
-      case 'Đang giao':
+      case 'Đang vận chuyển':
         return 'info';
-      case 'Đã giao':
+      case 'Hoàn thành':
         return 'success';
-      case 'Đã hủy':
+      case 'Hủy':
         return 'danger';
       default:
         return 'secondary';
@@ -63,6 +71,7 @@ export default function Thongtindonhang() {
 
   return (
     <div className="account-container">
+     
       <div className="account-sidebar">
         <div className="user-profile">
           <div className="avatar">
@@ -154,13 +163,7 @@ export default function Thongtindonhang() {
                       <div key={index} className="product-item">
                         <div className="product-image">
                           <img 
-                            src={`/img/sanpham/${
-                              item.id_danhmuc === 1 ? 'Laptop' :
-                              item.id_danhmuc === 2 ? 'PC' :
-                              item.id_danhmuc === 3 ? 'Manhinh' :
-                              item.id_danhmuc === 4 ? 'Chuot' :
-                              item.id_danhmuc === 5 ? 'Banphim' : 'Khac'
-                            }/${item.hinh_anh?.chinh}`}
+                            src={`/img/sanpham/${item.hinh_anh?.chinh}`}
                             alt={item.ten_sp}
                             onError={(e) => {
                               e.target.src = '/img/icon/default-product.png';
@@ -205,7 +208,7 @@ export default function Thongtindonhang() {
         </div>
       </div>
 
-      <style jsx>{`
+      <style >{`
         .order-container {
           padding: 20px;
           background: #fff;

@@ -9,28 +9,13 @@ export default function Giohang() {
   const navigate = useNavigate();
   const [showDeletePopup, setShowDeletePopup] = useState(false);
 
-  const getImagePath = (idDanhmuc) => {
-    switch (idDanhmuc) {
-      case 1:
-        return "Laptop";
-      case 2:
-        return "PC";
-      case 3:
-        return "Manhinh";
-      case 4:
-        return "Chuot";
-      case 5:
-        return "Banphim";
-      default:
-        return "Khac";
-    }
-  };
 
   useEffect(() => {
     const items = JSON.parse(localStorage.getItem("cartItem")) || [];
     setSanpham(items);
     updateTotal(items);
   }, []);
+  
 
   useEffect(() => {
     updateTotal(sanPham);
@@ -163,7 +148,7 @@ export default function Giohang() {
                     </thead>
                     <tbody>
                       {sanPham.map((sanpham, index) => {
-                        const imagePath = getImagePath(sanpham.id_danhmuc);
+                    
                         return (
                           <tr key={index}>
                             <td>
@@ -175,7 +160,7 @@ export default function Giohang() {
                                 }}
                               >
                                 <img
-                                  src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.chinh}`}
+                                  src={`/img/sanpham/${sanpham.hinh_anh.chinh}`}
                                   alt={sanpham.ten_sp}
                                   className="cart-product-image"
                                 />

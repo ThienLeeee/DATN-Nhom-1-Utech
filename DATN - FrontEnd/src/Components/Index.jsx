@@ -44,6 +44,7 @@ import Thongtindonhang from "./Layout_User/Thongtindonhang";
 import EditTaikhoan from "./Layout_User/editTaikhoan";
 import ForgotPassword from "./DK.DN/ForgotPassword";
 import Tintuc from "./Layout_User/tintuc";
+import SuccessPage from "./Layout_User/SuccessPage";
 
 export default function Index() {
   return (
@@ -62,6 +63,7 @@ export default function Index() {
             <Route path="/sanPham"  element={<SanPhamSearch></SanPhamSearch>}></Route>
             <Route path="/sanPham/id_danhmuc/:id_danhmuc/thuong_hieu/:thuong_hieu" element={<SanPhamThuongHieu></SanPhamThuongHieu>}></Route>
             <Route path="/thanhtoan" element={<Thanhtoan></Thanhtoan>}></Route>
+            <Route path="/thanhtoan/SuccessPage" element={<SuccessPage></SuccessPage>}></Route>
             <Route path="/taikhoan" element={<Taikhoan />}></Route>
             <Route path="/donhang" element={<Thongtindonhang />}></Route>
             <Route path="/chinhsuathongtin" element={<EditTaikhoan />}></Route>

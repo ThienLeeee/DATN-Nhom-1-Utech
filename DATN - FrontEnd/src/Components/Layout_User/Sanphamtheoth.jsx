@@ -66,26 +66,26 @@ export default function SanPhamThuongHieu() {
                 ) : sanPham.length > 0 ? (
                   sanPham.map((sanpham) => {
                     // Determine image folder based on the category ID
-                    let imagePath = "";
-                    switch (sanpham.id_danhmuc) {
-                      case 1:
-                        imagePath = "Laptop";
-                        break;
-                      case 2:
-                        imagePath = "PC";
-                        break;
-                      case 3:
-                        imagePath = "Manhinh";
-                        break;
-                      case 4:
-                        imagePath = "Chuot";
-                        break;
-                      case 5:
-                        imagePath = "Banphim";
-                        break;
-                      default:
-                        imagePath = "Khac";
-                    }
+                    // let imagePath = "";
+                    // switch (sanpham.id_danhmuc) {
+                    //   case 1:
+                    //     imagePath = "Laptop";
+                    //     break;
+                    //   case 2:
+                    //     imagePath = "PC";
+                    //     break;
+                    //   case 3:
+                    //     imagePath = "Manhinh";
+                    //     break;
+                    //   case 4:
+                    //     imagePath = "Chuot";
+                    //     break;
+                    //   case 5:
+                    //     imagePath = "Banphim";
+                    //     break;
+                    //   default:
+                    //     imagePath = "Khac";
+                    // }
 
                     return (
                       <div className="product" key={sanpham.id}>
@@ -100,7 +100,7 @@ export default function SanPhamThuongHieu() {
                               title={sanpham.ten_sp}
                             >
                               <img
-                                src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.chinh}`}
+                                src={`/img/sanpham/${sanpham.hinh_anh.chinh}`}
                                 alt={sanpham.ten_sp}
                                 className="w100 trans03"
                               />

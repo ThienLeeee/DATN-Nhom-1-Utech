@@ -25,42 +25,39 @@ export default function Dangnhap() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
-
+  
     try {
       const response = await axios.post('http://localhost:3000/api/accounts/login', {
         username,
-        password
+        password,
       });
-
+  
       const { user, token } = response.data;
-
-      // Kiểm tra role của user
+  
       if (user.role === 'admin') {
-        // Nếu là admin, chuyển hướng đến trang admin
-        window.location.href = "http://localhost:5174/"; // URL của trang admin
+        window.location.href = "http://localhost:5174/";
         return;
       }
-
-      // Nếu là user thường, tiếp tục xử lý đăng nhập bình thường
+  
       login(user);
       localStorage.setItem('token', token);
-      setShowSuccessPopup(true);
-      
-      setTimeout(() => {
-        setShowSuccessPopup(false);
-        if (previousPath) {
-          navigate(previousPath);
-          localStorage.removeItem('previousPath');
-        } else {
-          navigate('/');
-        }
-      }, 2000);
-
+  
+      // Xóa giỏ hàng theo cấu trúc removeItem
+      const cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
+      if (cartItems.length > 0) {
+        localStorage.removeItem("cartItem");
+      }
+  
+      // Dispatch event để cập nhật số lượng trong Header
+      window.dispatchEvent(new Event("cartUpdated"));
+  
+      window.location.href = "http://localhost:5173/";
     } catch (error) {
       setError(error.response?.data?.message || "Đăng nhập thất bại!");
     }
   };
-
+  
+  
   const togglePassword = () => {
     const passwordField = document.getElementById("password");
     if (passwordField.type === "password") {

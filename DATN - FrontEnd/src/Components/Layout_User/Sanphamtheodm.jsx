@@ -221,7 +221,7 @@ export default function SanPhamTheodm() {
                               title={sanpham.ten_sp}
                             >
                               <img
-                                src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.chinh}`}
+                                src={`/img/sanpham/${sanpham.hinh_anh.chinh}`}
                                 alt={sanpham.ten_sp}
                                 className="w100 trans03"
                               />

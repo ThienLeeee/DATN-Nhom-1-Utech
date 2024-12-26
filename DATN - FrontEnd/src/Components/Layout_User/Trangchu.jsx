@@ -976,20 +976,11 @@ export default function Trangchu() {
                 <div className="box-product">
                   <div className="pic-product">
                     <Link to={`/chitietsp/sanPham/${product.id}`}>
-                      <img
-                        src={`/img/sanpham/${
-                          product.id_danhmuc === 1
-                            ? "Laptop"
-                            : product.id_danhmuc === 2
-                            ? "PC"
-                            : product.id_danhmuc === 3
-                            ? "Manhinh"
-                            : product.id_danhmuc === 4
-                            ? "Chuot"
-                            : "Banphim"
-                        }/${product.hinh_anh.chinh}`}
-                        alt={product.ten_sp}
-                      />
+                    <img
+                              src={`/img/sanpham/${product.hinh_anh.chinh}`}
+                              alt={`${product.ten_sp}`}
+                              className="w100 trans03"
+                            />
                     </Link>
                   </div>
                   <div className="info-product">
@@ -1063,10 +1054,11 @@ export default function Trangchu() {
                             title={`${sanpham.ten_sp}`}
                           >
                             <img
-                              src={`/img/sanpham/Laptop/${sanpham.hinh_anh.chinh}`}
+                              src={`/img/sanpham/${sanpham.hinh_anh.chinh}`}
                               alt={`${sanpham.ten_sp}`}
                               className="w100 trans03"
                             />
+                          
                           </Link>
 
                           <div className="hot-icon blink" />
@@ -1167,7 +1159,7 @@ export default function Trangchu() {
                             title={`${sanpham.ten_sp}`}
                           >
                             <img
-                              src={`/img/sanpham/PC/${sanpham.hinh_anh.chinh}`}
+                              src={`/img/sanpham/${sanpham.hinh_anh.chinh}`}
                               alt={`${sanpham.ten_sp}`}
                               className="w100 trans03"
                             />
@@ -1284,7 +1276,7 @@ export default function Trangchu() {
                             title={`${sanpham.ten_sp}`}
                           >
                             <img
-                              src={`/img/sanpham/Manhinh/${sanpham.hinh_anh.chinh}`}
+                              src={`/img/sanpham/${sanpham.hinh_anh.chinh}`}
                               alt={`${sanpham.ten_sp}`}
                               className="w100 trans03"
                             />

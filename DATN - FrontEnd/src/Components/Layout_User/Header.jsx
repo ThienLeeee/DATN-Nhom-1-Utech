@@ -75,13 +75,22 @@ export default function Header() {
   }, []);
 
   const handleLogout = () => {
+    // Xóa giỏ hàng khỏi localStorage
+    const cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
+    if (cartItems.length > 0) {
+      localStorage.removeItem("cartItem");
+    }
+  // Dispatch event để cập nhật số lượng trong Header
+  window.dispatchEvent(new Event("cartUpdated"));
+    // Gọi hàm logout và chuyển hướng trang
     logout();
     navigate("/");
   };
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     if (keyword) {
-      navigate(`/sanPham?keyword=${keyword}`);
+      window.location.href = `/sanPham?keyword=${keyword}`;
     }
   };
   return (

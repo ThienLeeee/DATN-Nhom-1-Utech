@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { fetchSanphamIddm, fetchSanPhamTheoDm } from "../../../service/sanphamService";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-
 import "/public/css/chitietsp.css";
 
 
@@ -240,51 +239,51 @@ export default function ChiTietSanPham() {
     return <div>Loading...</div>;
   }
 
-  let imagePath = "";
-  switch (sanpham.id_danhmuc) {
-    case 1:
-      imagePath = "Laptop";
-      break;
-    case 2:
-      imagePath = "PC";
-      break;
-    case 3:
-      imagePath = "Manhinh";
-      break;
-    case 4:
-      imagePath = "Chuot";
-      break;
-    case 5:
-      imagePath = "Banphim";
-      break;
-    default:
-      imagePath = "Khac";
-  }
+  // let imagePath = "";
+  // switch (sanpham.id_danhmuc) {
+  //   case 1:
+  //     imagePath = "Laptop";
+  //     break;
+  //   case 2:
+  //     imagePath = "PC";
+  //     break;
+  //   case 3:
+  //     imagePath = "Manhinh";
+  //     break;
+  //   case 4:
+  //     imagePath = "Chuot";
+  //     break;
+  //   case 5:
+  //     imagePath = "Banphim";
+  //     break;
+  //   default:
+  //     imagePath = "Khac";
+  // }
 
   // Tạo mảng chứa tất cả ảnh
   const allImages = sanpham ? [
     {
-      src: `/img/sanpham/${imagePath}/${sanpham.hinh_anh.chinh}`,
+      src: `/img/sanpham/${sanpham.hinh_anh.chinh}`,
       alt: `${sanpham.ten_sp} - Ảnh chính`
     },
     {
-      src: `/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu1}`,
+      src: `/img/sanpham/${sanpham.hinh_anh.phu1}`,
       alt: `${sanpham.ten_sp} - Ảnh 1`
     },
     {
-      src: `/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu2}`,
+      src: `/img/sanpham/${sanpham.hinh_anh.phu2}`,
       alt: `${sanpham.ten_sp} - Ảnh 2`
     },
     {
-      src: `/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu3}`,
+      src: `/img/sanpham/${sanpham.hinh_anh.phu3}`,
       alt: `${sanpham.ten_sp} - Ảnh 3`
     },
     {
-      src: `/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu4}`,
+      src: `/img/sanpham/${sanpham.hinh_anh.phu4}`,
       alt: `${sanpham.ten_sp} - Ảnh 4`
     },
     {
-      src: `/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu5}`,
+      src: `/img/sanpham/${sanpham.hinh_anh.phu5}`,
       alt: `${sanpham.ten_sp} - Ảnh 5`
     }
   ] : [];
@@ -384,7 +383,7 @@ export default function ChiTietSanPham() {
                             <div className="item_owl_sub">
                               <a onClick={() => openGallery(1)} style={{ cursor: 'pointer' }}>
                                 <img
-                                  src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu1}`}
+                                  src={`/img/sanpham/${sanpham.hinh_anh.phu1}`}
                                   className="w100"
                                   alt={sanpham.ten_sp}
                                 />
@@ -398,7 +397,7 @@ export default function ChiTietSanPham() {
                             <div className="item_owl_sub">
                               <a onClick={() => openGallery(2)} style={{ cursor: 'pointer' }}>
                                 <img
-                                  src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu2}`}
+                                  src={`/img/sanpham/${sanpham.hinh_anh.phu2}`}
                                   className="w100"
                                   alt={sanpham.ten_sp}
                                 />
@@ -412,7 +411,7 @@ export default function ChiTietSanPham() {
                             <div className="item_owl_sub">
                               <a onClick={() => openGallery(3)} style={{ cursor: 'pointer' }}>
                                 <img
-                                  src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu3}`}
+                                  src={`/img/sanpham/${sanpham.hinh_anh.phu3}`}
                                   className="w100"
                                   alt={sanpham.ten_sp}
                                 />
@@ -426,7 +425,7 @@ export default function ChiTietSanPham() {
                             <div className="item_owl_sub">
                               <a onClick={() => openGallery(4)} style={{ cursor: 'pointer' }}>
                                 <img
-                                  src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu4}`}
+                                  src={`/img/sanpham/${sanpham.hinh_anh.phu4}`}
                                   className="w100"
                                   alt={sanpham.ten_sp}
                                 />
@@ -440,7 +439,7 @@ export default function ChiTietSanPham() {
                             <div className="item_owl_sub">
                               <a onClick={() => openGallery(5)} style={{ cursor: 'pointer' }}>
                                 <img
-                                  src={`/img/sanpham/${imagePath}/${sanpham.hinh_anh.phu5}`}
+                                  src={`/img/sanpham/${sanpham.hinh_anh.phu5}`}
                                   className="w100"
                                   alt={sanpham.ten_sp}
                                 />
@@ -1270,17 +1269,11 @@ export default function ChiTietSanPham() {
                     <div key={product.id} className="item_sanpham">
                       <div className="img_sp">
                         <Link 
-                         to={`/chitietsp/sanPham/${sanpham.id}`}
+                      to={`/chitietsp/sanPham/${sanpham.id}`}
                           title={product.ten_sp}
                         >
                           <img
-                            src={`/img/sanpham/${
-                              product.id_danhmuc === 1 ? 'Laptop' :
-                              product.id_danhmuc === 2 ? 'PC' :
-                              product.id_danhmuc === 3 ? 'Manhinh' :
-                              product.id_danhmuc === 4 ? 'Chuot' :
-                              product.id_danhmuc === 5 ? 'Banphim' : 'Khac'
-                            }/${product.hinh_anh.chinh}`}
+                            src={`/img/sanpham/${product.hinh_anh.chinh}`}
                             alt={product.ten_sp}
                             className="mw100 trans03"
                           />
@@ -1331,17 +1324,17 @@ export default function ChiTietSanPham() {
                     <div className="product">
                       <div className="box-product">
                         <div className="pic-product" data-tooltip="sticky7385">
-                          <a
+                          <Link
                             className="d-block"
                             href="san-pham/laptop-dell-vostro-3530-v5i3465w1-7385.html"
                             title={sanpham.ten_sp}
                           >
                             <img
-                              src={`/img/sanpham/Laptop/${sanpham.hinh_anh.phu1}`}
+                              src={`/img/sanpham/${sanpham.hinh_anh.phu1}`}
                               alt={sanpham.ten_sp}
                               className="w100 trans03"
                             />
-                          </a>
+                          </Link>
                           <div className="btntragop1" />
                           <div className="hot-icon blink" />
                           <div className="desc-product">
