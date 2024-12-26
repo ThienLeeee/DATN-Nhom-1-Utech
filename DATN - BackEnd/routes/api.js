@@ -1,10 +1,14 @@
-var express = require('express')
-var router = express.Router()
-
+var express = require('express');
+const nodemailer=require('nodemailer');
+var router = express.Router();
+const axios = require('axios');
 //Gọi thư viện bcryptjs
 const bcrypt = require('bcryptjs')
-
-//Gọi thư viện để sử dụng đc token
+const crypto = require('crypto');
+router.use(express.json({ limit: '50mb' }));
+router.use(express.urlencoded({extended:true,limit: '50mb'}));
+//Gọi thư viện để sử ;
+// dụng đc token
 const jwt = require('jsonwebtoken')
 
 //Thiết lập nơi lưu trữ và tên file
@@ -31,6 +35,143 @@ function checkFileUpLoad (req, file, cb) {
 }
 //Upload file
 let upload = multer({ storage: storage, fileFilter: checkFileUpLoad })
+var Email_User='tranhieu78295@gmail.com';
+var Email_Pass='ildlmfklvdsvgluu'
+const sendMail=async({
+  email,
+  subject,
+  html
+})=>{
+const transporter= nodemailer.createTransport({
+  host:'smtp.gmail.com',
+  service:"Gmail",
+  auth:{
+    user:Email_User,
+    pass:Email_Pass
+  }
+})
+const message={
+  from:`'Shop utech'<${Email_User}>`,
+  to:email,
+  subject:subject,
+  html:html
+}
+const result=await transporter.sendMail(message)
+return result;
+};
+
+
+var accessKey = 'F8BBA842ECF85';
+var secretKey = 'K951B6PE1waDMi640xX08PD3vg6EkVlz';
+router.post('/payment', async (req, res) => {
+  // Get data from frontend request
+  const { amount, orderInfo, redirectUrl, ipnUrl } = req.body;
+
+  if (!amount || !orderInfo || !redirectUrl || !ipnUrl) {
+    return res.status(400).json({ message: 'Missing required fields' });
+  }
+
+  // Parameters
+  var partnerCode = 'MOMO';
+  var requestType = "payWithMethod";
+  // var ipnUrl='https://3d31-2402-800-6341-34da-59a9-b6c1-418d-8659.ngrok-free.app/api/callback';
+  var orderId = partnerCode + new Date().getTime();
+  var requestId = orderId;
+  var extraData = '';
+  var orderGroupId = '';
+  var autoCapture = true;
+  var lang = 'vi';
+
+  // Generate raw signature
+  var rawSignature = `accessKey=${accessKey}&amount=${amount}&extraData=${extraData}&ipnUrl=${ipnUrl}&orderId=${orderId}&orderInfo=${orderInfo}&partnerCode=${partnerCode}&redirectUrl=${redirectUrl}&requestId=${requestId}&requestType=${requestType}`;
+  console.log("--------------------RAW SIGNATURE----------------");
+  console.log(rawSignature);
+
+  // Generate signature
+  var signature = crypto.createHmac('sha256', secretKey)
+    .update(rawSignature)
+    .digest('hex');
+  console.log("--------------------SIGNATURE----------------");
+  console.log(signature);
+
+  // JSON object to send to MoMo endpoint
+  const requestBody = JSON.stringify({
+    partnerCode: partnerCode,
+    partnerName: "Test",
+    storeId: "MomoTestStore",
+    requestId: requestId,
+    amount: amount,
+    orderId: orderId,
+    orderInfo: orderInfo,
+    redirectUrl: redirectUrl,
+    ipnUrl: ipnUrl,
+    lang: lang,
+    requestType: requestType,
+    autoCapture: autoCapture,
+    extraData: extraData,
+    orderGroupId: orderGroupId,
+    signature: signature
+  });
+
+  // Options for axios
+  const options = {
+    method: "POST",
+    url: "https://test-payment.momo.vn/v2/gateway/api/create",
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-length': Buffer.byteLength(requestBody)
+    },
+    data: requestBody
+  };
+
+  try {
+    const result = await axios(options);
+    return res.status(200).json(result.data);
+  } catch (error) {
+    console.error("Error:", error.message || error);
+    return res.status(500).json({
+      statusCode: 500,
+      message: "Server error"
+    });
+  }
+});
+
+router.post("/callback", async(req, res)=>{
+  console.log("callback:: ");
+  console.log(req.body);
+  //update order
+  
+  return res.status(200).json(req.body);
+  
+})
+
+router.post("/transaction-status",async(req,res)=>{
+  const{orderId}=req.body;
+  const rawSignature=`accessKey=${accessKey}&orderId=${orderId}&partnerCode=MOMO&requestId=${orderId}`
+
+  const signature=crypto
+          .createHmac("sha256",secretKey)
+          .update(rawSignature)
+          .digest('hex');
+  const requestBody = JSON.stringify({
+          partnerCode:"MOMO",
+          requestId:orderId,
+          orderId,
+          signature,
+          lang:'vi'
+        }) 
+  //options for axios
+  const options={
+    method: "POST",
+    url: 'https://test-payment.momo.vn/v2/gateway/api/query',
+    headers: {
+      'Content-Type': "application/json"
+    },
+    data: requestBody
+  }          
+  let result = await axios(options);
+  return res.status(200).json(result.data);   
+})
 
 //show danh mục
 router.get('/danhMuc', async (req, res, next) => {
@@ -158,10 +299,22 @@ if (result.modifiedCount > 0) {
 //xóa danh mục
 // Assuming `connectDb` is a function that connects to your MongoDB
 router.delete('/danhMuc/:id', async (req, res) => {
-  const id = parseInt(req.params.id); // Make sure id is parsed as an integer
+  const id = parseInt(req.params.id); // Chuyển id sang số nguyên
   const db = await connectDb();
   const categoriesCollection = db.collection('danhMuc');
+  const sanPhamCollection = db.collection('sanPham'); // Bộ sưu tập sản phẩm, thay thế nếu cần
+
   try {
+    // Kiểm tra xem danh mục có sản phẩm nào liên quan không
+    const hasProducts = await sanPhamCollection.findOne({ id_danhmuc: id });
+    console.log("ID cần xóa:", id);
+    console.log("Danh mục có sản phẩm liên quan:", hasProducts);
+
+    if (hasProducts) {
+      return res.status(400).json({ message: 'Không thể xóa danh mục vì có chưa sản phẩm' });
+    }
+
+    // Xóa danh mục nếu không có sản phẩm liên quan
     const result = await categoriesCollection.deleteOne({ id });
     if (result.deletedCount > 0) {
       res.status(200).json({ message: 'Xóa thành công' });
@@ -173,6 +326,7 @@ router.delete('/danhMuc/:id', async (req, res) => {
     res.status(500).json({ message: 'Lỗi khi xóa danh mục' });
   }
 });
+
 
 module.exports = router;
 
@@ -190,6 +344,7 @@ router.get('/sanPham', async (req, res, next) => {
 
     // Kiểm tra nếu có từ khóa tìm kiếm
     if (keyword && keyword.trim() !== '') {
+     
       const regex = new RegExp(keyword.trim(), 'i'); // 'i' để tìm kiếm không phân biệt hoa/thường
       filter = { ten_sp: regex }; // Giả sử 'ten_sp' là trường tên sản phẩm trong collection
     }
@@ -210,6 +365,34 @@ router.get('/sanPham', async (req, res, next) => {
     res.status(500).json({ message: 'Đã xảy ra lỗi khi xử lý yêu cầu!', error: error.message });
   }
 });
+// //cập nhật sl sp
+// router.put("/sanPham/update/:id", async (req, res) => {
+//   try {
+//     const db = await connectDb();
+//     const sanPhamCollection = db.collection('sanPham');
+//     const { soluong } = req.body; // Cập nhật số lượng
+
+//     // Tìm sản phẩm bằng id
+//     const product = await sanPhamCollection.findOne({ id: parseInt(req.params.id) });  // đảm bảo rằng id là một số nguyên
+
+//     if (!product) return res.status(404).json({ message: "Sản phẩm không tìm thấy" });
+
+//     // Cập nhật số lượng sản phẩm
+//     const updatedProduct = await sanPhamCollection.updateOne(
+//       { id: parseInt(req.params.id) },  // Tìm sản phẩm theo id
+//       { $set: { soluong: soluong } }   // Cập nhật số lượng
+//     );
+
+//     if (updatedProduct.modifiedCount === 0) {
+//       return res.status(400).json({ message: "Số lượng sản phẩm không thay đổi" });
+//     }
+
+//     res.json({ message: "Số lượng sản phẩm đã được cập nhật", soluong: soluong });
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// });
+
 
 
 //show 12 sp
@@ -509,16 +692,40 @@ router.put('/sanPham/:id',  upload.fields([ // Sử dụng upload.fields() để
 });
 //xóa sản phẩm
 router.delete('/sanPham/:id', async (req, res) => {
-  let id = req.params.id
-  const db = await connectDb()
-  const sanPhamCollection = db.collection('sanPham')
-  let product = await sanPhamCollection.deleteOne({ id: parseInt(id) })
-  if (product) {
-    res.status(200).json({ message: 'Xóa thành công' })
-  } else {
-    res.status(404).json({ message: 'Xóa ko thành công' })
+  const id = parseInt(req.params.id); // Chuyển id sản phẩm sang số nguyên
+  if (isNaN(id)) {
+    return res.status(400).json({ message: 'ID không hợp lệ' });
   }
-})
+
+  const db = await connectDb();
+  const sanPhamCollection = db.collection('sanPham');
+  const donHangCollection = db.collection('donHang'); // Bộ sưu tập đơn hàng
+
+  try {
+    // Kiểm tra xem sản phẩm có nằm trong bất kỳ đơn hàng nào không
+    const isInOrder = await donHangCollection.findOne({
+      sanPham: { $elemMatch: { id: id } }, // Kiểm tra id sản phẩm trong mảng sanPham
+    });
+
+    if (isInOrder) {
+      return res.status(400).json({
+        message: 'Không thể xóa sản phẩm vì sản phẩm đã nằm trong đơn hàng',
+      });
+    }
+
+    // Xóa sản phẩm nếu không nằm trong bất kỳ đơn hàng nào
+    const result = await sanPhamCollection.deleteOne({ id });
+    if (result.deletedCount > 0) {
+      res.status(200).json({ message: 'Xóa sản phẩm thành công' });
+    } else {
+      res.status(404).json({ message: 'Sản phẩm không tồn tại' });
+    }
+  } catch (error) {
+    console.error('Lỗi khi xóa sản phẩm:', error);
+    res.status(500).json({ message: 'Đã xảy ra lỗi khi xóa sản phẩm', error: error.message });
+  }
+});
+
 
 //Lấy sản phẩm theo mã danh mục
 router.get('/sanPham/id_danhmuc/:id', async (req, res, next) => {
@@ -942,10 +1149,11 @@ function authenToken (req, res, next) {
 }
 
 // API tạo đơn hàng mới
+
 router.post('/donHang', async (req, res) => {
   const db = await connectDb();
   const donHangCollection = db.collection('donHang');
-  
+
   try {
     // Lấy đơn hàng cuối cùng để tạo id mới
     const lastOrder = await donHangCollection
@@ -960,16 +1168,54 @@ router.post('/donHang', async (req, res) => {
       id,
       ...req.body,
       ngayDat: new Date(),
-      trangThai: "Chờ xử lý"
+      trangThai: 'Chờ xử lý',
     };
 
     await donHangCollection.insertOne(newOrder);
+    const BASE_URL = 'http://localhost:3000';
+
+    // Tính tổng tiền đơn hàng
+    const totalAmount = req.body.sanPham.reduce((total, item) => {
+      return total + (item.gia_sp * item.soLuong);
+    }, 0);
+    // Chuẩn bị nội dung email
+    const productListHtml = req.body.sanPham
+      .map(
+        (item) => `
+        <div style="margin-bottom: 10px;">
+          <p>Tên sản phẩm: <strong>${item.ten_sp}</strong></p>
+          <p>Giá: ${item.gia_sp.toLocaleString('vi-VN')} VND</p>
+          <p>Số lượng: ${item.soLuong}</p>
+        </div>
+      `
+      )
+      .join('');
+
+    const html = `
+      <h1>Cảm ơn bạn đã đặt hàng!</h1>
+      <p>Mã đơn hàng của bạn: <strong>#${id}</strong></p>
+      <p>Ngày đặt: ${new Date().toLocaleString()}</p>
+      <p>Trạng thái: đã thanh toán</p>
+      <p>Chi tiết đơn hàng:</p>
+      ${productListHtml}
+      <p><strong>Tổng tiền: ${totalAmount.toLocaleString('vi-VN')} VND</strong></p>
+    `;
+
+    // Gửi email thông báo đơn hàng
+    const email = req.body.email; // Địa chỉ email của khách hàng
+    const subject = `Xác nhận đặt hàng #${id}`;
+
+    if (email) {
+      await sendMail({ email, subject, html });
+    }
+
     res.status(200).json({ message: 'Đặt hàng thành công', order: newOrder });
   } catch (error) {
     console.error('Lỗi khi tạo đơn hàng:', error);
     res.status(500).json({ message: 'Đã xảy ra lỗi khi tạo đơn hàng' });
   }
 });
+
 
 // Lấy tất cả bình luận
 router.get('/binhLuan', async (req, res) => {
