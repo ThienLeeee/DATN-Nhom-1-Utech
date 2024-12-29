@@ -5,6 +5,7 @@ import { fetchSanpham } from "../../../service/sanphamService";
 import { fetchDanhmuc } from "../../../service/danhmucService";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import ChatBox from "./ChatBox";
 import "/public/css/trangchu.css";
 
 export default function Trangchu() {
@@ -1361,6 +1362,7 @@ export default function Trangchu() {
             </div>
           </div>
         </div>
+        <ChatBox/>
       </div>
     </>
   );
