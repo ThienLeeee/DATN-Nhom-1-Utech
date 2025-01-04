@@ -93,6 +93,52 @@ export default function Header() {
       window.location.href = `/sanPham?keyword=${keyword}`;
     }
   };
+
+  // Style chung cho các nút
+  const commonButtonStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '8px 15px',
+    height: '42px',
+    width: '135px',
+    backgroundColor: 'white',
+    border: '1.5px solid #e0e0e0',
+    borderRadius: '8px',
+    color: '#2c3e50',
+    textDecoration: 'none',
+    marginLeft: '12px'
+  };
+
+  // Style chung cho icon
+  const iconStyle = {
+    width: '22px',
+    height: '22px',
+    marginRight: '8px'
+  };
+
+  // Style cho text
+  const textStyle = {
+    fontSize: '14px',
+    margin: 0
+  };
+
+  // Style cho badge giỏ hàng
+  const badgeStyle = {
+    position: 'absolute',
+    top: '-8px',
+    right: '-8px',
+    background: '#ff4444',
+    color: 'white',
+    borderRadius: '50%',
+    width: '20px',
+    height: '20px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '12px'
+  };
+
   return (
     <>
       {/* header */}
@@ -228,44 +274,16 @@ export default function Header() {
                   <button
                     onClick={() => navigate("/dangnhap")}
                     style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "6px",
-                      padding: "6px 12px",
-                      backgroundColor: "#f8f9fa",
-                      border: "1px solid #ddd",
-                      borderRadius: "6px",
-                      cursor: "pointer",
-                      height: "36px",
-                      minWidth: "140px",
-                      maxWidth: "200px",
-                      textDecoration: "none",
-                      transition: "all 0.2s ease",
-                      boxSizing: "border-box",
+                      ...commonButtonStyle,
+                      cursor: 'pointer'
                     }}
                   >
                     <img
                       src="/public/img/icon/user-icon.png"
                       alt="Login"
-                      style={{
-                        width: "24px",
-                        height: "24px",
-                        objectFit: "contain",
-                        flexShrink: 0,
-                        marginRight: "2px",
-                      }}
+                      style={iconStyle}
                     />
-                    <span
-                      style={{
-                        color: "#333",
-                        fontSize: "14px",
-                        fontWeight: "500",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        lineHeight: "24px",
-                      }}
-                    >
+                    <span style={textStyle}>
                       Đăng nhập
                     </span>
                   </button>
@@ -273,17 +291,39 @@ export default function Header() {
               </div>
 
               <Link
+                to="/yeuthich"
+                style={commonButtonStyle}
+              >
+                <i 
+                  className="fas fa-heart" 
+                  style={{
+                    ...iconStyle,
+                    color: '#ff4444'
+                  }}
+                ></i>
+                <span style={textStyle}>
+                  Yêu thích
+                </span>
+              </Link>
+
+              <Link
                 to="/giohang"
-                className="cart-header"
+                style={{
+                  ...commonButtonStyle,
+                  position: 'relative'
+                }}
               >
                 <img
-                  width="32px"
                   src="/public/img/icon/bag_icon.png"
-                  alt=""
+                  alt="Cart"
+                  style={iconStyle}
                 />
-                <p>Giỏ hàng</p>
-                
-                <span className="cart-count">{cartCount}</span>
+                <span style={textStyle}>
+                  Giỏ hàng
+                </span>
+                <span style={badgeStyle}>
+                  {cartCount}
+                </span>
               </Link>
               
             </div>

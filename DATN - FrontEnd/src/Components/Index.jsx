@@ -45,6 +45,9 @@ import EditTaikhoan from "./Layout_User/editTaikhoan";
 import ForgotPassword from "./DK.DN/ForgotPassword";
 import Tintuc from "./Layout_User/tintuc";
 import SuccessPage from "./Layout_User/SuccessPage";
+import Yeuthich from "./Layout_User/yeuthich";
+import ErrorBoundary from "./ErrorBoundary";
+import Voucher from "./Layout_User/Voucher";
 
 export default function Index() {
   return (
@@ -69,6 +72,10 @@ export default function Index() {
             <Route path="/chinhsuathongtin" element={<EditTaikhoan />}></Route>
             <Route path="/forgot-password" element={<ForgotPassword></ForgotPassword>}></Route>
             <Route path="/tintuc" element={<Tintuc />}></Route>
+            <Route path="/yeuthich" element={<Yeuthich />}></Route>
+            <Route path="/voucher" element={<ErrorBoundary>
+              <Voucher />
+            </ErrorBoundary>} />
         </Routes>
         <Footer/>
       </Router>

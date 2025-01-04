@@ -4,7 +4,11 @@ import "../../style.css";
 
 export default function NavBar() {
   const [isOpen, setIsOpen] = useState(false); // State to handle sidebar visibility
+  const [showStatistics, setShowStatistics] = useState(false);
 
+  const handleStatisticsClick = () => {
+    setShowStatistics((prevState) => !prevState);
+  };  
   // Toggle sidebar visibility
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -53,15 +57,45 @@ export default function NavBar() {
 
         {/* Sidebar Menu for Desktop */}
         <div className="d-none d-md-block">
-          <p>
-            <i className="bi bi-pie-chart-fill me-2" />
-            <Link
-              to="/admin-thongke"
-              className="text-decoration-none text-white"
-            >
-              Quản lý thống kê
+        <div>
+      <p onClick={handleStatisticsClick} style={{ cursor: "pointer" }}>
+        <i className="bi bi-pie-chart-fill me-2" />
+        <span className="text-decoration-none text-white">
+          Quản lý thống kê
+        </span>
+      </p>
+
+      {showStatistics && (
+        <div>
+          <p style={{ cursor: "pointer" }}>
+            <i className="bi bi-cash-coin me-2"></i>
+            Quản lí doanh thu
+          </p>
+          <p style={{ cursor: "pointer" }}>
+            <i className="bi bi-plus-slash-minus me-2"></i>
+            <Link to='/addproductquantity' className="text-decoration-none text-white">
+            Quản lí Số lượng
+            </Link>
+            
+          </p>
+          <p style={{ cursor: "pointer" }}>
+            <i className="bi bi-tag-fill me-2" />
+            <Link to="/admin-sale" className="text-decoration-none text-white">
+              Quản lý giảm giá
             </Link>
           </p>
+          <p style={{ cursor: "pointer" }}>
+            <i className="bi bi-ticket-perforated me-2" />
+            <Link
+              to="/admin-voucher"
+              className="text-decoration-none text-white"
+            >
+              Quản lý voucher
+            </Link>
+          </p>
+        </div>
+      )}
+    </div>
           <p>
             <i className="bi bi-tag-fill me-2" />
             <Link to="/admin-dm" className="text-decoration-none text-white">

@@ -25,7 +25,10 @@ export default function ChiTietSanPham() {
   const [showReplies, setShowReplies] = useState({});
   const [visibleComments, setVisibleComments] = useState(4);
   const [showAllComments, setShowAllComments] = useState(false);
-
+  
+ 
+ 
+ 
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem('user'));
     setUser(userInfo);

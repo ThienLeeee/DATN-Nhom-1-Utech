@@ -136,14 +136,39 @@ router.post('/payment', async (req, res) => {
   }
 });
 
-router.post("/callback", async(req, res)=>{
-  console.log("callback:: ");
-  console.log(req.body);
-  //update order
-  
-  return res.status(200).json(req.body);
-  
-})
+router.post("/callback", async (req, res) => {
+  const { orderId, resultCode } = req.body;
+
+  try {
+    // Kiểm tra đơn hàng dựa trên `orderId`
+    const existingOrder = await Order.findOne({ orderId });
+
+    if (existingOrder) {
+      console.log(`Đơn hàng ${orderId} đã được xử lý.`);
+      return res.status(200).json({ message: "Đơn hàng đã tồn tại." });
+    }
+
+    if (resultCode === 0) {
+      // Tạo đơn hàng mới nếu thanh toán thành công
+      const newOrder = new Order({
+        ...req.body, // Hoặc map các trường cần thiết
+        status: "Đã thanh toán",
+        createdAt: new Date(),
+      });
+
+      await newOrder.save();
+      console.log(`Đơn hàng ${orderId} được tạo thành công.`);
+      return res.status(200).json({ message: "Đơn hàng xử lý thành công." });
+    } else {
+      console.error(`Thanh toán thất bại: ${req.body}`);
+      return res.status(400).json({ message: "Thanh toán thất bại." });
+    }
+  } catch (error) {
+    console.error("Lỗi callback:", error);
+    return res.status(500).json({ message: "Lỗi xử lý callback." });
+  }
+});
+
 
 router.post("/transaction-status",async(req,res)=>{
   const{orderId}=req.body;
@@ -444,7 +469,7 @@ router.post('/sanPham',upload.fields([
 ]), async (req, res, next) => {
   const db = await connectDb();
   const sanPhamCollection = db.collection('sanPham');
-  let { ma_san_pham, ten_sp, gia_sp, bao_hanh, thuong_hieu, id_danhmuc, cau_hinh } = req.body;
+  let { ma_san_pham, ten_sp, gia_sp, bao_hanh, thuong_hieu, id_danhmuc, cau_hinh,soluong } = req.body;
   try {
     cau_hinh = JSON.parse(cau_hinh);  // Chuyển cau_hinh thành đối tượng nếu nó là chuỗi JSON
   } catch (error) {
@@ -453,6 +478,18 @@ router.post('/sanPham',upload.fields([
   // Parse id_danhmuc as an integer and determine the folder based on category ID
   const categoryId = parseInt(id_danhmuc);
   const folder = getImagePath(categoryId);
+   // Kiểm tra giá trị soluong
+  // Kiểm tra mã sản phẩm đã tồn tại trong cơ sở dữ liệu chưa
+  const existingProductByCode = await sanPhamCollection.findOne({ ma_san_pham });
+  if (existingProductByCode) {
+    return res.status(400).json({ message: 'Mã sản phẩm đã tồn tại.' });
+  }
+
+  // Kiểm tra tên sản phẩm đã tồn tại trong cơ sở dữ liệu chưa
+  const existingProductByName = await sanPhamCollection.findOne({ ten_sp });
+  if (existingProductByName) {
+    return res.status(400).json({ message: 'Tên sản phẩm đã tồn tại.' });
+  }
   // Construct hinh_anh object to include the single uploaded image with folder path
   let hinh_anh = {
     chinh: req.files['hinh_anh[chinh]'] ? `${req.files['hinh_anh[chinh]'][0].originalname}` : '',
@@ -548,7 +585,8 @@ router.post('/sanPham',upload.fields([
     thuong_hieu, 
     id_danhmuc: categoryId, 
     cau_hinh: customCauHinh, 
-    hinh_anh 
+    hinh_anh,
+    soluong
   };
   // Insert the new product into the database
   await sanPhamCollection.insertOne(newProduct);
@@ -855,6 +893,81 @@ router.get('/sanPham/:id', async (req, res, next) => {
     res.status(404).json({ message: 'Không tìm thấy sản phẩm' })
   }
 })
+  // cập nhật soluong sản phẩm
+  router.post('/updateProductQuantity', async (req, res) => {
+    const { productId, quantityPurchased } = req.body;
+
+    try {
+      // Kết nối đến database
+      const db = await connectDb();
+      const sanPhamCollection = db.collection('sanPham');
+
+      // Lấy thông tin sản phẩm
+      const product = await sanPhamCollection.findOne({ id: productId });
+
+      if (!product) {
+        return res.status(404).json({ message: 'Sản phẩm không tồn tại.' });
+      }
+
+      // Kiểm tra số lượng hiện tại
+      const newQuantity = product.soluong - quantityPurchased;
+
+      if (newQuantity < 0) {
+        return res
+          .status(400)
+          .json({ message: `Không đủ số lượng sản phẩm: ${product.ten_sp}` });
+      }
+
+      // Cập nhật số lượng sản phẩm
+      await sanPhamCollection.updateOne(
+        { id: productId },
+        { $set: { soluong: newQuantity } }
+      );
+
+      res
+        .status(200)
+        .json({ message: `Cập nhật số lượng sản phẩm ${product.ten_sp} thành công.` });
+    } catch (error) {
+      console.error('Lỗi khi cập nhật số lượng sản phẩm:', error);
+      res.status(500).json({ message: 'Lỗi server. Vui lòng thử lại sau.' });
+    }
+  });
+
+// API để tăng số lượng sản phẩm
+router.post('/addproductquantity', async (req, res) => {
+  const { productId, quantityToAdd } = req.body;
+
+  try {
+    // Kết nối đến database
+    const db = await connectDb();
+    const sanPhamCollection = db.collection('sanPham');
+
+    // Lấy thông tin sản phẩm
+    const product = await sanPhamCollection.findOne({ id: productId });
+
+    if (!product) {
+      return res.status(404).json({ message: 'Sản phẩm không tồn tại.' });
+    }
+
+    // Tăng số lượng sản phẩm
+    const newQuantity = product.soluong + quantityToAdd;
+
+    // Cập nhật số lượng sản phẩm trong database
+    await sanPhamCollection.updateOne(
+      { id: productId },
+      { $set: { soluong: newQuantity } }
+    );
+
+    res.status(200).json({
+      message: `Đã tăng số lượng sản phẩm ${product.ten_sp} thành công.`,
+      newQuantity, // Trả về số lượng mới
+    });
+  } catch (error) {
+    console.error('Lỗi khi tăng số lượng sản phẩm:', error);
+    res.status(500).json({ message: 'Lỗi server. Vui lòng thử lại sau.' });
+  }
+});
+
 
 //Sửa đổi thông tin người dùng
 router.put('/user/:id', async (req, res) => {
@@ -1150,71 +1263,71 @@ function authenToken (req, res, next) {
 
 // API tạo đơn hàng mới
 
-router.post('/donHang', async (req, res) => {
-  const db = await connectDb();
-  const donHangCollection = db.collection('donHang');
+  router.post('/donHang', async (req, res) => {
+    const db = await connectDb();
+    const donHangCollection = db.collection('donHang');
 
-  try {
-    // Lấy đơn hàng cuối cùng để tạo id mới
-    const lastOrder = await donHangCollection
-      .find()
-      .sort({ id: -1 })
-      .limit(1)
-      .toArray();
-    const id = lastOrder[0] ? lastOrder[0].id + 1 : 1;
+    try {
+      // Lấy đơn hàng cuối cùng để tạo id mới
+      const lastOrder = await donHangCollection
+        .find()
+        .sort({ id: -1 })
+        .limit(1)
+        .toArray();
+      const id = lastOrder[0] ? lastOrder[0].id + 1 : 1;
 
-    // Tạo đơn hàng mới với id tự động tăng
-    const newOrder = {
-      id,
-      ...req.body,
-      ngayDat: new Date(),
-      trangThai: 'Chờ xử lý',
-    };
+      // Tạo đơn hàng mới với id tự động tăng
+      const newOrder = {
+        id,
+        ...req.body,
+        ngayDat: new Date(),
+        trangThai: 'Chờ xử lý',
+      };
 
-    await donHangCollection.insertOne(newOrder);
-    const BASE_URL = 'http://localhost:3000';
+      await donHangCollection.insertOne(newOrder);
+      const BASE_URL = 'http://localhost:3000';
 
-    // Tính tổng tiền đơn hàng
-    const totalAmount = req.body.sanPham.reduce((total, item) => {
-      return total + (item.gia_sp * item.soLuong);
-    }, 0);
-    // Chuẩn bị nội dung email
-    const productListHtml = req.body.sanPham
-      .map(
-        (item) => `
-        <div style="margin-bottom: 10px;">
-          <p>Tên sản phẩm: <strong>${item.ten_sp}</strong></p>
-          <p>Giá: ${item.gia_sp.toLocaleString('vi-VN')} VND</p>
-          <p>Số lượng: ${item.soLuong}</p>
-        </div>
-      `
-      )
-      .join('');
+      // Tính tổng tiền đơn hàng
+      const totalAmount = req.body.sanPham.reduce((total, item) => {
+        return total + (item.gia_sp * item.soLuong);
+      }, 0);
+      // Chuẩn bị nội dung email
+      const productListHtml = req.body.sanPham
+        .map(
+          (item) => `
+          <div style="margin-bottom: 10px;">
+            <p>Tên sản phẩm: <strong>${item.ten_sp}</strong></p>
+            <p>Giá: ${item.gia_sp.toLocaleString('vi-VN')} VND</p>
+            <p>Số lượng: ${item.soLuong}</p>
+          </div>
+        `
+        )
+        .join('');
 
-    const html = `
-      <h1>Cảm ơn bạn đã đặt hàng!</h1>
-      <p>Mã đơn hàng của bạn: <strong>#${id}</strong></p>
-      <p>Ngày đặt: ${new Date().toLocaleString()}</p>
-      <p>Trạng thái: đã thanh toán</p>
-      <p>Chi tiết đơn hàng:</p>
-      ${productListHtml}
-      <p><strong>Tổng tiền: ${totalAmount.toLocaleString('vi-VN')} VND</strong></p>
-    `;
+      const html = `
+        <h1>Cảm ơn bạn đã đặt hàng!</h1>
+        <p>Mã đơn hàng của bạn: <strong>#${id}</strong></p>
+        <p>Ngày đặt: ${new Date().toLocaleString()}</p>
+        <p>Trạng thái: đang xử lý</p>
+        <p>Chi tiết đơn hàng:</p>
+        ${productListHtml}
+        <p><strong>Tổng tiền: ${totalAmount.toLocaleString('vi-VN')} VND</strong></p>
+      `;
 
-    // Gửi email thông báo đơn hàng
-    const email = req.body.email; // Địa chỉ email của khách hàng
-    const subject = `Xác nhận đặt hàng #${id}`;
+      // Gửi email thông báo đơn hàng
+      const email = req.body.email; // Địa chỉ email của khách hàng
+      const subject = `Xác nhận đặt hàng #${id}`;
 
-    if (email) {
-      await sendMail({ email, subject, html });
+      if (email) {
+        await sendMail({ email, subject, html });
+      }
+
+      res.status(200).json({ message: 'Đặt hàng thành công', order: newOrder });
+    } catch (error) {
+      console.error('Lỗi khi tạo đơn hàng:', error);
+      res.status(500).json({ message: 'Đã xảy ra lỗi khi tạo đơn hàng' });
     }
-
-    res.status(200).json({ message: 'Đặt hàng thành công', order: newOrder });
-  } catch (error) {
-    console.error('Lỗi khi tạo đơn hàng:', error);
-    res.status(500).json({ message: 'Đã xảy ra lỗi khi tạo đơn hàng' });
-  }
-});
+  });
 
 
 // Lấy tất cả bình luận
@@ -1527,13 +1640,13 @@ router.get('/donHang', async (req, res) => {
 router.put('/donHang/:id/status', async (req, res) => {
   try {
     const { id } = req.params;
-    const { trangThai } = req.body;
+    const { trangThai,lyDoHuy } = req.body;
     const db = await connectDb();
     const donHangCollection = db.collection('donHang');
     
     const result = await donHangCollection.updateOne(
       { id: parseInt(id) },
-      { $set: { trangThai } }
+      { $set: { trangThai, lyDoHuy  } }
     );
     
     if (result.modifiedCount > 0) {
@@ -2041,6 +2154,986 @@ router.delete('/binhLuan/:commentId/reply/:replyIndex', async (req, res) => {
     console.error('Lỗi khi xóa phản hồi:', error);
     res.status(500).json({ 
       message: 'Lỗi khi xóa phản hồi', 
+      error: error.message 
+    });
+  }
+});
+// Thêm các API endpoints cho wishlist
+
+// API lấy danh sách yêu thích theo username
+router.get('/wishlist/:username', async (req, res) => {
+  try {
+    const { username } = req.params;
+    const db = await connectDb();
+    const wishlistCollection = db.collection('wishlist');
+    
+    const wishlist = await wishlistCollection.findOne({ username });
+    res.status(200).json(wishlist?.products || []);
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Lỗi khi lấy danh sách yêu thích',
+      error: error.message 
+    });
+  }
+});
+
+// API thêm sản phẩm vào danh sách yêu thích
+router.post('/wishlist/add', async (req, res) => {
+  try {
+    const { username, product } = req.body;
+    const db = await connectDb();
+    const wishlistCollection = db.collection('wishlist');
+    
+    // Tìm wishlist của user
+    const userWishlist = await wishlistCollection.findOne({ username });
+    
+    if (userWishlist) {
+      // Kiểm tra sản phẩm đã tồn tại chưa
+      const productExists = userWishlist.products.some(p => p.id === product.id);
+      
+      if (productExists) {
+        return res.status(400).json({ message: 'Sản phẩm đã có trong danh sách yêu thích' });
+      }
+      
+      // Thêm sản phẩm mới vào danh sách
+      await wishlistCollection.updateOne(
+        { username },
+        { $push: { products: product } }
+      );
+    } else {
+      // Tạo wishlist mới cho user
+      await wishlistCollection.insertOne({
+        username,
+        products: [product]
+      });
+    }
+    
+    res.status(200).json({ message: 'Đã thêm sản phẩm vào danh sách yêu thích' });
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Lỗi khi thêm vào danh sách yêu thích',
+      error: error.message 
+    });
+  }
+});
+
+// API xóa sản phẩm khỏi danh sách yêu thích
+router.delete('/wishlist/remove', async (req, res) => {
+  try {
+    const { username, productId } = req.body;
+    const db = await connectDb();
+    const wishlistCollection = db.collection('wishlist');
+    
+    await wishlistCollection.updateOne(
+      { username },
+      { $pull: { products: { id: productId } } }
+    );
+    
+    res.status(200).json({ message: 'Đã xóa sản phẩm khỏi danh sách yêu thích' });
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Lỗi khi xóa khỏi danh sách yêu thích',
+      error: error.message 
+    });
+  }
+});
+
+// API quên mật khẩu - gửi mã xác thực
+router.post('/accounts/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+    const db = await connectDb();
+    const usersCollection = db.collection('users');
+
+    // Kiểm tra email tồn tại
+    const user = await usersCollection.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'Email không tồn tại trong hệ thống' });
+    }
+
+    // Tạo mã xác thực ngẫu nhiên 6 số
+    const verificationCode = Math.floor(100000 + Math.random() * 900000);
+    
+    // Lưu mã xác thực và thời gian hết hạn (5 phút)
+    await usersCollection.updateOne(
+      { email },
+      { 
+        $set: { 
+          resetCode: verificationCode,
+          resetCodeExpires: new Date(Date.now() + 5 * 60000) 
+        } 
+      }
+    );
+
+    // Gửi email chứa mã xác thực
+    const html = `
+      <h2>Đặt lại mật khẩu</h2>
+      <p>Mã xác thực của bạn là: <strong>${verificationCode}</strong></p>
+      <p>Mã này sẽ hết hạn sau 5 phút.</p>
+    `;
+
+    await sendMail({
+      email,
+      subject: 'Mã xác thực đặt lại mật khẩu',
+      html
+    });
+
+    res.status(200).json({ message: 'Mã xác thực đã được gửi đến email của bạn' });
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi gửi mã xác thực', error: error.message });
+  }
+});
+
+// API xác thực mã
+router.post('/accounts/verify-code', async (req, res) => {
+  try {
+    const { email, verificationCode } = req.body;
+    const db = await connectDb();
+    const usersCollection = db.collection('users');
+
+    const user = await usersCollection.findOne({
+      email,
+      resetCode: parseInt(verificationCode),
+      resetCodeExpires: { $gt: new Date() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Mã xác thực không hợp lệ hoặc đã hết hạn' });
+    }
+
+    res.status(200).json({ message: 'Mã xác thực hợp lệ' });
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi xác thực mã', error: error.message });
+  }
+});
+
+// API đặt lại mật khẩu
+router.post('/accounts/reset-password', async (req, res) => {
+  try {
+    const { email, verificationCode, newPassword } = req.body;
+    const db = await connectDb();
+    const usersCollection = db.collection('users');
+
+    const user = await usersCollection.findOne({
+      email,
+      resetCode: parseInt(verificationCode),
+      resetCodeExpires: { $gt: new Date() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Yêu cầu không hợp lệ' });
+    }
+
+    // Mã hóa mật khẩu mới
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPassword = bcrypt.hashSync(newPassword, salt);
+
+    // Cập nhật mật khẩu và xóa mã reset
+    await usersCollection.updateOne(
+      { email },
+      { 
+        $set: { password: hashedPassword },
+        $unset: { resetCode: "", resetCodeExpires: "" }
+      }
+    );
+
+    res.status(200).json({ message: 'Đặt lại mật khẩu thành công' });
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi đặt lại mật khẩu', error: error.message });
+  }
+});
+
+// API endpoints for discounts
+
+// Get all discounts
+router.get('/discounts', async (req, res) => {
+  try {
+    const db = await connectDb();
+    const discountsCollection = db.collection('discounts');
+    const discounts = await discountsCollection.find().toArray();
+    res.status(200).json(discounts);
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi lấy danh sách giảm giá', error: error.message });
+  }
+});
+
+// Create new discount
+router.post('/discounts', async (req, res) => {
+  try {
+    const { type, itemId, discountType, discountValue } = req.body;
+    const db = await connectDb();
+    const discountsCollection = db.collection('discounts');
+    const sanPhamCollection = db.collection('sanPham');
+
+    // Tạo ID mới
+    const lastDiscount = await discountsCollection.find().sort({ id: -1 }).limit(1).toArray();
+    const newId = lastDiscount.length > 0 ? lastDiscount[0].id + 1 : 1;
+
+    const product = await sanPhamCollection.findOne({ id: parseInt(itemId) });
+    if (!product && type === 'product') {
+      return res.status(404).json({ message: 'Không tìm thấy sản phẩm' });
+    }
+
+    const originalPrice = type === 'product' 
+      ? parseFloat(product.gia_sp.replace(/\./g, ''))
+      : 0;
+    
+    let discountedPrice = 0;
+    if (type === 'product') {
+      if (discountType === 'percent') {
+        discountedPrice = originalPrice * (1 - discountValue / 100);
+      } else {
+        discountedPrice = originalPrice - discountValue;
+      }
+    }
+
+    const newDiscount = {
+      id: newId,
+      type,
+      itemId: parseInt(itemId),
+      discountType,
+      discountValue: parseFloat(discountValue),
+      active: true,
+      createdAt: new Date(),
+      originalPrice,
+      currentPrice: Math.round(discountedPrice),
+      discountHistory: type === 'product' ? [{
+        type: discountType,
+        value: parseFloat(discountValue),
+        priceBeforeDiscount: originalPrice,
+        priceAfterDiscount: Math.round(discountedPrice),
+        appliedAt: new Date()
+      }] : []
+    };
+
+    await discountsCollection.insertOne(newDiscount);
+
+    // Apply discount to products
+    if (type === 'product') {
+      await applyDiscountToProduct(itemId, discountType, discountValue);
+    } else {
+      await applyDiscountToCategory(itemId, discountType, discountValue);
+    }
+
+    res.status(201).json(newDiscount);
+  } catch (error) {
+    console.error('Error creating discount:', error);
+    res.status(500).json({ 
+      message: 'Lỗi khi tạo giảm giá', 
+      error: error.message,
+      stack: error.stack 
+    });
+  }
+});
+
+// Toggle discount status
+router.patch('/discounts/:id/toggle', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const db = await connectDb();
+    const discountsCollection = db.collection('discounts');
+    
+    const discount = await discountsCollection.findOne({ id: parseInt(id) });
+    if (!discount) {
+      return res.status(404).json({ message: 'Không tìm thấy giảm giá' });
+    }
+
+    const result = await discountsCollection.updateOne(
+      { id: parseInt(id) },
+      { $set: { active: !discount.active } }
+    );
+
+    // Update product prices based on new status
+    if (discount.type === 'product') {
+      if (!discount.active) {
+        await applyDiscountToProduct(discount.itemId, discount.discountType, discount.discountValue);
+      } else {
+        await removeDiscountFromProduct(discount.itemId);
+      }
+    } else {
+      if (!discount.active) {
+        await applyDiscountToCategory(discount.itemId, discount.discountType, discount.discountValue);
+      } else {
+        await removeDiscountFromCategory(discount.itemId);
+      }
+    }
+
+    res.status(200).json({ message: 'Cập nhật trạng thái thành công' });
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi cập nhật trạng thái', error: error.message });
+  }
+});
+
+// Delete discount
+router.delete('/discounts/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const db = await connectDb();
+    const discountsCollection = db.collection('discounts');
+    
+    const discount = await discountsCollection.findOne({ id: parseInt(id) });
+    if (!discount) {
+      return res.status(404).json({ message: 'Không tìm thấy giảm giá' });
+    }
+
+    // Remove discount from products first
+    if (discount.type === 'product') {
+      await removeDiscountFromProduct(discount.itemId);
+    } else {
+      await removeDiscountFromCategory(discount.itemId);
+    }
+
+    await discountsCollection.deleteOne({ id: parseInt(id) });
+    res.status(200).json({ message: 'Xóa giảm giá thành công' });
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi xóa giảm giá', error: error.message });
+  }
+});
+
+// Helper functions
+async function applyDiscountToProduct(productId, discountType, discountValue) {
+  const db = await connectDb();
+  const sanPhamCollection = db.collection('sanPham');
+  
+  const product = await sanPhamCollection.findOne({ id: productId });
+  if (!product) return;
+
+  // Bỏ dấu chấm từ giá gốc để tính toán
+  const originalPrice = parseFloat(product.gia_sp.replace(/\./g, ''));
+  let discountedPrice;
+
+  if (discountType === 'percent') {
+    discountedPrice = originalPrice * (1 - discountValue / 100);
+  } else {
+    discountedPrice = originalPrice - discountValue;
+  }
+
+  // Làm tròn số và định dạng với dấu chấm trước khi lưu
+  const formattedPrice = Math.round(discountedPrice)
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+  await sanPhamCollection.updateOne(
+    { id: productId },
+    { $set: { giam_gia: formattedPrice } }
+  );
+}
+
+async function applyDiscountToCategory(categoryId, discountType, discountValue) {
+  const db = await connectDb();
+  const sanPhamCollection = db.collection('sanPham');
+  
+  const products = await sanPhamCollection.find({ id_danhmuc: categoryId }).toArray();
+  
+  for (const product of products) {
+    await applyDiscountToProduct(product.id, discountType, discountValue);
+  }
+}
+
+async function removeDiscountFromProduct(productId) {
+  const db = await connectDb();
+  const sanPhamCollection = db.collection('sanPham');
+  
+  await sanPhamCollection.updateOne(
+    { id: productId },
+    { $unset: { giam_gia: "" } } // Đổi từ giamgia thành giam_gia
+  );
+}
+
+async function removeDiscountFromCategory(categoryId) {
+  const db = await connectDb();
+  const sanPhamCollection = db.collection('sanPham');
+  
+  await sanPhamCollection.updateMany(
+    { id_danhmuc: categoryId },
+    { $unset: { giam_gia: "" } } // Đổi từ giamgia thành giam_gia
+  );
+}
+
+// Thêm hàm formatCurrency
+function formatCurrency(value) {
+  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+// Cập nhật API endpoint
+router.patch('/discounts/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { discountType, discountValue, finalPrice, totalDiscountValue, originalPrice } = req.body;
+    const db = await connectDb();
+    const discountsCollection = db.collection('discounts');
+    const sanPhamCollection = db.collection('sanPham');
+    
+    const currentDiscount = await discountsCollection.findOne({ id: parseInt(id) });
+    if (!currentDiscount) {
+      return res.status(404).json({ message: 'Không tìm thấy giảm giá' });
+    }
+
+    // Tạo entry mới cho lịch sử
+    const historyEntry = {
+      type: discountType,
+      value: parseFloat(discountValue),
+      priceBeforeDiscount: currentDiscount.currentPrice,
+      priceAfterDiscount: finalPrice,
+      appliedAt: new Date(),
+      discountPercent: parseFloat(discountValue) // Lưu % giảm của lần này
+    };
+
+    // Cập nhật discount
+    await discountsCollection.updateOne(
+      { id: parseInt(id) },
+      {
+        $set: {
+          discountType,
+          discountValue: totalDiscountValue, // Lưu tổng % giảm
+          currentPrice: finalPrice,
+          lastUpdated: new Date()
+        },
+        $push: {
+          discountHistory: historyEntry
+        }
+      }
+    );
+
+    // Cập nhật giá sản phẩm
+    await sanPhamCollection.updateOne(
+      { id: currentDiscount.itemId },
+      { $set: { giam_gia: formatCurrency(finalPrice) } }
+    );
+
+    res.status(200).json({
+      message: 'Cập nhật giảm giá thành công',
+      totalDiscountPercent: totalDiscountValue,
+      historyEntry: {
+        ...historyEntry,
+        description: `Giảm ${discountValue}%`
+      }
+    });
+
+  } catch (error) {
+    console.error('Error updating discount:', error);
+    res.status(500).json({ 
+      message: 'Lỗi khi cập nhật giảm giá', 
+      error: error.message 
+    });
+  }
+});
+
+// Thêm route để xóa lịch sử giảm giá
+router.patch('/discounts/:id/history', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { historyIndex, updatedHistory } = req.body;
+    
+    const db = await connectDb();
+    const discountsCollection = db.collection('discounts');
+    
+    // Tìm discount cần cập nhật
+    const discount = await discountsCollection.findOne({ id: parseInt(id) });
+    if (!discount) {
+      return res.status(404).json({ message: 'Không tìm thấy giảm giá' });
+    }
+
+    // Tính lại giá và tổng giảm giá từ đầu
+    let newPrice = parseFloat(discount.originalPrice);
+    let totalDiscountValue = 0;
+    let lastDiscountAmount = 0;
+
+    // Áp dụng lại từng lịch sử giảm giá theo thứ tự
+    for (const history of updatedHistory) {
+      const currentPrice = newPrice;
+      
+      if (history.type === 'percent') {
+        // Tính giảm giá theo phần trăm
+        lastDiscountAmount = newPrice * (parseFloat(history.value) / 100);
+        newPrice = newPrice - lastDiscountAmount;
+        totalDiscountValue += parseFloat(history.value);
+      } else {
+        // Tính giảm giá theo số tiền
+        lastDiscountAmount = parseFloat(history.value);
+        const percentValue = (lastDiscountAmount / discount.originalPrice) * 100;
+        totalDiscountValue += percentValue;
+        newPrice = newPrice - lastDiscountAmount;
+      }
+
+      // Cập nhật giá trước và sau cho mỗi lịch sử
+      history.priceBeforeDiscount = Math.round(currentPrice);
+      history.priceAfterDiscount = Math.round(newPrice);
+    }
+
+    // Cập nhật discount với lịch sử mới và giá mới
+    const updateResult = await discountsCollection.updateOne(
+      { id: parseInt(id) },
+      { 
+        $set: {
+          discountHistory: updatedHistory,
+          currentPrice: Math.round(newPrice),
+          totalDiscountValue: parseFloat(totalDiscountValue.toFixed(2)),
+          discountValue: parseFloat(totalDiscountValue.toFixed(2))
+        }
+      }
+    );
+
+    // Cập nhật giá giảm cho sản phẩm
+    const sanPhamCollection = db.collection('sanPham');
+    await sanPhamCollection.updateOne(
+      { id: discount.itemId },
+      { $set: { giam_gia: formatCurrency(Math.round(newPrice)) } }
+    );
+
+    // Lấy discount đã cập nhật
+    const updatedDiscount = await discountsCollection.findOne({ id: parseInt(id) });
+
+    res.status(200).json({ 
+      message: 'Cập nhật lịch sử giảm giá thành công',
+      updatedDiscount
+    });
+
+  } catch (error) {
+    console.error('Error updating discount history:', error);
+    res.status(500).json({ 
+      message: 'Lỗi khi cập nhật lịch sử giảm giá', 
+      error: error.message 
+    });
+  }
+});
+
+// Thêm route để xóa lịch sử giảm giá của danh mục
+router.delete('/discounts/category/:categoryId', async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+    const db = await connectDb();
+    const discountsCollection = db.collection('discounts');
+    const sanPhamCollection = db.collection('sanPham');
+
+    // Lấy tất cả sản phẩm thuộc danh mục
+    const products = await sanPhamCollection.find({ id_danhmuc: parseInt(categoryId) }).toArray();
+    const productIds = products.map(p => p.id);
+
+    // Lấy các discount của sản phẩm trong danh mục
+    const discounts = await discountsCollection.find({
+      itemId: { $in: productIds },
+      type: 'product'
+    }).toArray();
+
+    // Xử lý từng discount
+    for (const discount of discounts) {
+      if (discount.discountHistory && discount.discountHistory.length > 0) {
+        // Xóa lịch sử giảm giá mới nhất
+        const updatedHistory = discount.discountHistory.slice(0, -1);
+        
+        if (updatedHistory.length === 0) {
+          // Nếu không còn lịch sử, xóa discount
+          await discountsCollection.deleteOne({ id: discount.id });
+          continue;
+        }
+
+        // Tính lại giá và tổng giảm giá từ đầu
+        let newPrice = parseFloat(discount.originalPrice);
+        let totalDiscountValue = 0;
+        let lastDiscountAmount = 0;
+
+        // Áp dụng lại từng lịch sử giảm giá theo thứ tự
+        for (const history of updatedHistory) {
+          const currentPrice = newPrice;
+          
+          if (history.type === 'percent') {
+            // Tính giảm giá theo phần trăm
+            lastDiscountAmount = newPrice * (parseFloat(history.value) / 100);
+            newPrice = newPrice - lastDiscountAmount;
+            totalDiscountValue += parseFloat(history.value);
+          } else {
+            // Tính giảm giá theo số tiền
+            lastDiscountAmount = parseFloat(history.value);
+            const percentValue = (lastDiscountAmount / discount.originalPrice) * 100;
+            totalDiscountValue += percentValue;
+            newPrice = newPrice - lastDiscountAmount;
+          }
+
+          // Cập nhật giá trước và sau cho mỗi lịch sử
+          history.priceBeforeDiscount = Math.round(currentPrice);
+          history.priceAfterDiscount = Math.round(newPrice);
+        }
+
+        // Cập nhật discount
+        await discountsCollection.updateOne(
+          { id: discount.id },
+          {
+            $set: {
+              discountHistory: updatedHistory,
+              currentPrice: Math.round(newPrice),
+              totalDiscountValue: parseFloat(totalDiscountValue.toFixed(2)),
+              discountValue: parseFloat(totalDiscountValue.toFixed(2))
+            }
+          }
+        );
+
+        // Cập nhật giá sản phẩm
+        await sanPhamCollection.updateOne(
+          { id: discount.itemId },
+          { $set: { giam_gia: formatCurrency(Math.round(newPrice)) } }
+        );
+      }
+    }
+
+    res.status(200).json({ message: 'Đã xóa giảm giá danh mục thành công' });
+  } catch (error) {
+    console.error('Error deleting category discount:', error);
+    res.status(500).json({ 
+      message: 'Lỗi khi xóa giảm giá danh mục',
+      error: error.message 
+    });
+  }
+});
+
+// API endpoints for vouchers
+const voucherSchema = {
+  id: Number,
+  code: String,
+  discount_type: String, // 'percent' hoặc 'fixed'
+  discount_value: Number,
+  min_order_value: Number,
+  max_discount: Number,
+  quantity: Number,
+  used_count: Number,
+  start_date: Date,
+  end_date: Date,
+  active: Boolean,
+  description: String
+};
+
+// Get all vouchers
+router.get('/vouchers', async (req, res) => {
+  try {
+    const db = await connectDb();
+    const vouchersCollection = db.collection('vouchers');
+    const vouchers = await vouchersCollection.find().toArray();
+    res.status(200).json(vouchers);
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi lấy danh sách voucher', error: error.message });
+  }
+});
+
+// Create new voucher
+router.post('/vouchers', async (req, res) => {
+  try {
+    const db = await connectDb();
+    const vouchersCollection = db.collection('vouchers');
+
+    // Tạo ID mới
+    const lastVoucher = await vouchersCollection.find().sort({ id: -1 }).limit(1).toArray();
+    const newId = lastVoucher.length > 0 ? lastVoucher[0].id + 1 : 1;
+
+    const newVoucher = {
+      id: newId,
+      code: req.body.code.toUpperCase(),
+      discount_type: req.body.discount_type,
+      discount_value: parseFloat(req.body.discount_value),
+      min_order_value: parseFloat(req.body.min_order_value),
+      max_discount: parseFloat(req.body.max_discount),
+      quantity: parseInt(req.body.quantity),
+      used_count: 0,
+      start_date: new Date(req.body.start_date),
+      end_date: new Date(req.body.end_date),
+      active: true,
+      description: req.body.description,
+      created_at: new Date()
+    };
+
+    await vouchersCollection.insertOne(newVoucher);
+    res.status(201).json(newVoucher);
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi tạo voucher', error: error.message });
+  }
+});
+
+// Update voucher
+router.patch('/vouchers/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const db = await connectDb();
+    const vouchersCollection = db.collection('vouchers');
+    
+    const updateData = {
+      ...req.body,
+      code: req.body.code?.toUpperCase(),
+      discount_value: parseFloat(req.body.discount_value),
+      min_order_value: parseFloat(req.body.min_order_value),
+      max_discount: parseFloat(req.body.max_discount),
+      quantity: parseInt(req.body.quantity),
+      start_date: req.body.start_date ? new Date(req.body.start_date) : undefined,
+      end_date: req.body.end_date ? new Date(req.body.end_date) : undefined
+    };
+
+    const result = await vouchersCollection.updateOne(
+      { id: parseInt(id) },
+      { $set: updateData }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: 'Không tìm thấy voucher' });
+    }
+
+    res.status(200).json({ message: 'Cập nhật voucher thành công' });
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi cập nhật voucher', error: error.message });
+  }
+});
+
+// Delete voucher
+router.delete('/vouchers/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const db = await connectDb();
+    const vouchersCollection = db.collection('vouchers');
+    
+    const result = await vouchersCollection.deleteOne({ id: parseInt(id) });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: 'Không tìm thấy voucher' });
+    }
+
+    res.status(200).json({ message: 'Xóa voucher thành công' });
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi xóa voucher', error: error.message });
+  }
+});
+
+// Toggle voucher status
+router.patch('/vouchers/:id/toggle', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const db = await connectDb();
+    const vouchersCollection = db.collection('vouchers');
+    
+    const voucher = await vouchersCollection.findOne({ id: parseInt(id) });
+    if (!voucher) {
+      return res.status(404).json({ message: 'Không tìm thấy voucher' });
+    }
+
+    await vouchersCollection.updateOne(
+      { id: parseInt(id) },
+      { $set: { active: !voucher.active } }
+    );
+
+    res.status(200).json({ message: 'Cập nhật trạng thái thành công' });
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi cập nhật trạng thái', error: error.message });
+  }
+});
+
+// Verify voucher
+router.post('/vouchers/verify', async (req, res) => {
+  try {
+    const { code, orderValue } = req.body;
+    const db = await connectDb();
+    const vouchersCollection = db.collection('vouchers');
+    
+    const voucher = await vouchersCollection.findOne({ 
+      code: code.toUpperCase(),
+      active: true,
+      quantity: { $gt: 0 },
+      start_date: { $lte: new Date() },
+      end_date: { $gte: new Date() }
+    });
+
+    if (!voucher) {
+      return res.status(400).json({ message: 'Voucher không hợp lệ hoặc đã hết hạn' });
+    }
+
+    if (orderValue < voucher.min_order_value) {
+      return res.status(400).json({ 
+        message: `Giá trị đơn hàng tối thiểu là ${voucher.min_order_value.toLocaleString('vi-VN')}đ`
+      });
+    }
+
+    let discountAmount;
+    if (voucher.discount_type === 'percent') {
+      discountAmount = (orderValue * voucher.discount_value) / 100;
+      if (voucher.max_discount && discountAmount > voucher.max_discount) {
+        discountAmount = voucher.max_discount;
+      }
+    } else {
+      discountAmount = voucher.discount_value;
+    }
+
+    res.status(200).json({
+      voucher,
+      discountAmount: Math.round(discountAmount)
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi kiểm tra voucher', error: error.message });
+  }
+});
+
+// Schema cho user_vouchers
+const userVoucherSchema = {
+  id: Number,
+  user_id: Number,
+  voucher_id: Number,
+  received_date: Date,
+  used: Boolean,
+  used_date: Date
+};
+
+// API lấy voucher của user
+router.get('/vouchers/user/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const db = await connectDb();
+    const userVouchersCollection = db.collection('user_vouchers');
+    const vouchersCollection = db.collection('vouchers');
+
+    // Lấy tất cả voucher của user
+    const userVouchers = await userVouchersCollection.find({ 
+      user_id: parseInt(userId)
+    }).toArray();
+
+    // Lấy thông tin chi tiết của từng voucher
+    const voucherDetails = await Promise.all(
+      userVouchers.map(async (uv) => {
+        const voucher = await vouchersCollection.findOne({ id: uv.voucher_id });
+        return {
+          ...voucher,
+          received_date: uv.received_date,
+          used: uv.used,
+          used_date: uv.used_date
+        };
+      })
+    );
+
+    res.status(200).json(voucherDetails);
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Lỗi khi lấy danh sách voucher của user', 
+      error: error.message 
+    });
+  }
+});
+
+// API nhận voucher
+router.post('/vouchers/receive', async (req, res) => {
+  try {
+    const { userId, voucherId } = req.body;
+    const db = await connectDb();
+    const userVouchersCollection = db.collection('user_vouchers');
+    const vouchersCollection = db.collection('vouchers');
+    const usersCollection = db.collection('users');
+
+    // Kiểm tra voucher có tồn tại và còn hiệu lực
+    const voucher = await vouchersCollection.findOne({ 
+      id: parseInt(voucherId),
+      active: true,
+      end_date: { $gte: new Date() },
+      quantity: { $gt: 0 }
+    });
+
+    if (!voucher) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Voucher không hợp lệ hoặc đã hết hạn' 
+      });
+    }
+
+    // Kiểm tra user đã nhận voucher này chưa
+    const existingUserVoucher = await userVouchersCollection.findOne({
+      user_id: parseInt(userId),
+      voucher_id: parseInt(voucherId)
+    });
+
+    if (existingUserVoucher) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Bạn đã nhận voucher này rồi' 
+      });
+    }
+
+    // Tạo ID mới cho user_voucher
+    const lastUserVoucher = await userVouchersCollection
+      .find()
+      .sort({ id: -1 })
+      .limit(1)
+      .toArray();
+    const newId = lastUserVoucher.length > 0 ? lastUserVoucher[0].id + 1 : 1;
+
+    // Thêm voucher cho user
+    const userVoucher = {
+      id: newId,
+      user_id: parseInt(userId),
+      voucher_id: parseInt(voucherId),
+      received_date: new Date(),
+      used: false,
+      used_date: null,
+      code: voucher.code,
+      discount_type: voucher.discount_type,
+      discount_value: voucher.discount_value,
+      min_order_value: voucher.min_order_value,
+      max_discount: voucher.max_discount,
+      end_date: voucher.end_date
+    };
+
+    await userVouchersCollection.insertOne(userVoucher);
+
+    // Giảm số lượng voucher còn lại
+    await vouchersCollection.updateOne(
+      { id: parseInt(voucherId) },
+      { $inc: { quantity: -1 } }
+    );
+
+    // Thêm voucher vào mảng vouchers của user
+    await usersCollection.updateOne(
+      { id: parseInt(userId) },
+      { 
+        $push: { 
+          vouchers: userVoucher 
+        } 
+      }
+    );
+
+    res.status(200).json({ 
+      success: true,
+      message: 'Nhận voucher thành công',
+      userVoucher 
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false,
+      message: 'Lỗi khi nhận voucher', 
+      error: error.message 
+    });
+  }
+});
+
+// API sử dụng voucher
+router.post('/vouchers/use', async (req, res) => {
+  try {
+    const { userId, voucherId } = req.body;
+    const db = await connectDb();
+    const userVouchersCollection = db.collection('user_vouchers');
+
+    // Tìm và cập nhật trạng thái voucher của user
+    const result = await userVouchersCollection.updateOne(
+      { 
+        user_id: parseInt(userId),
+        voucher_id: parseInt(voucherId),
+        used: false
+      },
+      { 
+        $set: { 
+          used: true,
+          used_date: new Date()
+        } 
+      }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(400).json({ message: 'Voucher không tồn tại hoặc đã được sử dụng' });
+    }
+
+    res.status(200).json({ message: 'Sử dụng voucher thành công' });
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Lỗi khi sử dụng voucher', 
       error: error.message 
     });
   }

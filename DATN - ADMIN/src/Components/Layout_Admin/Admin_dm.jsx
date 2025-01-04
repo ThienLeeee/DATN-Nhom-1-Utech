@@ -19,39 +19,51 @@ export default function Admin_dm() {
     loadDanhmuc();
   }, []);
   const handleDelete = async (id) => {
-    try {
-      const response = await fetch(`http://localhost:3000/api/danhMuc/${id}`, {
-        method: 'DELETE',
+     Swal.fire({
+         title: 'Bạn có chắc chắn muốn xóa danh mục này?',
+         icon: 'warning',
+         showCancelButton: true,
+         confirmButtonText: 'Xóa',
+         cancelButtonText: 'Hủy',
+       }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            const response = await fetch(`http://localhost:3000/api/danhMuc/${id}`, {
+              method: 'DELETE',
+            });
+            const result = await response.json();
+        
+            if (response.ok) {
+              setDanhMuc(danhMuc.filter((item) => item.id !== id));
+              Swal.fire('Đã xóa!', 'Danh mục đã được xóa thành công.', 'success');
+            } else {
+              Swal.fire('Lỗi!', result.message || 'Xóa không thành công.', 'error');
+            }
+          } catch (error) {
+            console.error("Lỗi khi xóa danh mục:", error);
+            Swal.fire('Lỗi!', 'Đã xảy ra lỗi khi xóa danh mục.', 'error');
+          }
+        }
       });
-      const result = await response.json();
+    };
+   
   
-      if (response.ok) {
-        setDanhMuc(danhMuc.filter((item) => item.id !== id));
-        Swal.fire('Đã xóa!', 'Danh mục đã được xóa thành công.', 'success');
-      } else {
-        Swal.fire('Lỗi!', result.message || 'Xóa không thành công.', 'error');
-      }
-    } catch (error) {
-      console.error("Lỗi khi xóa danh mục:", error);
-      Swal.fire('Lỗi!', 'Đã xảy ra lỗi khi xóa danh mục.', 'error');
-    }
-  };
-  const toggleLock = async (id) => {
-    try {
-      const response = await fetch(`http://localhost:3000/api/danhMuc/lock/${id}`, {
-        method: 'PUT',
-      });
-      if (response.ok) {
-        loadDanhmuc(); // Refresh category list to reflect the updated lock status
-        Swal.fire('Thành công!', 'Đã thay đổi trạng thái khóa của danh mục.', 'success');
-      } else {
-        Swal.fire('Lỗi!', 'Không thể thay đổi trạng thái khóa.', 'error');
-      }
-    } catch (error) {
-      console.error("Lỗi:", error);
-      Swal.fire('Lỗi!', 'Có lỗi xảy ra khi thay đổi trạng thái khóa.', 'error');
-    }
-  };
+  // const toggleLock = async (id) => {
+  //   try {
+  //     const response = await fetch(`http://localhost:3000/api/danhMuc/lock/${id}`, {
+  //       method: 'PUT',
+  //     });
+  //     if (response.ok) {
+  //       loadDanhmuc(); // Refresh category list to reflect the updated lock status
+  //       Swal.fire('Thành công!', 'Đã thay đổi trạng thái khóa của danh mục.', 'success');
+  //     } else {
+  //       Swal.fire('Lỗi!', 'Không thể thay đổi trạng thái khóa.', 'error');
+  //     }
+  //   } catch (error) {
+  //     console.error("Lỗi:", error);
+  //     Swal.fire('Lỗi!', 'Có lỗi xảy ra khi thay đổi trạng thái khóa.', 'error');
+  //   }
+  // };
   
 
   return (
@@ -100,10 +112,10 @@ export default function Admin_dm() {
             >
               <i className="text-warning bi-trash" />
             </button>
-            <button onClick={() => toggleLock(dm.id)} type="button" className="btn btn-light mx-1 mb-1">
+            {/* <button onClick={() => toggleLock(dm.id)} type="button" className="btn btn-light mx-1 mb-1">
               <i className={`bi ${dm.locked ? 'bi-lock-fill text-danger' : 'bi-unlock text-success'}`} />
               {dm.locked ? 'Mở khóa' : 'Khóa'}
-            </button>
+            </button> */}
           </div>
         </td>
       </tr>

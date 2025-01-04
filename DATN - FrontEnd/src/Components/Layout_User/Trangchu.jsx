@@ -7,6 +7,9 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ChatBox from "./ChatBox";
 import "/public/css/trangchu.css";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Trangchu() {
   const [sanPham, setSanpham] = useState([]);
@@ -18,6 +21,64 @@ export default function Trangchu() {
   const totalSlides = Math.ceil(hotProducts.length / productsPerSlide);
   const [promotionalProducts, setPromotionalProducts] = useState([]);
   const [currentPromotionalSlide, setCurrentPromotionalSlide] = useState(0);
+  const [wishlist, setWishlist] = useState(() => {
+    const savedWishlist = localStorage.getItem('wishlist');
+    return savedWishlist ? JSON.parse(savedWishlist) : [];
+  });
+  const { user } = useAuth();
+
+  useEffect(() => {
+    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+  }, [wishlist]);
+
+  useEffect(() => {
+    const fetchWishlist = async () => {
+      if (user) {
+        try {
+          const response = await axios.get(`http://localhost:3000/api/wishlist/${user.username}`);
+          setWishlist(response.data);
+        } catch (error) {
+          console.error('Lỗi khi lấy danh sách yêu thích:', error);
+        }
+      }
+    };
+    
+    fetchWishlist();
+  }, [user]);
+
+  const handleAddToWishlist = async (product) => {
+    if (!user) {
+      toast.warning('Vui lòng đăng nhập để thêm sản phẩm vào danh sách yêu thích!', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      return;
+    }
+
+    const isProductInWishlist = wishlist.some(item => item.id === product.id);
+    
+    if (isProductInWishlist) {
+      toast.info('Sản phẩm đã có trong danh sách yêu thích!');
+      return;
+    }
+
+    try {
+      await axios.post('http://localhost:3000/api/wishlist/add', {
+        username: user.username,
+        product
+      });
+
+      setWishlist([...wishlist, product]);
+      toast.success('Đã thêm sản phẩm vào danh sách yêu thích!');
+    } catch (error) {
+      console.error('Lỗi khi thêm vào danh sách yêu thích:', error);
+      toast.error('Có lỗi xảy ra khi thêm sản phẩm vào danh sách yêu thích!');
+    }
+  };
 
   useEffect(() => {
     const loadSanpham = async () => {
@@ -61,7 +122,7 @@ export default function Trangchu() {
     const fetchPromotionalProducts = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:4000/api/sanPham/khuyen-mai"
+          "http://localhost:3000/api/sanPham/khuyen-mai"
         );
         setPromotionalProducts(response.data);
       } catch (error) {
@@ -105,7 +166,13 @@ export default function Trangchu() {
     (sanpham) => sanpham.id_danhmuc === 3 && !isCategoryLocked(3)
   );
 
-
+  // Thêm hàm tính % giảm giá
+  const calculateDiscount = (originalPrice, discountedPrice) => {
+    const original = parseInt(originalPrice.replace(/\./g, ''));
+    const discounted = parseInt(discountedPrice.replace(/\./g, ''));
+    const discount = Math.round(((original - discounted) / original) * 100);
+    return discount;
+  };
 
   return (
     <>
@@ -128,319 +195,7 @@ export default function Trangchu() {
                           {danhmuc.tendm}
                         </Link>
 
-                        {/* <div className="boxMainDropdown">
-                         <ul className="dropdown-prod-lv2">
-                         <li>
-                          <a
-                         className="has-child transition"
-                          title="LAPTOP DELL"
-                        href="san-pham/laptop-dell-15/"
-                       >
-                LAPTOP DELL
-              </a>
-              <ul className="dropdown-prod-lv3">
-                <li>
-                  <a
-                    className="has-child transition"
-                    title="DELL VOSTRO "
-                    href="san-pham/dell-vostro-385/"
-                  >
-                    DELL VOSTRO{" "}
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="has-child transition"
-                    title="DELL INSPIRON "
-                    href="san-pham/dell-inspiron-387/"
-                  >
-                    DELL INSPIRON{" "}
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="has-child transition"
-                    title="DELL LATITUDE"
-                    href="san-pham/dell-latitude-12/"
-                  >
-                    DELL LATITUDE
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="has-child transition"
-                    title="DELL GAMING"
-                    href="san-pham/dell-gaming-345/"
-                  >
-                    DELL GAMING
-                  </a>
-                </li>
-              </ul>
-            </li>
-            <li>
-              <a
-                className="has-child transition"
-                title="LAPTOP HP"
-                href="san-pham/laptop-hp-16/"
-              >
-                LAPTOP HP
-              </a>
-              <ul className="dropdown-prod-lv3">
-                <li>
-                  <a
-                    className="has-child transition"
-                    title="HP 14s"
-                    href="san-pham/hp-14s-80/"
-                  >
-                    HP 14s
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="has-child transition"
-                    title="HP 15s"
-                    href="san-pham/hp-15s-81/"
-                  >
-                    HP 15s
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="has-child transition"
-                    title="HP 240"
-                    href="san-pham/hp-240-365/"
-                  >
-                    HP 240
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="has-child transition"
-                    title="HP PAVILION"
-                    href="san-pham/hp-pavilion-82/"
-                  >
-                    HP PAVILION
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="has-child transition"
-                    title="HP PAVILION X360"
-                    href="san-pham/hp-pavilion-x360-267/"
-                  >
-                    HP PAVILION X360
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="has-child transition"
-                    title="HP PROBOOK"
-                    href="san-pham/hp-probook-83/"
-                  >
-                    HP PROBOOK
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="has-child transition"
-                    title="HP ENVY X360"
-                    href="san-pham/hp-envy-x360-84/"
-                  >
-                    HP ENVY X360
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="has-child transition"
-                    title="HP ELITEBOOK"
-                    href="san-pham/hp-elitebook-256/"
-                  >
-                    HP ELITEBOOK
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="has-child transition"
-                    title="HP VICTUS"
-                    href="san-pham/hp-victus-344/"
-                  >
-                    HP VICTUS
-                  </a>
-                </li>
-              </ul>
-            </li>
-            <li>
-              <a
-                className="has-child transition"
-                title="LAPTOP ASUS"
-                href="san-pham/laptop-asus-18/"
-              >
-                LAPTOP ASUS
-              </a>
-              <ul className="dropdown-prod-lv3">
-                <li>
-                  <a
-                    className="has-child transition"
-                    title="ASUS ExpertBook"
-                    href="san-pham/asus-expertbook-350/"
-                  >
-                    ASUS ExpertBook
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="has-child transition"
-                    title="ASUS ViVoBook"
-                    href="san-pham/asus-vivobook-228/"
-                  >
-                    ASUS ViVoBook
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="has-child transition"
-                    title="ASUS Zenbook"
-                    href="san-pham/asus-zenbook-87/"
-                  >
-                    ASUS Zenbook
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="has-child transition"
-                    title="ASUS GAMING Series"
-                    href="san-pham/asus-gaming-series-90/"
-                  >
-                    ASUS GAMING Series
-                  </a>
-                </li>
-              </ul>
-            </li>
-            <li>
-              <a
-                className="has-child transition"
-                title="LAPTOP LENOVO"
-                href="san-pham/laptop-lenovo-17/"
-              >
-                LAPTOP LENOVO
-              </a>
-              <ul className="dropdown-prod-lv3">
-                <li>
-                  <a
-                    className="has-child transition"
-                    title="THINKPAD"
-                    href="san-pham/thinkpad-255/"
-                  >
-                    THINKPAD
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="has-child transition"
-                    title="LENOVO V - S Series"
-                    href="san-pham/lenovo-v-s-series-254/"
-                  >
-                    LENOVO V - S Series
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="has-child transition"
-                    title="THINKBOOK"
-                    href="san-pham/thinkbook-376/"
-                  >
-                    THINKBOOK
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="has-child transition"
-                    title="YOGA SLIM"
-                    href="san-pham/yoga-slim-443/"
-                  >
-                    YOGA SLIM
-                  </a>
-                </li>
-              </ul>
-            </li>
-            <li>
-              <a
-                className="has-child transition"
-                title="LAPTOP LG"
-                href="san-pham/laptop-lg-173/"
-              >
-                LAPTOP LG
-              </a>
-              <ul className="dropdown-prod-lv3">
-                <li>
-                  <a
-                    className="has-child transition"
-                    title="LG GRAM"
-                    href="san-pham/lg-gram-323/"
-                  >
-                    LG GRAM
-                  </a>
-                </li>
-              </ul>
-            </li>
-            <li>
-              <a
-                className="has-child transition"
-                title="LINH KIỆN LAPTOP"
-                href="san-pham/linh-kien-laptop-214/"
-              >
-                LINH KIỆN LAPTOP
-              </a>
-              <ul className="dropdown-prod-lv3">
-                <li>
-                  <a
-                    className="has-child transition"
-                    title="RAM LAPTOP"
-                    href="san-pham/ram-laptop-418/"
-                  >
-                    RAM LAPTOP
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="has-child transition"
-                    title="MÀN HÌNH LAPTOP"
-                    href="san-pham/man-hinh-laptop-419/"
-                  >
-                    MÀN HÌNH LAPTOP
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="has-child transition"
-                    title="PIN LAPTOP"
-                    href="san-pham/pin-laptop-420/"
-                  >
-                    PIN LAPTOP
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="has-child transition"
-                    title="ADAPTER LAPTOP"
-                    href="san-pham/adapter-laptop-421/"
-                  >
-                    ADAPTER LAPTOP
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="has-child transition"
-                    title="PHỤ KIỆN CHO LAPTOP"
-                    href="san-pham/phu-kien-cho-laptop-422/"
-                  >
-                    PHỤ KIỆN CHO LAPTOP
-                  </a>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </div> */}
+                  
                       </li>
                     ))
                   ) : (
@@ -975,30 +730,166 @@ export default function Trangchu() {
             {hotProducts.map((product) => (
               <div className="product" key={product.id}>
                 <div className="box-product">
-                  <div className="pic-product">
-                    <Link to={`/chitietsp/sanPham/${product.id}`}>
-                    <img
-                              src={`/img/sanpham/${product.hinh_anh.chinh}`}
-                              alt={`${product.ten_sp}`}
-                              className="w100 trans03"
-                            />
+                  <div className="pic-product" data-tooltip={`sticky${product.id}`}>
+                    <Link
+                      to={`/chitietsp/sanPham/${product.id}`}
+                      className="d-block"
+                      title={product.ten_sp}
+                    >
+                      <img
+                        src={`/img/sanpham/${product.hinh_anh.chinh}`}
+                        alt={product.ten_sp}
+                        className="w100 trans03"
+                      />
                     </Link>
+
+                    
+
+                    <div className="hot-icon blink" />
+                    <div className="desc-product">
+                      <div>
+                        <ul>
+                          {product.id_danhmuc === 1 ? (
+                            // Laptop specs
+                            <>
+                              <li>{product.cau_hinh.cpu}</li>
+                              <li>{product.cau_hinh.ram}</li>
+                              <li>{product.cau_hinh.ocung}</li>
+                              <li>{product.cau_hinh.vga}</li>
+                              <li>{product.cau_hinh.man_hinh}</li>
+                            </>
+                          ) : product.id_danhmuc === 2 ? (
+                            // PC specs
+                            <>
+                              <li>Mainboard: {product.cau_hinh.mainboard}</li>
+                              <li>CPU: {product.cau_hinh.cpu}</li>
+                              <li>RAM: {product.cau_hinh.ram}</li>
+                              <li>VGA: {product.cau_hinh.vga}</li>
+                              <li>HDD: {product.cau_hinh.hdd}</li>
+                              <li>SSD: {product.cau_hinh.ssd}</li>
+                              <li>PSU: {product.cau_hinh.psu}</li>
+                              <li>Case: {product.cau_hinh.case}</li>
+                            </>
+                          ) : (
+                            // Monitor specs
+                            <>
+                              <li>Kiểu màn hình: {product.cau_hinh.kieu_man_hinh}</li>
+                              <li>Kích thước: {product.cau_hinh.kich_thuoc}</li>
+                              <li>Độ phân giải: {product.cau_hinh.do_phan_giai}</li>
+                              <li>Tần số quét: {product.cau_hinh.tan_so_quet}</li>
+                              <li>Tấm nền: {product.cau_hinh.tam_nen}</li>
+                            </>
+                          )}
+                        </ul>
+                        <p>&nbsp;</p>
+                        <div className="baohanh">{product.bao_hanh}</div>
+                      </div>
+                    </div>
                   </div>
                   <div className="info-product">
                     <Link
                       to={`/chitietsp/sanPham/${product.id}`}
-                      className="name-product"
+                      className="name-product text-split"
+                      title={product.ten_sp}
                     >
                       {product.ten_sp}
                     </Link>
-                    <div className="price-product">{product.gia_sp}đ</div>
-                    <div className="cart-product">
-                      <span className="status-pro">Còn hàng</span>
+                    <div className="price-product d-flex justify-content-between" style={{ margin: '8px 0', textAlign: 'left' }}>
+                      {product.giam_gia ? (
+                        <div className="price-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '2px',  }}>
+                          <div style={{ 
+                            textDecoration: 'line-through', 
+                            color: '#707070', 
+                            fontSize: '14px', 
+                            fontWeight: 'normal' 
+                          }}>
+                            {product.gia_sp}đ
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <div style={{ 
+                              color: '#d70018', 
+                              fontSize: '16px', 
+                              fontWeight: '500' 
+                            }}>
+                              {product.giam_gia}đ
+                            </div>
+                            <div style={{ 
+                              color: '#fff',
+                              fontSize: '12px',
+                              background: '#d70018',
+                              padding: '0 6px',
+                              borderRadius: '3px',
+                              fontWeight: '500',
+                              height: '20px',
+                              display: 'flex',
+                              alignItems: 'center'
+                            }}>
+                              -{calculateDiscount(product.gia_sp, product.giam_gia)}%
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <span style={{ 
+                          color: '#d70018', 
+                          fontSize: '16px', 
+                          fontWeight: '500' 
+                        }}>
+                          {product.gia_sp}đ
+                        </span>
+                      )}
+                      <button 
+                      
+                      className="wishlist-btn "
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleAddToWishlist(product);
+                        
+                      }}
+                      title="Thêm vào yêu thích"
+                    >
+                      <i style={{color:'red' , fontSize: '25px', }} className={`fas fa-heart ${
+                        wishlist.some(w => w.id === product.id) ? 'active' : ''
+                      }`}>
+
+                      </i>
+                    </button>
+                    </div>
+                    <div className="cart-product d-flex flex-wrap justify-content-between align-items-center" 
+                      style={{ 
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginTop: '10px'
+                      }}>
+                      <span className="status-pro sts2" style={{
+                        fontSize: '13px',
+                        color: '#32CD32',
+                        fontWeight: '400',
+                        position: 'relative',
+                        paddingLeft: '15px',
+                        border: '1px solid #32CD32',
+                        borderRadius: '4px',
+                        padding: '4px 8px 4px 20px',
+                        display: 'inline-flex',
+                        alignItems: 'center'
+                      }}>
+                        <span style={{
+                          width: '6px',
+                          height: '6px',
+                          borderRadius: '50%',
+                          backgroundColor: '#32CD32',
+                          position: 'absolute',
+                          left: '8px',
+                          top: '50%',
+                          transform: 'translateY(-50%)'
+                        }}></span>
+                        Còn hàng
+                      </span>
                       <span
                         className="mua_giohang"
                         onClick={() => handleAddToCart(product)}
                       >
-                        MUA NGAY
+                        Mua ngay
                       </span>
                     </div>
                   </div>
@@ -1062,6 +953,7 @@ export default function Trangchu() {
                           
                           </Link>
 
+                         
                           <div className="hot-icon blink" />
                           <div className="desc-product">
                             <div>
@@ -1092,11 +984,97 @@ export default function Trangchu() {
                           >
                             {sanpham.ten_sp}
                           </Link>
-                          <div className="price-product">
-                            <span className="price-new">{sanpham.gia_sp}đ</span>
+                          <div className="price-product d-flex justify-content-between" style={{ margin: '8px 0', textAlign: 'left' }}>
+                      {sanpham.giam_gia ? (
+                        <div className="price-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '2px',  }}>
+                          <div style={{ 
+                            textDecoration: 'line-through', 
+                            color: '#707070', 
+                            fontSize: '14px', 
+                            fontWeight: 'normal' 
+                          }}>
+                            {sanpham.gia_sp}đ
                           </div>
-                          <div className="cart-product d-flex flex-wrap justify-content-between align-items-center">
-                            <span className="status-pro sts2">Còn hàng</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <div style={{ 
+                              color: '#d70018', 
+                              fontSize: '16px', 
+                              fontWeight: '500' 
+                            }}>
+                              {sanpham.giam_gia}đ
+                            </div>
+                            <div style={{ 
+                              color: '#fff',
+                              fontSize: '12px',
+                              background: '#d70018',
+                              padding: '0 6px',
+                              borderRadius: '3px',
+                              fontWeight: '500',
+                              height: '20px',
+                              display: 'flex',
+                              alignItems: 'center'
+                            }}>
+                              -{calculateDiscount(sanpham.gia_sp, sanpham.giam_gia)}%
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <span style={{ 
+                          color: '#d70018', 
+                          fontSize: '16px', 
+                          fontWeight: '500' 
+                        }}>
+                          {sanpham.gia_sp}đ
+                        </span>
+                      )}
+                      <button 
+                      
+                      className="wishlist-btn "
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleAddToWishlist(sanpham);
+                        
+                      }}
+                      title="Thêm vào yêu thích"
+                    >
+                      <i style={{color:'red' , fontSize: '20px', }} className={`fas fa-heart ${
+                        wishlist.some(w => w.id === sanpham.id) ? 'active' : ''
+                      }`}>
+
+                      </i>
+                    </button>
+                    </div>
+                          <div className="cart-product d-flex flex-wrap justify-content-between align-items-center" 
+                            style={{ 
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              marginTop: '10px'
+                            }}>
+                            <span className="status-pro sts2" style={{
+                              fontSize: '13px',
+                              color: '#32CD32',
+                              fontWeight: '400',
+                              position: 'relative',
+                              paddingLeft: '15px',
+                              border: '1px solid #32CD32',
+                              borderRadius: '4px',
+                              padding: '4px 8px 4px 20px',
+                              display: 'inline-flex',
+                              alignItems: 'center'
+                            }}>
+                              <span style={{
+                                width: '6px',
+                                height: '6px',
+                                borderRadius: '50%',
+                                backgroundColor: '#32CD32',
+                                position: 'absolute',
+                                left: '8px',
+                                top: '50%',
+                                transform: 'translateY(-50%)'
+                              }}></span>
+                              Còn hàng
+                            </span>
                             <span
                               className="mua_giohang"
                               rel={7385}
@@ -1164,8 +1142,10 @@ export default function Trangchu() {
                               alt={`${sanpham.ten_sp}`}
                               className="w100 trans03"
                             />
+                          
                           </Link>
 
+                      
                           <div className="hot-icon blink" />
                           <div className="desc-product">
                             <div>
@@ -1194,11 +1174,97 @@ export default function Trangchu() {
                           >
                             {sanpham.ten_sp}
                           </Link>
-                          <div className="price-product">
-                            <span className="price-new">{sanpham.gia_sp}đ</span>
+                          <div className="price-product d-flex justify-content-between" style={{ margin: '8px 0', textAlign: 'left' }}>
+                      {sanpham.giam_gia ? (
+                        <div className="price-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '2px',  }}>
+                          <div style={{ 
+                            textDecoration: 'line-through', 
+                            color: '#707070', 
+                            fontSize: '14px', 
+                            fontWeight: 'normal' 
+                          }}>
+                            {sanpham.gia_sp}đ
                           </div>
-                          <div className="cart-product d-flex flex-wrap justify-content-between align-items-center">
-                            <span className="status-pro sts2">Còn hàng</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <div style={{ 
+                              color: '#d70018', 
+                              fontSize: '16px', 
+                              fontWeight: '500' 
+                            }}>
+                              {sanpham.giam_gia}đ
+                            </div>
+                            <div style={{ 
+                              color: '#fff',
+                              fontSize: '12px',
+                              background: '#d70018',
+                              padding: '0 6px',
+                              borderRadius: '3px',
+                              fontWeight: '500',
+                              height: '20px',
+                              display: 'flex',
+                              alignItems: 'center'
+                            }}>
+                              -{calculateDiscount(sanpham.gia_sp, sanpham.giam_gia)}%
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <span style={{ 
+                          color: '#d70018', 
+                          fontSize: '16px', 
+                          fontWeight: '500' 
+                        }}>
+                          {sanpham.gia_sp}đ
+                        </span>
+                      )}
+                      <button 
+                      
+                      className="wishlist-btn "
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleAddToWishlist(sanpham);
+                        
+                      }}
+                      title="Thêm vào yêu thích"
+                    >
+                      <i style={{color:'red' , fontSize: '20px', }} className={`fas fa-heart ${
+                        wishlist.some(w => w.id === sanpham.id) ? 'active' : ''
+                      }`}>
+
+                      </i>
+                    </button>
+                    </div>
+                          <div className="cart-product d-flex flex-wrap justify-content-between align-items-center" 
+                            style={{ 
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              marginTop: '10px'
+                            }}>
+                            <span className="status-pro sts2" style={{
+                              fontSize: '13px',
+                              color: '#32CD32',
+                              fontWeight: '400',
+                              position: 'relative',
+                              paddingLeft: '15px',
+                              border: '1px solid #32CD32',
+                              borderRadius: '4px',
+                              padding: '4px 8px 4px 20px',
+                              display: 'inline-flex',
+                              alignItems: 'center'
+                            }}>
+                              <span style={{
+                                width: '6px',
+                                height: '6px',
+                                borderRadius: '50%',
+                                backgroundColor: '#32CD32',
+                                position: 'absolute',
+                                left: '8px',
+                                top: '50%',
+                                transform: 'translateY(-50%)'
+                              }}></span>
+                              Còn hàng
+                            </span>
                             <span
                               className="mua_giohang"
                               rel={7385}
@@ -1281,8 +1347,10 @@ export default function Trangchu() {
                               alt={`${sanpham.ten_sp}`}
                               className="w100 trans03"
                             />
+                          
                           </Link>
 
+                        
                           <div className="hot-icon blink" />
                           <div className="desc-product">
                             <div>
@@ -1336,11 +1404,97 @@ export default function Trangchu() {
                           >
                             {sanpham.ten_sp}
                           </Link>
-                          <div className="price-product">
-                            <span className="price-new">{sanpham.gia_sp}đ</span>
+                          <div className="price-product d-flex justify-content-between" style={{ margin: '8px 0', textAlign: 'left' }}>
+                      {sanpham.giam_gia ? (
+                        <div className="price-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '2px',  }}>
+                          <div style={{ 
+                            textDecoration: 'line-through', 
+                            color: '#707070', 
+                            fontSize: '14px', 
+                            fontWeight: 'normal' 
+                          }}>
+                            {sanpham.gia_sp}đ
                           </div>
-                          <div className="cart-product d-flex flex-wrap justify-content-between align-items-center">
-                            <span className="status-pro sts2">Còn hàng</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <div style={{ 
+                              color: '#d70018', 
+                              fontSize: '16px', 
+                              fontWeight: '500' 
+                            }}>
+                              {sanpham.giam_gia}đ
+                            </div>
+                            <div style={{ 
+                              color: '#fff',
+                              fontSize: '12px',
+                              background: '#d70018',
+                              padding: '0 6px',
+                              borderRadius: '3px',
+                              fontWeight: '500',
+                              height: '20px',
+                              display: 'flex',
+                              alignItems: 'center'
+                            }}>
+                              -{calculateDiscount(sanpham.gia_sp, sanpham.giam_gia)}%
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <span style={{ 
+                          color: '#d70018', 
+                          fontSize: '16px', 
+                          fontWeight: '500' 
+                        }}>
+                          {sanpham.gia_sp}đ
+                        </span>
+                      )}
+                      <button 
+                      
+                      className="wishlist-btn "
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleAddToWishlist(sanpham);
+                        
+                      }}
+                      title="Thêm vào yêu thích"
+                    >
+                      <i style={{color:'red' , fontSize: '20px', }} className={`fas fa-heart ${
+                        wishlist.some(w => w.id === sanpham.id) ? 'active' : ''
+                      }`}>
+
+                      </i>
+                    </button>
+                    </div>
+                          <div className="cart-product d-flex flex-wrap justify-content-between align-items-center" 
+                            style={{ 
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              marginTop: '10px'
+                            }}>
+                            <span className="status-pro sts2" style={{
+                              fontSize: '13px',
+                              color: '#32CD32',
+                              fontWeight: '400',
+                              position: 'relative',
+                              paddingLeft: '15px',
+                              border: '1px solid #32CD32',
+                              borderRadius: '4px',
+                              padding: '4px 8px 4px 20px',
+                              display: 'inline-flex',
+                              alignItems: 'center'
+                            }}>
+                              <span style={{
+                                width: '6px',
+                                height: '6px',
+                                borderRadius: '50%',
+                                backgroundColor: '#32CD32',
+                                position: 'absolute',
+                                left: '8px',
+                                top: '50%',
+                                transform: 'translateY(-50%)'
+                              }}></span>
+                              Còn hàng
+                            </span>
                             <span
                               className="mua_giohang"
                               rel={7385}
@@ -1358,7 +1512,7 @@ export default function Trangchu() {
                   <p>Sản phẩm đang trong quá trình cập nhật...</p>
                 )}
               </div>
-           
+             
             </div>
           </div>
         </div>

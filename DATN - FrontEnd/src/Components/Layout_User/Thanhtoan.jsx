@@ -40,63 +40,117 @@
       e.preventDefault();
       try {
         const cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
-        if (cartItems.length > 0) {
-          localStorage.removeItem("cartItem");
-       
-          window.dispatchEvent(new Event("cartUpdated")); // Gửi sự kiện cập nhật
+        if (cartItems.length === 0) {
+          alert("Giỏ hàng trống. Vui lòng thêm sản phẩm trước khi thanh toán.");
+          return;
         }
     
-        const orderData = {
-          hoTen: formData.ten_thanhtoan,
-          diaChi: formData.diachi_thanhtoan,
-          dienThoai: formData.dienthoai_thanhtoan,
-          email: formData.email_thanhtoan,
-          ghiChu: formData.noidung_thanhtoan,
-          hinhThucThanhToan: formData.ht_thanhtoan,
-          sanPham: cartItems.map((item) => ({
-            id: item.id,
-            ten_sp: item.ten_sp,
-            gia_sp: item.gia_sp,
-            soLuong: item.quantity,
-            id_danhmuc: item.id_danhmuc,
-            hinh_anh: item.hinh_anh,
-          })),
-          tongTien: cartItems.reduce(
-            (total, item) => total + item.gia_sp * item.quantity,
-            0
-          ),
-          trangThai: "Chờ xử lý",
-          ngayDat: new Date(),
+        const totalPrice = cartItems.reduce(
+          (total, item) => total + item.gia_sp * item.quantity,
+          0
+        );
+    
+        // Giảm số lượng sản phẩm sau khi thanh toán
+        const updateProductQuantities = async () => {
+          for (let item of cartItems) {
+            const response = await axios.post("http://localhost:3000/api/updateProductQuantity", {
+              productId: item.id,
+              quantityPurchased: item.quantity,
+            });
+            if (response.status !== 200) {
+              alert("Cập nhật số lượng sản phẩm thất bại.");
+            }
+          }
         };
     
-        // Gửi dữ liệu đơn hàng lên backend
-        const response = await axios.post("http://localhost:3000/api/donHang", orderData);
-        const orderId = response.data.orderId;
-    
         if (formData.ht_thanhtoan === "THANH TOÁN QUA MOMO") {
+          // Tạm lưu thông tin đơn hàng vào localStorage
+          const tempOrder = {
+            hoTen: formData.ten_thanhtoan,
+            diaChi: formData.diachi_thanhtoan,
+            dienThoai: formData.dienthoai_thanhtoan,
+            email: formData.email_thanhtoan,
+            ghiChu: formData.noidung_thanhtoan,
+            hinhThucThanhToan: "THANH TOÁN QUA MOMO",
+            sanPham: cartItems.map((item) => ({
+              id: item.id,
+              ten_sp: item.ten_sp,
+              gia_sp: item.gia_sp,
+              soLuong: item.quantity,
+              id_danhmuc: item.id_danhmuc,
+              hinh_anh: item.hinh_anh,
+            })),
+            tongTien: totalPrice,
+            trangThai: "Chờ xử lý",
+            ngayDat: new Date(),
+          };
+          localStorage.setItem("tempOrder", JSON.stringify(tempOrder));
+    
+          // Gửi yêu cầu thanh toán qua Momo
           const momoPaymentData = {
-            amount: orderData.tongTien,
-            orderInfo: `Thanh toán cho đơn hàng với ${orderData.sanPham.length} sản phẩm`,
-            redirectUrl: `http://localhost:5173/thanhtoan/SuccessPage?orderId=${orderId}`,
-            ipnUrl: `https://3d31-2402-800-6341-34da-59a9-b6c1-418d-8659.ngrok-free.app/api/callback?orderId=${orderId}`,
+            amount: totalPrice,
+            orderInfo: `Thanh toán cho đơn hàng với ${cartItems.length} sản phẩm`,
+            redirectUrl: `http://localhost:5173/thanhtoan/SuccessPage`,
+            ipnUrl: `https://your-server-ipn-url.com/api/callback`, // Thay bằng URL callback thật
           };
     
-          const momoResponse = await axios.post("http://localhost:3000/api/payment", momoPaymentData);
+          // Gửi yêu cầu thanh toán qua Momo
+          const momoResponse = await axios.post(
+            "http://localhost:3000/api/payment",
+            momoPaymentData
+          );
     
           if (momoResponse.data && momoResponse.data.payUrl) {
             window.location.href = momoResponse.data.payUrl;
+          } else {
+            alert("Không thể tạo liên kết thanh toán. Vui lòng thử lại.");
           }
         } else if (formData.ht_thanhtoan === "THANH TOÁN QUA COD") {
-          setIsSuccess(true); // Đánh dấu trạng thái thành công
-        
-          window.dispatchEvent(new Event("cartUpdated")); // Gửi sự kiện để đồng bộ giao diện
-       
+          // Xử lý COD
+          const orderData = {
+            hoTen: formData.ten_thanhtoan,
+            diaChi: formData.diachi_thanhtoan,
+            dienThoai: formData.dienthoai_thanhtoan,
+            email: formData.email_thanhtoan,
+            ghiChu: formData.noidung_thanhtoan,
+            hinhThucThanhToan: "THANH TOÁN QUA COD",
+            sanPham: cartItems.map((item) => ({
+              id: item.id,
+              ten_sp: item.ten_sp,
+              gia_sp: item.gia_sp,
+              soLuong: item.quantity,
+              id_danhmuc: item.id_danhmuc,
+              hinh_anh: item.hinh_anh,
+            })),
+            tongTien: totalPrice,
+            trangThai: "Chờ xử lý",
+            ngayDat: new Date(),
+          };
+    
+          const response = await axios.post(
+            "http://localhost:3000/api/donHang",
+            orderData
+          );
+    
+          if (response.status === 200) {
+            // Cập nhật số lượng sản phẩm sau khi thanh toán thành công
+            await updateProductQuantities();
+    
+            setIsSuccess(true);
+            localStorage.removeItem("cartItem");
+            window.dispatchEvent(new Event("cartUpdated"));
+          } else {
+            alert("Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại.");
+          }
         }
       } catch (error) {
         console.error("Lỗi:", error);
         alert("Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại.");
       }
     };
+    
+    
+    
     
     
     

@@ -204,6 +204,10 @@ export default function EditTaikhoan() {
             <i className="fas fa-shopping-bag"></i>
             <span>Thông tin đơn hàng</span>
           </Link>
+          <Link to="/voucher" className="menu-item ">
+            <i className="fas fa-ticket-alt"></i>
+            <span>Voucher của tôi</span>
+          </Link>
           <button onClick={handleLogout} className="menu-item logout">
             <i className="fas fa-sign-out-alt"></i>
             <span>Đăng xuất</span>

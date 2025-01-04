@@ -1,0 +1,1022 @@
+/* Vô hiệu hóa tất cả các hiệu ứng chuyển động và hover */
+.admin-sale * {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+  
+  /* Style cho nút Áp dụng giảm giá */
+  .admin-sale .btn-primary {
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+    color: white !important;
+    padding: 8px 16px !important;
+    border-radius: 4px !important;
+    transition: all 0.2s ease !important;
+  }
+  
+  .admin-sale .btn-primary:hover:not(:disabled) {
+    background-color: #0b5ed7 !important;
+    border-color: #0a58ca !important;
+  }
+  
+  /* Style cho nút Xóa */
+  .admin-sale .btn-danger {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    color: white !important;
+  }
+  
+  .admin-sale .btn-danger:hover,
+  .admin-sale .btn-danger:active,
+  .admin-sale .btn-danger:focus {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    color: white !important;
+    box-shadow: none !important;
+  }
+  
+  /* Vô hiệu hóa hover cho bảng */
+  .admin-sale .table tbody tr:hover {
+    background-color: transparent !important;
+  }
+  
+  /* Vô hiệu hóa hover cho form controls */
+  .admin-sale .form-select:hover,
+  .admin-sale .form-control:hover,
+  .admin-sale .form-select:focus,
+  .admin-sale .form-control:focus {
+    border-color: #ced4da !important;
+    box-shadow: none !important;
+  }
+  
+  /* Giữ chức năng của switch button nhưng bỏ animation */
+  .admin-sale .form-check-input {
+    transition: none !important;
+    cursor: pointer;
+  }
+  
+  /* Vô hiệu hóa tất cả các cursor hover */
+  .admin-sale * {
+    cursor: default !important;
+  }
+  
+  /* Chỉ giữ lại cursor pointer cho các phần tử có thể click */
+  .admin-sale .btn,
+  .admin-sale .form-check-input,
+  .admin-sale select,
+  .admin-sale input[type="number"] {
+    cursor: pointer !important;
+  }
+  
+  /* Style cho nút disabled */
+  .admin-sale .btn-primary:disabled {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    cursor: not-allowed !important;
+    opacity: 0.65 !important;
+  }
+  
+  /* Style cho input group */
+  .admin-sale .input-group {
+    display: flex;
+    align-items: stretch;
+  }
+  
+  .admin-sale .input-group-text {
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-left: none;
+  }
+  
+  /* Style cho thông báo lỗi */
+  .admin-sale .invalid-feedback {
+    color: #dc3545;
+    font-size: 0.875em;
+    margin-top: 0.25rem;
+  }
+  
+  .admin-sale .is-invalid {
+    border-color: #dc3545;
+  }
+  
+  .admin-sale .is-invalid:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+  }
+  
+  /* Style cho card thông tin sản phẩm */
+  .admin-sale .card-subtitle {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .admin-sale .table-borderless td {
+    padding: 0.5rem 0;
+    border: none;
+  }
+  
+  .admin-sale .text-danger {
+    color: #dc3545 !important;
+  }
+  
+  /* Style cho ảnh sản phẩm */
+  .admin-sale .img-fluid {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #dee2e6;
+    padding: 0.25rem;
+  }
+  
+  /* Style cho danh sách sản phẩm theo danh mục */
+  .category-products {
+    max-height: 300px;
+    overflow-y: auto;
+    transition: max-height 0.3s ease-in-out;
+  }
+  
+  .category-products.expanded {
+    max-height: none;
+  }
+  
+  /* Style cho thanh cuộn */
+  .category-products::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .category-products::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  .category-products::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+  }
+  
+  .category-products::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+  
+  /* Style cho bảng sản phẩm */
+  .category-products .table {
+    margin-bottom: 0;
+  }
+  
+  .category-products .table img {
+    border: 1px solid #dee2e6;
+    padding: 2px;
+  }
+  
+  /* Style cho nút thu gọn/mở rộng */
+  .btn-outline-primary {
+    border-color: #0d6efd;
+    color: #0d6efd;
+  }
+  
+  .btn-outline-primary:hover {
+    background-color: #0d6efd;
+    color: white;
+  }
+  
+  /* Style cho modal */
+  .modal {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  .modal-dialog {
+    max-width: 90%;
+    margin: 1.75rem auto;
+  }
+  
+  .modal-content {
+    border-radius: 0.5rem;
+  }
+  
+  .modal-header {
+    border-bottom: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+  }
+  
+  .modal-footer {
+    border-top: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+  }
+  
+  /* Style cho bảng trong modal */
+  .modal .table-responsive {
+    margin: -1rem;
+  }
+  
+  .modal .sticky-top {
+    top: 0;
+    z-index: 1;
+  }
+  
+  .modal .table th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+  }
+  
+  /* Style cho alert */
+  .modal .alert {
+    margin-bottom: 1rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.25rem;
+  }
+  
+  .modal .alert-info {
+    background-color: #cff4fc;
+    border-color: #b6effb;
+    color: #055160;
+  }
+  
+  /* Style cho card danh sách giảm giá */
+  .admin-sale .card-body {
+    padding: 1.5rem;
+  }
+  
+  .admin-sale .card-title {
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
+  
+  .admin-sale .table {
+    margin-bottom: 0;
+  }
+  
+  .admin-sale .table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    padding: 0.75rem;
+    vertical-align: middle;
+  }
+  
+  .admin-sale .table td {
+    padding: 0.75rem;
+    vertical-align: middle;
+  }
+  
+  /* Căn giữa switch button */
+  .admin-sale .form-switch {
+    margin: 0;
+    padding-left: 2.5em;
+  }
+  
+  /* Style cho text muted */
+  .admin-sale .text-muted {
+    color: #6c757d !important;
+    font-size: 0.875em;
+  }
+  
+  .admin-sale .fst-italic {
+    font-style: italic !important;
+  }
+  
+  /* Style cho alert thông báo */
+  .admin-sale .alert {
+    border-radius: 8px;
+    padding: 1.2rem;
+    margin-bottom: 1.5rem;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .admin-sale .alert-info {
+    background-color: #e8f4ff;
+    border-left: 4px solid #0d6efd;
+  }
+  
+  /* Style cho nội dung trong alert */
+  .admin-sale .alert .row {
+    margin: 0 -0.5rem;
+  }
+  
+  .admin-sale .alert .col-md-4 {
+    padding: 0.5rem;
+  }
+  
+  /* Style cho text trong alert */
+  .admin-sale .alert strong {
+    color: #0a58ca;
+    font-weight: 600;
+    margin-right: 8px;
+  }
+  
+  /* Style cho giá trị trong alert */
+  .admin-sale .alert .col-md-4:not(:last-child) {
+    border-right: 1px solid #c5dbf2;
+  }
+  
+  /* Responsive cho alert */
+  @media (max-width: 768px) {
+    .admin-sale .alert .col-md-4 {
+      border-right: none !important;
+      border-bottom: 1px solid #c5dbf2;
+      padding: 0.8rem 0.5rem;
+    }
+    
+    .admin-sale .alert .col-md-4:last-child {
+      border-bottom: none;
+    }
+  }
+  
+  /* Style cho bảng lịch sử */
+  .admin-sale .table-history {
+    margin-top: 1rem;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .admin-sale .table-history thead th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    padding: 1rem;
+    font-weight: 600;
+    color: #495057;
+  }
+  
+  .admin-sale .table-history tbody td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #e9ecef;
+  }
+  
+  .admin-sale .table-history tbody tr:last-child td {
+    border-bottom: none;
+  }
+  
+  /* Style cho modal chi tiết */
+  .admin-sale .modal-content {
+    border: none;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  .admin-sale .modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    padding: 1.2rem;
+  }
+  
+  .admin-sale .modal-title {
+    color: #344767;
+    font-weight: 600;
+  }
+  
+  .admin-sale .modal-body {
+    padding: 1.5rem;
+  }
+  
+  /* Style cho tiêu đề lịch sử giảm giá */
+  .admin-sale h6.mb-3 {
+    color: #344767;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-top: 1.5rem;
+  }
+  
+  /* Hiệu ứng hover cho dòng trong bảng */
+  .admin-sale .table-history tbody tr:hover {
+    background-color: #f8f9fa;
+    transition: background-color 0.2s ease;
+  }
+  
+  /* Style cho các giá trị số */
+  .admin-sale .text-danger {
+    font-weight: 600;
+  }
+  
+  /* Style cho thời gian */
+  .admin-sale .table-history td:first-child {
+    color: #6c757d;
+    font-size: 0.9rem;
+  }
+  
+  /* Style cho confirm alert */
+  .sweet-alert, .swal2-popup {
+    background-color: #ffffff !important;
+    border-radius: 12px !important;
+    padding: 2rem !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+    max-width: 500px !important;
+    width: 90% !important;
+    font-family: inherit !important;
+  }
+  
+  /* Style cho nội dung thông báo */
+  .confirm-message {
+    white-space: pre-line !important;
+    text-align: left !important;
+    padding: 1rem !important;
+    background-color: #f8f9fa !important;
+    border-radius: 8px !important;
+    margin: 1rem 0 !important;
+    line-height: 1.6 !important;
+    font-size: 0.95rem !important;
+  }
+  
+  /* Style cho giá tiền trong thông báo */
+  .confirm-message strong {
+    color: #0a58ca !important;
+    font-weight: 600 !important;
+  }
+  
+  /* Style cho phần giảm giá trong thông báo */
+  .confirm-message .discount-info {
+    color: #dc3545 !important;
+    font-weight: 600 !important;
+  }
+  
+  /* Style cho nút trong thông báo */
+  .swal2-actions button, .sweet-alert button {
+    border-radius: 6px !important;
+    padding: 0.5rem 1.5rem !important;
+    font-weight: 500 !important;
+    margin: 0 0.5rem !important;
+    transition: all 0.2s ease !important;
+  }
+  
+  /* Style cho nút xác nhận */
+  .swal2-confirm, .confirm-button {
+    background-color: #0d6efd !important;
+    color: white !important;
+    border: none !important;
+  }
+  
+  /* Style cho nút hủy */
+  .swal2-cancel, .cancel-button {
+    background-color: #6c757d !important;
+    color: white !important;
+    border: none !important;
+  }
+  
+  /* Hover effect cho nút */
+  .swal2-confirm:hover, .confirm-button:hover {
+    background-color: #0b5ed7 !important;
+  }
+  
+  .swal2-cancel:hover, .cancel-button:hover {
+    background-color: #5c636a !important;
+  }
+  
+  /* Style cho tiêu đề thông báo */
+  .swal2-title, .sweet-alert h2 {
+    color: #344767 !important;
+    font-size: 1.25rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 576px) {
+    .sweet-alert, .swal2-popup {
+      padding: 1.5rem !important;
+      margin: 1rem !important;
+    }
+  
+    .confirm-message {
+      padding: 0.75rem !important;
+      font-size: 0.9rem !important;
+    }
+  }
+  
+  /* Style cho confirm dialog */
+  .confirm-dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    z-index: 1000;
+  }
+  
+  /* Style cho overlay */
+  .confirm-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+  }
+  
+  /* Style cho nội dung thông báo */
+  .confirm-content {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 6px;
+    margin: 10px 0;
+  }
+  
+  /* Style cho các dòng thông tin */
+  .confirm-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #e9ecef;
+  }
+  
+  .confirm-row:last-child {
+    border-bottom: none;
+  }
+  
+  /* Style cho label */
+  .confirm-label {
+    color: #6c757d;
+    font-weight: 500;
+  }
+  
+  /* Style cho giá trị */
+  .confirm-value {
+    font-weight: 600;
+  }
+  
+  /* Style cho giá */
+  .confirm-price {
+    color: #0a58ca;
+  }
+  
+  /* Style cho phần giảm giá */
+  .confirm-discount {
+    color: #dc3545;
+  }
+  
+  /* Style cho nút */
+  .confirm-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .confirm-button {
+    padding: 8px 20px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  
+  .confirm-ok {
+    background: #0d6efd;
+    color: white;
+  }
+  
+  .confirm-cancel {
+    background: #6c757d;
+    color: white;
+  }
+  
+  /* Responsive */
+  @media (max-width: 480px) {
+    .confirm-dialog {
+      width: 90%;
+      max-width: 350px;
+    }
+    
+    .confirm-content {
+      padding: 10px;
+    }
+    
+    .confirm-row {
+      flex-direction: column;
+      gap: 4px;
+    }
+  }
+  
+  /* Style cho Swal Alert */
+  .swal2-popup {
+    padding: 2rem !important;
+    border-radius: 12px !important;
+    width: 32em !important;
+  }
+  
+  .swal2-title {
+    font-size: 1.5rem !important;
+    color: #344767 !important;
+    font-weight: 600 !important;
+    padding: 0 !important;
+    margin-bottom: 1.5rem !important;
+  }
+  
+  /* Style cho nội dung thông báo */
+  .confirm-content {
+    background-color: #f8f9fa !important;
+    border-radius: 8px !important;
+    padding: 1rem !important;
+    margin: 1rem 0 1.5rem 0 !important;
+  }
+  
+  .confirm-row {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 0.75rem 1rem !important;
+    border-bottom: 1px solid #dee2e6 !important;
+  }
+  
+  .confirm-row:last-child {
+    border-bottom: none !important;
+  }
+  
+  .confirm-label {
+    color: #6c757d !important;
+    font-weight: 500 !important;
+    font-size: 0.95rem !important;
+  }
+  
+  .confirm-value {
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
+  }
+  
+  .confirm-price {
+    color: #0a58ca !important;
+  }
+  
+  .confirm-discount {
+    color: #dc3545 !important;
+  }
+  
+  /* Style cho nút */
+  .swal2-actions {
+    gap: 0.5rem !important;
+    margin-top: 1rem !important;
+  }
+  
+  .swal2-confirm {
+    background-color: #0d6efd !important;
+    color: white !important;
+    padding: 0.5rem 1.5rem !important;
+    border-radius: 6px !important;
+    font-weight: 500 !important;
+    border: none !important;
+  }
+  
+  .swal2-cancel {
+    background-color: #6c757d !important;
+    color: white !important;
+    padding: 0.5rem 1.5rem !important;
+    border-radius: 6px !important;
+    font-weight: 500 !important;
+    border: none !important;
+  }
+  
+  .swal2-confirm:hover {
+    background-color: #0b5ed7 !important;
+  }
+  
+  .swal2-cancel:hover {
+    background-color: #5c636a !important;
+  }
+  
+  /* Responsive */
+  @media (max-width: 576px) {
+    .swal2-popup {
+      width: 90% !important;
+      padding: 1.5rem !important;
+    }
+  
+    .confirm-row {
+      padding: 0.5rem 0.75rem !important;
+    }
+  
+    .confirm-label, .confirm-value {
+      font-size: 0.9rem !important;
+    }
+  }
+  
+  /* Style cho thông báo giảm giá theo tiền */
+  .confirm-content .confirm-value {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .confirm-content .confirm-value .confirm-price {
+    color: #0a58ca !important;
+  }
+  
+  .confirm-content .confirm-value .confirm-discount {
+    color: #dc3545 !important;
+    font-size: 0.9rem !important;
+  }
+  
+  /* Điều chỉnh khoảng cách và border */
+  .confirm-row {
+    padding: 12px 16px !important;
+  }
+  
+  .confirm-row:not(:last-child) {
+    border-bottom: 1px solid rgba(0,0,0,0.1) !important;
+  }
+  
+  /* Style cho nút submit form */
+  .admin-sale .btn-primary {
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+    color: white !important;
+    padding: 8px 16px !important;
+    border-radius: 4px !important;
+    transition: all 0.2s ease !important;
+  }
+  
+  .admin-sale .btn-primary:hover:not(:disabled) {
+    background-color: #0b5ed7 !important;
+    border-color: #0a58ca !important;
+  }
+  
+  /* Style cho nút disabled */
+  .admin-sale .btn-secondary {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+    padding: 8px 16px !important;
+    border-radius: 4px !important;
+    cursor: not-allowed !important;
+  }
+  
+  .admin-sale .btn-secondary:hover {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+  }
+  
+  /* Style cho disabled state */
+  .admin-sale button:disabled {
+    opacity: 0.7 !important;
+    cursor: not-allowed !important;
+  }
+  
+  /* Thêm hiệu ứng khi form hợp lệ */
+  .admin-sale .btn-primary:not(:disabled) {
+    box-shadow: 0 2px 4px rgba(13, 110, 253, 0.15) !important;
+  }
+  
+  .admin-sale .btn-primary:not(:disabled):hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 6px rgba(13, 110, 253, 0.2) !important;
+  }
+  
+  /* Style cho bảng danh sách giảm giá theo danh mục */
+  .admin-sale .category-discount-table {
+    margin-bottom: 0;
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  /* Style cho header của bảng danh mục */
+  .admin-sale .category-discount-table thead th {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 500;
+    text-align: center;
+    white-space: nowrap;
+    color: #344767;
+  }
+  
+  /* Style cho cells của bảng danh mục */
+  .admin-sale .category-discount-table tbody td {
+    padding: 15px;
+    vertical-align: middle;
+    border-bottom: 1px solid #dee2e6;
+    text-align: center;
+  }
+  
+  /* Style cho từng cột */
+  /* Cột ID */
+  .admin-sale .category-discount-table td:first-child,
+  .admin-sale .category-discount-table th:first-child {
+    width: 10%;
+    text-align: center;
+  }
+  
+  /* Cột tên danh mục */
+  .admin-sale .category-discount-table td:nth-child(2),
+  .admin-sale .category-discount-table th:nth-child(2) {
+    width: 30%;
+    text-align: left;
+    padding-left: 25px;
+  }
+  
+  /* Cột số sản phẩm đang giảm giá */
+  .admin-sale .category-discount-table td:nth-child(3),
+  .admin-sale .category-discount-table th:nth-child(3) {
+    width: 25%;
+    text-align: center;
+  }
+  
+  /* Cột trạng thái */
+  .admin-sale .category-discount-table td:nth-child(4),
+  .admin-sale .category-discount-table th:nth-child(4) {
+    width: 20%;
+    text-align: center;
+  }
+  
+  /* Cột chi tiết */
+  .admin-sale .category-discount-table td:last-child,
+  .admin-sale .category-discount-table th:last-child {
+    width: 15%;
+    text-align: center;
+  }
+  
+  /* Style cho nút chi tiết */
+  .admin-sale .category-discount-table .btn-info {
+    min-width: 80px;
+  }
+  
+  /* Style cho toggle switch trong bảng danh mục */
+  .admin-sale .category-discount-table .status-switch {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .admin-sale .category-discount-table .form-check-input {
+    width: 3em;
+    height: 1.5em;
+    margin: 0;
+    cursor: pointer;
+  }
+  
+  /* Style cho nút trong bảng danh mục */
+  .admin-sale .category-discount-table .btn-group {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+  
+  .admin-sale .category-discount-table .btn {
+    min-width: 70px;
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+  
+  .admin-sale .category-discount-table .btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+  }
+  
+  .admin-sale .category-discount-table .btn-info {
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+    color: white;
+  }
+  
+  /* Hiệu ứng hover cho hàng */
+  .admin-sale .category-discount-table tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+  
+  /* Style cho container của bảng */
+  .admin-sale .category-discount-table-container {
+    border-radius: 0.375rem;
+    box-shadow: 0 0 0 1px #dee2e6;
+    overflow: hidden;
+  }
+  
+  /* Style cho nút bị vô hiệu hóa */
+  .admin-sale .category-discount-table .btn-danger:disabled {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .admin-sale .category-discount-table .btn-danger:disabled:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+  }
+  
+  /* Style cho bảng danh sách giảm giá theo sản phẩm */
+  .admin-sale .product-discount-table {
+    margin-bottom: 0;
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  /* Style cho header của bảng sản phẩm */
+  .admin-sale .product-discount-table thead th {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 500;
+    text-align: center;
+    white-space: nowrap;
+    color: #344767;
+  }
+  
+  /* Style cho cells của bảng sản phẩm */
+  .admin-sale .product-discount-table tbody td {
+    padding: 15px;
+    vertical-align: middle;
+    border-bottom: 1px solid #dee2e6;
+    text-align: center;
+  }
+  
+  /* Style riêng cho cột tên sản phẩm */
+  .admin-sale .product-discount-table td:nth-child(4) {
+    text-align: left;
+    padding-left: 25px;
+    min-width: 200px;
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* Style cho container của bảng */
+  .admin-sale .product-discount-table-container {
+    border-radius: 0.375rem;
+    box-shadow: 0 0 0 1px #dee2e6;
+    overflow: hidden;
+  }
+  
+  /* Style cho checkbox trong header */
+  .admin-sale .product-discount-table .select-checkbox {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
+  
+  /* Style cho select filter */
+  .admin-sale .product-discount-table-filter {
+    padding: 8px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #344767;
+    font-size: 14px;
+  }
+  
+  .admin-sale .product-discount-table-filter:focus {
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  }
+  
+  /* Điều chỉnh margin cho container của filter */
+  .admin-sale .product-discount-filter-container {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  /* Style cho container chứa filter và nút xóa */
+  .admin-sale .product-discount-filter-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  /* Style cho nút xóa nhiều */
+  .admin-sale .btn-danger {
+    white-space: nowrap;
+    padding: 0.375rem 0.75rem;
+    font-size: 14px;
+  }
+  
+  /* Điều chỉnh khoảng cách giữa các phần tử */
+  .admin-sale .d-flex.gap-3 {
+    gap: 1rem !important;
+  }
+  
+  /* Style cho react-select */
+  .admin-sale .basic-single .select__control {
+    border-color: #dee2e6;
+    box-shadow: none;
+  }
+  
+  .admin-sale .basic-single .select__control:hover {
+    border-color: #dee2e6;
+  }
+  
+  .admin-sale .basic-single .select__control--is-focused {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  }
+  
+  .admin-sale .basic-single .select__menu {
+    z-index: 2;
+  }
+  
+  /* Style cho option trong react-select */
+  .admin-sale .basic-single .select__option {
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+  
+  .admin-sale .basic-single .select__option:hover {
+    background-color: #f8f9fa;
+  }
+  
+  .admin-sale .basic-single .select__option strong {
+    color: #0d6efd;
+    font-weight: 700;
+  } 

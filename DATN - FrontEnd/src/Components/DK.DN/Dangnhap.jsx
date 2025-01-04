@@ -134,6 +134,9 @@ export default function Dangnhap() {
               </form>
               <hr />
               <div className="text-center mb-3">
+                <Link to="/forgot-password" className="text-decoration-none">Quên mật khẩu?</Link>
+              </div>
+              <div className="text-center mb-3">
                 Bạn chưa có tài khoản? <Link to="/Dangky">Đăng ký</Link>
               </div>
             </div>

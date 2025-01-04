@@ -14,6 +14,9 @@ import EditCategory from "./Layout_Admin/components/edit_category";
 import Admin_comment from "./Layout_Admin/Admin_comment";
 import Admin_dh from "./Layout_Admin/Admin_dh";
 import ChiTietDonHang from "./Layout_Admin/components/ChiTietDonHang";
+import AddProductQuantity from "./Layout_Admin/Admin_quanlisoluong";
+import Admin_sale from "./Layout_Admin/Admin_sale";
+import Admin_voucher from "./Layout_Admin/Admin_voucher";
 
 export default function Admin_Index() {
   return (
@@ -29,6 +32,7 @@ export default function Admin_Index() {
             <Routes>
               <Route path="/" element={<Navigate to="/admin-thongke" replace />} />
               <Route path="/admin-thongke" element={<Admin_thongke/>} />
+              <Route path="/addproductquantity" element={<AddProductQuantity></AddProductQuantity>}></Route>
               <Route path="/admin-dm" element={<Admin_dm />} />
               <Route path="/category/add" element={<AddCategory />} />
               <Route path="/category/edit/:id" element={<EditCategory />} />
@@ -43,6 +47,8 @@ export default function Admin_Index() {
               <Route path="/admin-dh" element={<Admin_dh />} />
               <Route path="/admin-dh/:id" element={<ChiTietDonHang />} />
               <Route path="/admin-comment" element={<Admin_comment />} />
+              <Route path="/admin-sale" element={<Admin_sale />} />
+              <Route path="/admin-voucher" element={<Admin_voucher />} />
             </Routes>
           </div>
         </div>

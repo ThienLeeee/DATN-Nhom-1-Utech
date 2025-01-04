@@ -236,7 +236,7 @@ const renderConfig = (cau_hinh, id_danhmuc) => {
               <th className="text-center align-middle " scope="col">Cấu hình</th>
               <th className="text-center align-middle " scope="col">Thương hiệu</th>
               <th className="text-center align-middle " scope="col">Bảo hành</th>
-              <th className="text-center align-middle " scope="col">Số lượng</th>
+             
               <th className="text-center align-middle " scope="col">Thao tác</th>
             </tr>
           </thead>
@@ -265,7 +265,7 @@ const renderConfig = (cau_hinh, id_danhmuc) => {
                     </td>
                     <td className="align-middle">{sanpham.thuong_hieu}</td>
                     <td className="align-middle">{sanpham.bao_hanh}</td>
-                    <td className="align-middle">{sanpham.soluong}</td>
+                   
                     <td className="text-center align-middle d-flex justify-content-center gap-2 pt-5">
                       <Link to={`/products/edit/${sanpham.id}`} className="btn btn-light">
                         <i className="text-primary bi-pencil-square" />

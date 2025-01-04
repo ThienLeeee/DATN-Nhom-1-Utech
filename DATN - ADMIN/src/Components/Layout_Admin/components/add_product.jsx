@@ -13,6 +13,7 @@ export default function AddProduct() {
     cau_hinh: {},
     id_danhmuc: '',
      thuong_hieu: '',
+     soluong: '',
     hinh_anh: { chinh: null, phu1: null, phu2: null, phu3: null, phu4: null, phu5: null }, // Thêm các trường hình ảnh
   });
 
@@ -150,7 +151,7 @@ const handleFileChange = (e, type) => {
     e.preventDefault();
     
     // Check if all required fields are filled
-    if (!formData.ma_san_pham || !formData.ten_sp || !formData.gia_sp || !formData.bao_hanh || !formData.thuong_hieu || !formData.id_danhmuc) {
+    if (!formData.ma_san_pham || !formData.ten_sp || !formData.gia_sp || !formData.bao_hanh || !formData.thuong_hieu|| !formData.soluong || !formData.id_danhmuc) {
       return Swal.fire("Lỗi!", "Vui lòng điền đầy đủ thông tin sản phẩm.", "error");
     }
 
@@ -174,6 +175,7 @@ const handleFileChange = (e, type) => {
     data.append('gia_sp', formData.gia_sp);
     data.append('thuong_hieu', formData.thuong_hieu);
     data.append('bao_hanh', formData.bao_hanh);
+    data.append('soluong', formData.soluong);
     data.append('id_danhmuc', formData.id_danhmuc);
     data.append('cau_hinh', JSON.stringify(formData.cau_hinh)); // Convert configuration to JSON string
     if (formData.hinh_anh.chinh) data.append('hinh_anh[chinh]', formData.hinh_anh.chinh);
@@ -194,8 +196,8 @@ const handleFileChange = (e, type) => {
 
       if (res.ok) {
         loadSanpham(); // Reload products after success
-        setMessage('Sản phẩm đã được thêm thành công');
-        navigate('/admin-sp'); // Redirect after success
+  Swal.fire("Thành công!", "Sản phẩm đã được thêm.", "success");
+        navigate("/admin-sp"); // Navigate to categories page after success
       } else {
         setError(responseData.message || 'Có lỗi xảy ra khi thêm sản phẩm.');
         Swal.fire("Lỗi!", responseData.message || 'Có lỗi xảy ra khi thêm sản phẩm.', "error");
@@ -294,6 +296,22 @@ const handleFileChange = (e, type) => {
                 />
               </div>
             </div>
+
+          {/* Số lượng */}
+      <div className="row mb-3">
+        <label className="col-sm-4 col-form-label" htmlFor="soluong">Số lượng</label>
+        <div className="col-sm-8">
+          <input
+            className="form-control"
+            id="soluong"
+            name="soluong"
+            type="number"
+            value={formData.soluong} // Hiển thị giá trị từ state
+            onChange={handleChange} // Gọi hàm khi giá trị thay đổi
+            min="1" // Đảm bảo số lượng không dưới 1
+          />
+        </div>
+      </div>
 
             {/* Danh mục */}
             <div className="row mb-3">

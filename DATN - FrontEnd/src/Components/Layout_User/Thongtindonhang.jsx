@@ -4,13 +4,14 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '/public/css/taikhoan.css';
-
+import './components/CssThongtindonhang.css'
+import Swal from "sweetalert2";
 export default function Thongtindonhang() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [selectedStatus, setSelectedStatus] = useState("");
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -31,6 +32,11 @@ export default function Thongtindonhang() {
       fetchOrders();
     }
   }, [user]);
+
+  const handleStatusClick = (status) => {
+    setSelectedStatus(status); // Cập nhật trạng thái được chọn
+  };
+
 
   const handleLogout = () => {
     // Xóa giỏ hàng khỏi localStorage
@@ -56,6 +62,8 @@ export default function Thongtindonhang() {
   // Hàm lấy màu cho trạng thái
   const getStatusColor = (status) => {
     switch (status) {
+      case 'Chờ xử lý':
+        return 'start';
       case 'Đang xử lý':
         return 'warning';
       case 'Đang vận chuyển':
@@ -69,6 +77,53 @@ export default function Thongtindonhang() {
     }
   };
 
+    const filteredOrders =
+    selectedStatus === ""
+      ? orders
+      : orders.filter((order) => order.trangThai === selectedStatus);
+
+
+      const handleCancelOrder = async (orderId) => {
+        try {
+          const { value: reason } = await Swal.fire({
+            title: "Xác nhận hủy đơn hàng",
+            input: "textarea",
+            inputLabel: "Lý do hủy đơn hàng",
+            inputPlaceholder: "Nhập lý do của bạn...",
+            inputAttributes: {
+              "aria-label": "Nhập lý do hủy đơn hàng"
+            },
+            showCancelButton: true,
+            cancelButtonText: "Không",
+            confirmButtonText: "Hủy đơn hàng",
+          });
+      
+          if (reason) {
+            const response = await axios.put(`http://localhost:3000/api/donHang/${orderId}/status`, {
+              trangThai: "Hủy",
+              lyDoHuy: reason, // Gửi lý do hủy cùng với trạng thái
+            });
+      
+            if (response.status === 200) {
+              setOrders((prevOrders) =>
+                prevOrders.map((order) =>
+                  order.id === orderId ? { ...order, trangThai: "Hủy", lyDoHuy: reason } : order
+                )
+              );
+              Swal.fire("Thành công!", "Đơn hàng đã được hủy.", "success");
+            } else {
+              Swal.fire("Lỗi", response.data.message || "Không thể hủy đơn hàng.", "error");
+            }
+          } else if (reason === "") {
+            Swal.fire("Hủy thất bại", "Bạn cần nhập lý do để hủy đơn hàng.", "warning");
+          }
+        } catch (error) {
+          console.error("Lỗi khi hủy đơn hàng:", error);
+          Swal.fire("Lỗi", "Đã xảy ra lỗi. Vui lòng thử lại sau!", "error");
+        }
+      };
+      
+      
   return (
     <div className="account-container">
      
@@ -81,17 +136,25 @@ export default function Thongtindonhang() {
         </div>
         
         <div className="menu-list">
+         
           <Link to="/taikhoan" className="menu-item">
             <i className="fas fa-user"></i>
             <span>Thông tin tài khoản</span>
           </Link>
+         
           <Link to="/chinhsuathongtin" className="menu-item">
             <i className="fas fa-edit"></i>
             <span>Chỉnh sửa thông tin</span>
           </Link>
-          <Link to="/donhang" className="menu-item active">
+        
+          <Link to="/donhang" className="menu-item active ">
             <i className="fas fa-shopping-bag"></i>
             <span>Thông tin đơn hàng</span>
+          </Link>
+     
+          <Link to="/voucher" className="menu-item ">
+            <i className="fas fa-ticket-alt"></i>
+            <span>Voucher của tôi</span>
           </Link>
           <button onClick={handleLogout} className="menu-item logout">
             <i className="fas fa-sign-out-alt"></i>
@@ -104,16 +167,31 @@ export default function Thongtindonhang() {
         <div className="content-header">
           <h2>Thông tin đơn hàng của tôi</h2>
         </div>
-
+       
         <div className="order-container">
+        <div className="box-category">
+            <div className="box-category-header">
+              {["Chờ xử lý", "Đang xử lý", "Đang vận chuyển", "Hoàn thành", "Hủy"].map((status, index) => (
+                <p
+                  key={index}
+                  className={`status-option ${
+                    selectedStatus === status ? "active" : ""
+                  }`}
+                  onClick={() => handleStatusClick(status)}
+                >
+                  {status}
+                </p>
+              ))}
+            </div>
+          </div>
           {loading ? (
             <div className="loading-state">
               <div className="spinner"></div>
               <p>Đang tải thông tin đơn hàng...</p>
             </div>
-          ) : orders.length > 0 ? (
+          ) : filteredOrders.length > 0 ? (
             <div className="orders-grid">
-              {orders.map((order) => (
+              {filteredOrders.map((order) => (
                 <div key={order.id} className="order-box">
                   {/* Header đơn hàng */}
                   <div className="order-box-header">
@@ -190,6 +268,15 @@ export default function Thongtindonhang() {
                       <label>Tổng tiền:</label>
                       <span>{formatCurrency(order.tongTien)}</span>
                     </div>
+                    {order.trangThai === "Chờ xử lý" && (
+                    <button
+                      className="cancel-order-btn"
+                      onClick={() => handleCancelOrder(order.id)}
+                    >
+                      Hủy đơn hàng
+                    </button>
+                  )}
+
                   </div>
                 </div>
               ))}
@@ -208,293 +295,7 @@ export default function Thongtindonhang() {
         </div>
       </div>
 
-      <style >{`
-        .order-container {
-          padding: 20px;
-          background: #fff;
-          border-radius: 12px;
-          max-width: 1000px;
-          margin: 0 auto;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .orders-grid {
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
-        }
-
-        .order-box {
-          border: 1px solid #e2e8f0;
-          border-radius: 8px;
-          overflow: hidden;
-        }
-
-        .order-box-header {
-          padding: 15px 20px;
-          border-bottom: 1px solid #eee;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          background: #fff;
-        }
-
-        .order-box-title {
-          display: flex;
-          gap: 15px;
-          align-items: center;
-        }
-
-        .order-number {
-          font-weight: 600;
-          color: #2d3748;
-        }
-
-        .order-date {
-          color: #718096;
-          font-size: 0.9em;
-          display: flex;
-          align-items: center;
-          gap: 5px;
-        }
-
-        .order-status {
-          padding: 8px 16px;
-          border-radius: 6px;
-          font-weight: 600;
-          font-size: 0.95em;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          position: relative;
-          display: flex;
-          align-items: center;
-          gap: 6px;
-        }
-
-        .order-status::before {
-          content: '';
-          display: inline-block;
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-        }
-
-        .status-warning {
-          background: #fff8e6;
-          color: #b45309;
-          border: 2px solid #fbbf24;
-        }
-        .status-warning::before {
-          background: #fbbf24;
-        }
-
-        .status-info {
-          background: #e6f3ff;
-          color: #1e40af;
-          border: 2px solid #3b82f6;
-        }
-        .status-info::before {
-          background: #3b82f6;
-        }
-
-        .status-success {
-          background: #ecfdf5;
-          color: #065f46;
-          border: 2px solid #34d399;
-        }
-        .status-success::before {
-          background: #34d399;
-        }
-
-        .status-danger {
-          background: #fef2f2;
-          color: #991b1b;
-          border: 2px solid #f87171;
-        }
-        .status-danger::before {
-          background: #f87171;
-        }
-
-        .recipient-info {
-          padding: 15px 20px;
-          background: #f8fafc;
-          border-bottom: 1px solid #e2e8f0;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          flex-wrap: wrap;
-          gap: 20px;
-        }
-
-        .info-row {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          min-width: 200px;
-          flex: 1;
-        }
-
-        .info-row i {
-          color: #64748b;
-          width: 16px;
-        }
-
-        .info-row div {
-          display: flex;
-          align-items: center;
-          gap: 5px;
-        }
-
-        .info-row label {
-          color: #64748b;
-          font-size: 0.9em;
-          margin: 0;
-          white-space: nowrap;
-        }
-
-        .info-row span {
-          color: #1e293b;
-          font-weight: 500;
-        }
-
-        .products-list {
-          padding: 20px;
-        }
-
-        .list-header {
-          margin-bottom: 15px;
-        }
-
-        .list-header h4 {
-          color: #2d3748;
-          font-size: 1em;
-          margin: 0;
-        }
-
-        .product-item {
-          display: flex;
-          gap: 15px;
-          padding: 10px;
-          border: 1px solid #eee;
-          border-radius: 8px;
-          margin-bottom: 10px;
-        }
-
-        .product-image {
-          width: 80px;
-          height: 80px;
-          border-radius: 6px;
-          overflow: hidden;
-        }
-
-        .product-image img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-
-        .product-details {
-          flex: 1;
-        }
-
-        .product-details h5 {
-          margin: 0 0 8px 0;
-          font-size: 0.95em;
-          color: #2d3748;
-        }
-
-        .price-qty {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-
-        .price {
-          color: #e53e3e;
-          font-weight: 600;
-        }
-
-        .quantity {
-          color: #718096;
-          font-size: 0.9em;
-        }
-
-        .order-box-footer {
-          padding: 15px 20px;
-          background: #f8fafc;
-          border-top: 1px solid #eee;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-
-        .payment-method {
-          color: #4b5563;
-          font-weight: 500;
-        }
-
-        .total-amount {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-
-        .total-amount label {
-          color: #4b5563;
-          font-weight: 500;
-        }
-
-        .total-amount span {
-          font-weight: 600;
-          color: #e31837;
-          font-size: 1.1em;
-        }
-
-        .empty-state {
-          text-align: center;
-          padding: 40px 20px;
-        }
-
-        .empty-state img {
-          width: 120px;
-          margin-bottom: 20px;
-        }
-
-        .shop-now-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 10px 20px;
-          background: #4299e1;
-          color: white;
-          border-radius: 8px;
-          text-decoration: none;
-          margin-top: 20px;
-          transition: all 0.2s;
-        }
-
-        .shop-now-btn:hover {
-          background: #3182ce;
-          transform: translateY(-1px);
-        }
-
-        @media (max-width: 768px) {
-          .order-box-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 10px;
-          }
-
-          .product-item {
-            flex-direction: column;
-          }
-
-          .product-image {
-            width: 100%;
-            height: 200px;
-          }
-        }
-      `}</style>
+  
     </div>
   );
 }

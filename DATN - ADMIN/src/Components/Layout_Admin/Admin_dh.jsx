@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import '/public/css/Admin_dh.css';
 import { useNavigate } from 'react-router-dom';
-
+import Swal from "sweetalert2";
 export default function Admin_dh() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,32 +35,65 @@ export default function Admin_dh() {
   
       // Kiểm tra nếu trạng thái mới không hợp lệ (quay ngược lại trạng thái trước)
       if (newStatusIndex < currentStatusIndex) {
-        alert("Bạn không thể quay lại trạng thái trước đó.");
+        Swal.fire({
+          icon: "warning",
+          title: "Không hợp lệ",
+          text: "Bạn không thể quay lại trạng thái trước đó.",
+        });
         return;
       }
   
-      // Gửi yêu cầu cập nhật trạng thái lên server
-      const response = await fetch(
-        `http://localhost:3000/api/donHang/${orderId}/status`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ trangThai: newStatus }),
-        }
-      );
+      // Hiển thị hộp thoại xác nhận
+      const result = await Swal.fire({
+        title: "Xác nhận thay đổi trạng thái",
+        text: `Bạn có chắc muốn chuyển trạng thái từ "${currentOrder.trangThai}" sang "${newStatus}"?`,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Đồng ý",
+        cancelButtonText: "Hủy",
+      });
   
-      if (response.ok) {
-        // Cập nhật danh sách đơn hàng sau khi thay đổi trạng thái
-        fetchOrders();
-      } else {
-        console.error("Lỗi khi cập nhật trạng thái:", await response.text());
+      if (result.isConfirmed) {
+        // Gửi yêu cầu cập nhật trạng thái lên server
+        const response = await fetch(
+          `http://localhost:3000/api/donHang/${orderId}/status`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ trangThai: newStatus }),
+          }
+        );
+  
+        if (response.ok) {
+          // Cập nhật danh sách đơn hàng sau khi thay đổi trạng thái
+          fetchOrders();
+          Swal.fire({
+            icon: "success",
+            title: "Thành công",
+            text: "Trạng thái đã được cập nhật thành công.",
+          });
+        } else {
+          const errorText = await response.text();
+          Swal.fire({
+            icon: "error",
+            title: "Lỗi",
+            text: `Cập nhật trạng thái thất bại: ${errorText}`,
+          });
+          console.error("Lỗi khi cập nhật trạng thái:", errorText);
+        }
       }
     } catch (error) {
       console.error("Lỗi khi cập nhật trạng thái:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Lỗi",
+        text: "Đã xảy ra lỗi trong quá trình cập nhật trạng thái.",
+      });
     }
   };
+  
   
 
   const filterOrders = () => {
@@ -90,6 +123,7 @@ export default function Admin_dh() {
     return <div className="loading">Đang tải...</div>;
   }
   const validStatusOrder = [
+    "Chưa xử Lý",
     "Đang xử lý",
     "Đang vận chuyển",
     "Hoàn thành",
@@ -107,6 +141,7 @@ export default function Admin_dh() {
           className="status-filter"
         >
           <option value="all">Tất cả đơn hàng</option>
+          <option value="Đang xử lý">Chưa xử lý</option>
           <option value="Đang xử lý">Đang xử lý</option>
           <option value="Đang giao hàng">Đang vận chuyển</option>
           <option value="Đã giao hàng">Hoàn thành</option>
@@ -152,6 +187,7 @@ export default function Admin_dh() {
                     onChange={(e) => handleStatusChange(order.id, e.target.value)}
                     className="status-select"
                   >
+                    <option value="Chưa xử lý">Chưa xử lý</option>
                     <option value="Đang xử lý">Đang xử lý</option>
                     <option value="Đang vận chuyển">Đang vận chuyển</option>
                     <option value="Hoàn thành">Hoàn Thành</option>

@@ -50,4 +50,14 @@
   .slider-container {
     animation: slideIn 0.5s ease-in-out;
   }
+  .wishlist-btn {
+    background: none; /* Loại bỏ màu nền */
+    border: none; /* Loại bỏ viền */
+    padding: 0; /* Loại bỏ khoảng cách bên trong */
+    margin: 0; /* Loại bỏ khoảng cách bên ngoài */
+    display: flex; /* Để căn chỉnh icon nằm sát trái */
+    align-items: center; /* Canh giữa theo chiều dọc nếu cần */
+    cursor: pointer; /* Thêm hiệu ứng con trỏ chuột */
+  
+  }
   
