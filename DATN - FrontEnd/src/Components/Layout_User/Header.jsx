@@ -10,6 +10,26 @@ export default function Header() {
   const [danhMuc, setDanhmuc] = useState([]);
   const [isActive, setIsActive] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [showLogoutPopup, setShowLogoutPopup] = useState(false);
+
+  const handleLogout = () => {
+    setShowLogoutPopup(true);
+  };
+
+  const confirmLogout = () => {
+    // Xóa giỏ hàng khỏi localStorage
+    const cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
+    if (cartItems.length > 0) {
+      localStorage.removeItem("cartItem");
+    }
+    // Dispatch event để cập nhật số lượng trong Header
+    window.dispatchEvent(new Event("cartUpdated"));
+    // Gọi hàm logout
+    logout();
+    // Tải lại trang sau khi đăng xuất
+    window.location.reload(); // Tải lại trang
+  };
+    
   const handleClick = () => {
     setIsActive(!isActive);
   };
@@ -74,18 +94,18 @@ export default function Header() {
     };
   }, []);
 
-  const handleLogout = () => {
-    // Xóa giỏ hàng khỏi localStorage
-    const cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
-    if (cartItems.length > 0) {
-      localStorage.removeItem("cartItem");
-    }
-  // Dispatch event để cập nhật số lượng trong Header
-  window.dispatchEvent(new Event("cartUpdated"));
-    // Gọi hàm logout và chuyển hướng trang
-    logout();
-    navigate("/");
-  };
+  // const handleLogout = () => {
+  //   // Xóa giỏ hàng khỏi localStorage
+  //   const cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
+  //   if (cartItems.length > 0) {
+  //     localStorage.removeItem("cartItem");
+  //   }
+  // // Dispatch event để cập nhật số lượng trong Header
+  // window.dispatchEvent(new Event("cartUpdated"));
+  //   // Gọi hàm logout và chuyển hướng trang
+  //   logout();
+  //   navigate("/");
+  // };
   
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -776,6 +796,29 @@ export default function Header() {
         </div>
       </div>
       {/* header end*/}
+
+      {showLogoutPopup && (
+        <div className="logout-popup-overlay">
+          <div className="logout-popup">
+            <i
+              className="fas fa-sign-out-alt fa-2x"
+              style={{ color: "#0000a3", marginBottom: "10px" }}
+            ></i>
+            <p>Bạn có chắc chắn muốn đăng xuất?</p>
+            <div className="logout-popup-buttons">
+              <button onClick={confirmLogout} className="btn-logout">
+                Đăng xuất
+              </button>
+              <button
+                onClick={() => setShowLogoutPopup(false)}
+                className="btn-cancel"
+              >
+                Hủy
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

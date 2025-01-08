@@ -10,10 +10,22 @@ export default function EditTaikhoan() {
   const { user, logout, updateUser } = useAuth();
   const navigate = useNavigate();
 
+  const [showLogoutPopup, setShowLogoutPopup] = useState(false);
+
   const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
+   setShowLogoutPopup(true);
+ };
+
+ const confirmLogout = () => {
+   localStorage.removeItem("cartItem");
+   logout();
+   navigate("/");
+   window.location.reload();
+ };
+
+ const closeLogoutPopup = () => {
+   setShowLogoutPopup(false);
+ };
 
   const [formData, setFormData] = useState({
     fullname: user?.fullname || '',
@@ -380,6 +392,21 @@ export default function EditTaikhoan() {
           </div>
         )}
       </div>
+      {showLogoutPopup && (
+        <div className="logout-popup-overlay">
+          <div className="logout-popup">
+            <div className="popup-header">
+              <i className="fas fa-sign-out-alt fa-2x" style={{ color: '#0000a3' }}></i>
+              <h2 style={{ color: '#0000a3' }}>Đăng xuất</h2>
+            </div>
+            <p>Bạn có chắc chắn muốn đăng xuất?</p>
+            <div className="logout-popup-buttons">
+              <button onClick={confirmLogout} className="btn-logout">Đăng xuất</button>
+              <button onClick={closeLogoutPopup} className="btn-cancel">Hủy</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
