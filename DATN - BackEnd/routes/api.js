@@ -893,11 +893,62 @@ router.get('/sanPham/:id', async (req, res, next) => {
     res.status(404).json({ message: 'Không tìm thấy sản phẩm' })
   }
 })
+
+
   // cập nhật soluong sản phẩm
   router.post('/updateProductQuantity', async (req, res) => {
     const { productId, quantityPurchased } = req.body;
 
     try {
+        // Kết nối đến database
+        const db = await connectDb();
+        const sanPhamCollection = db.collection('sanPham');
+
+        // Lấy thông tin sản phẩm
+        const product = await sanPhamCollection.findOne({ id: productId });
+
+        if (!product) {
+            return res.status(404).json({ message: 'Sản phẩm không tồn tại.' });
+        }
+
+        // Kiểm tra số lượng hiện tại
+        const newQuantity = product.soluong - quantityPurchased;
+
+        if (newQuantity < 0) {
+            return res
+                .status(400)
+                .json({ message: `Không đủ số lượng sản phẩm: ${product.ten_sp}` });
+        }
+
+        // Cập nhật số lượng sản phẩm và trạng thái
+        const newStatus = newQuantity > 0 ? 'Còn hàng' : 'Hết hàng';
+        await sanPhamCollection.updateOne(
+            { id: productId },
+            { $set: { soluong: newQuantity, trang_thai: newStatus } }
+        );
+
+        res.status(200).json({
+            message: `Cập nhật số lượng sản phẩm ${product.ten_sp} thành công.`,
+            newQuantity, // Trả về số lượng mới
+            newStatus // Trả về trạng thái mới
+        });
+    } catch (error) {
+        console.error('Lỗi khi cập nhật số lượng sản phẩm:', error);
+        res.status(500).json({ message: 'Lỗi server. Vui lòng thử lại sau.' });
+    }
+});
+
+
+// API để tăng số lượng sản phẩm
+router.post('/addproductquantity', async (req, res) => {
+  const { productId, quantityToAdd } = req.body;
+
+  // Kiểm tra input quantityToAdd có phải là một số hợp lệ
+  if (isNaN(quantityToAdd) || quantityToAdd < 0) {
+      return res.status(400).json({ message: 'Số lượng thêm không hợp lệ.' });
+  }
+
+  try {
       // Kết nối đến database
       const db = await connectDb();
       const sanPhamCollection = db.collection('sanPham');
@@ -906,65 +957,26 @@ router.get('/sanPham/:id', async (req, res, next) => {
       const product = await sanPhamCollection.findOne({ id: productId });
 
       if (!product) {
-        return res.status(404).json({ message: 'Sản phẩm không tồn tại.' });
+          return res.status(404).json({ message: 'Sản phẩm không tồn tại.' });
       }
 
-      // Kiểm tra số lượng hiện tại
-      const newQuantity = product.soluong - quantityPurchased;
+      // Tăng số lượng sản phẩm và cập nhật trạng thái
+      const newQuantity = product.soluong + quantityToAdd;
+      const newStatus = newQuantity > 0 ? 'Còn hàng' : 'Hết hàng';
 
-      if (newQuantity < 0) {
-        return res
-          .status(400)
-          .json({ message: `Không đủ số lượng sản phẩm: ${product.ten_sp}` });
-      }
-
-      // Cập nhật số lượng sản phẩm
       await sanPhamCollection.updateOne(
-        { id: productId },
-        { $set: { soluong: newQuantity } }
+          { id: productId },
+          { $set: { soluong: newQuantity, trang_thai: newStatus } }
       );
 
-      res
-        .status(200)
-        .json({ message: `Cập nhật số lượng sản phẩm ${product.ten_sp} thành công.` });
-    } catch (error) {
-      console.error('Lỗi khi cập nhật số lượng sản phẩm:', error);
-      res.status(500).json({ message: 'Lỗi server. Vui lòng thử lại sau.' });
-    }
-  });
-
-// API để tăng số lượng sản phẩm
-router.post('/addproductquantity', async (req, res) => {
-  const { productId, quantityToAdd } = req.body;
-
-  try {
-    // Kết nối đến database
-    const db = await connectDb();
-    const sanPhamCollection = db.collection('sanPham');
-
-    // Lấy thông tin sản phẩm
-    const product = await sanPhamCollection.findOne({ id: productId });
-
-    if (!product) {
-      return res.status(404).json({ message: 'Sản phẩm không tồn tại.' });
-    }
-
-    // Tăng số lượng sản phẩm
-    const newQuantity = product.soluong + quantityToAdd;
-
-    // Cập nhật số lượng sản phẩm trong database
-    await sanPhamCollection.updateOne(
-      { id: productId },
-      { $set: { soluong: newQuantity } }
-    );
-
-    res.status(200).json({
-      message: `Đã tăng số lượng sản phẩm ${product.ten_sp} thành công.`,
-      newQuantity, // Trả về số lượng mới
-    });
+      res.status(200).json({
+          message: `Đã tăng số lượng sản phẩm ${product.ten_sp} thành công.`,
+          newQuantity, // Trả về số lượng mới
+          newStatus // Trả về trạng thái mới
+      });
   } catch (error) {
-    console.error('Lỗi khi tăng số lượng sản phẩm:', error);
-    res.status(500).json({ message: 'Lỗi server. Vui lòng thử lại sau.' });
+      console.error('Lỗi khi tăng số lượng sản phẩm:', error);
+      res.status(500).json({ message: 'Lỗi server. Vui lòng thử lại sau.' });
   }
 });
 
@@ -1262,7 +1274,7 @@ function authenToken (req, res, next) {
 }
 
 // API tạo đơn hàng mới
-
+//#region Thêm thanh toán VNPAY
   router.post('/donHang', async (req, res) => {
     const db = await connectDb();
     const donHangCollection = db.collection('donHang');
@@ -1297,20 +1309,22 @@ function authenToken (req, res, next) {
           (item) => `
           <div style="margin-bottom: 10px;">
             <p>Tên sản phẩm: <strong>${item.ten_sp}</strong></p>
-            <p>Giá: ${item.gia_sp.toLocaleString('vi-VN')} VND</p>
             <p>Số lượng: ${item.soLuong}</p>
           </div>
         `
         )
         .join('');
-
+        const paymentStatus = req.body.trangthai_thanhtoan;
+       const tongtien =req.body.tongTien;
       const html = `
         <h1>Cảm ơn bạn đã đặt hàng!</h1>
         <p>Mã đơn hàng của bạn: <strong>#${id}</strong></p>
         <p>Ngày đặt: ${new Date().toLocaleString()}</p>
-        <p>Trạng thái: đang xử lý</p>
+        <p>Trạng thái đơn hàng: đang xử lý</p>
+   <p>Trạng thái thanh toán: ${paymentStatus}</p>
         <p>Chi tiết đơn hàng:</p>
         ${productListHtml}
+    <p>Giá sản phẩm: ${tongtien}</p>
         <p><strong>Tổng tiền: ${totalAmount.toLocaleString('vi-VN')} VND</strong></p>
       `;
 
@@ -1329,6 +1343,42 @@ function authenToken (req, res, next) {
     }
   });
 
+  router.get('/vnpay_return', async (req, res) => {
+    const vnp_HashSecret = 'PNGRD84ZAH8YMQSQW2NEHWHNECCKXZAZ'; // Mã bí mật
+    const query = req.query;
+  
+    // Lấy chữ ký từ VNPay
+    const secureHash = query.vnp_SecureHash;
+  
+    // Loại bỏ chữ ký ra khỏi query để kiểm tra
+    delete query.vnp_SecureHash;
+    delete query.vnp_SecureHashType;
+  
+    // Sắp xếp tham số và tạo chữ ký
+    const sortedParams = Object.keys(query)
+      .sort()
+      .reduce((obj, key) => {
+        obj[key] = query[key];
+        return obj;
+      }, {});
+  
+    const queryString = new URLSearchParams(sortedParams).toString();
+    const hmac = crypto.createHmac('sha512', vnp_HashSecret);
+    const checkHash = hmac.update(Buffer.from(queryString, 'utf-8')).digest('hex');
+  
+    // So sánh chữ ký
+    if (secureHash === checkHash) {
+      if (query.vnp_ResponseCode === '00') {
+        // Thanh toán thành công
+        res.status(200).json({ message: 'Thanh toán thành công', data: query });
+      } else {
+        // Thanh toán thất bại
+        res.status(400).json({ message: 'Thanh toán thất bại', data: query });
+      }
+    } else {
+      res.status(400).json({ message: 'Chữ ký không hợp lệ' });
+    }
+  });
 
 // Lấy tất cả bình luận
 router.get('/binhLuan', async (req, res) => {

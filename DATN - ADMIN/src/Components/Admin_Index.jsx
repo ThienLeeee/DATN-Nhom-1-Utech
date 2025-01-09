@@ -4,7 +4,7 @@ import Header from "./Layout_Admin/Header";
 import Footer from "./Layout_Admin/Footer";
 import Admin_dm from "./Layout_Admin/Admin_dm";
 import Admin_sp from "./Layout_Admin/Admin_sp";
-import Admin_thongke from "./Layout_Admin/Admin_thongke";
+
 import Admin_account from "./Layout_Admin/Admin_account";
 import EditUser from "./Layout_Admin/components/edit_user";
 import AddProduct from "./Layout_Admin/components/add_product";
@@ -17,7 +17,7 @@ import ChiTietDonHang from "./Layout_Admin/components/ChiTietDonHang";
 import AddProductQuantity from "./Layout_Admin/Admin_quanlisoluong";
 import Admin_sale from "./Layout_Admin/Admin_sale";
 import Admin_voucher from "./Layout_Admin/Admin_voucher";
-
+import Trangchu from"./Layout_Admin/Trangchu"
 export default function Admin_Index() {
   return (
     <div className="row">
@@ -30,8 +30,8 @@ export default function Admin_Index() {
           <Header />
           <div className="row p-5">
             <Routes>
-              <Route path="/" element={<Navigate to="/admin-thongke" replace />} />
-              <Route path="/admin-thongke" element={<Admin_thongke/>} />
+              <Route path="/" element={<Trangchu></Trangchu>} />
+         
               <Route path="/addproductquantity" element={<AddProductQuantity></AddProductQuantity>}></Route>
               <Route path="/admin-dm" element={<Admin_dm />} />
               <Route path="/category/add" element={<AddCategory />} />

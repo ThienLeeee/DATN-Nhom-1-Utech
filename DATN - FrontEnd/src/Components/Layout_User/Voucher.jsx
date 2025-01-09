@@ -1,71 +1,49 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "../../context/AuthContext";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { toast } from "react-toastify";
-import "/public/css/taikhoan.css";
+import { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import '/public/css/taikhoan.css';
 
 export default function Voucher() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [availableVouchers, setAvailableVouchers] = useState([]);
+  const [availableVouchers, setAvailableVouchers] = useState([]); 
   const [myVouchers, setMyVouchers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("my-vouchers");
+  const [activeTab, setActiveTab] = useState('my-vouchers');
   const [isReceiving, setIsReceiving] = useState(false);
-  const [showLogoutPopup, setShowLogoutPopup] = useState(false);
-
-  const handleLogout = () => {
-    setShowLogoutPopup(true);
-  };
-
-  const confirmLogout = () => {
-    localStorage.removeItem("cartItem");
-    logout();
-    navigate("/");
-    window.location.reload();
-  };
-
-  const closeLogoutPopup = () => {
-    setShowLogoutPopup(false);
-  };
 
   useEffect(() => {
     const fetchVouchers = async () => {
       if (!user) {
-        navigate("/Dangnhap");
+        navigate('/Dangnhap');
         return;
       }
 
       try {
         // Lấy tất cả voucher có sẵn
-        const vouchersResponse = await axios.get(
-          "http://localhost:3000/api/vouchers"
-        );
-
+        const vouchersResponse = await axios.get('http://localhost:3000/api/vouchers');
+        
         // Lấy voucher của user
-        const myVouchersResponse = await axios.get(
-          `http://localhost:3000/api/vouchers/user/${user.id}`
-        );
+        const myVouchersResponse = await axios.get(`http://localhost:3000/api/vouchers/user/${user.id}`);
 
         // Lọc voucher còn hiệu lực và chưa nhận
-        const activeVouchers = vouchersResponse.data.filter((voucher) => {
+        const activeVouchers = vouchersResponse.data.filter(voucher => {
           const isActive = voucher.active;
           const isValid = new Date(voucher.end_date) >= new Date();
           const hasQuantity = voucher.quantity > voucher.used_count;
-          const notReceived = !myVouchersResponse.data.some(
-            (mv) => mv.id === voucher.id
-          );
-
+          const notReceived = !myVouchersResponse.data.some(mv => mv.id === voucher.id);
+          
           return isActive && isValid && hasQuantity && notReceived;
         });
 
         setAvailableVouchers(activeVouchers);
         setMyVouchers(myVouchersResponse.data);
       } catch (error) {
-        console.error("Lỗi khi lấy danh sách voucher:", error);
-        toast.error("Có lỗi xảy ra khi tải voucher");
+        console.error('Lỗi khi lấy danh sách voucher:', error);
+        toast.error('Có lỗi xảy ra khi tải voucher');
       } finally {
         setLoading(false);
       }
@@ -74,37 +52,40 @@ export default function Voucher() {
     fetchVouchers();
   }, [user, navigate]);
 
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
   const handleReceiveVoucher = async (voucherId) => {
     if (isReceiving) return;
-
+    
     setIsReceiving(true);
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/vouchers/receive",
-        {
-          userId: user.id,
-          voucherId: voucherId,
-        }
-      );
+      const response = await axios.post('http://localhost:3000/api/vouchers/receive', {
+        userId: user.id,
+        voucherId: voucherId
+      });
 
       if (response.data.success) {
         // Cập nhật lại danh sách voucher có sẵn
-        setAvailableVouchers((prev) => prev.filter((v) => v.id !== voucherId));
+        setAvailableVouchers(prev => 
+          prev.filter(v => v.id !== voucherId)
+        );
 
         // Thêm voucher mới vào danh sách voucher của tôi
-        setMyVouchers((prev) => [...prev, response.data.userVoucher]);
+        setMyVouchers(prev => [...prev, response.data.userVoucher]);
 
         // Hiển thị thông báo thành công
-        toast.success("Nhận voucher thành công!");
+        toast.success('Nhận voucher thành công!');
 
         // Chuyển sang tab voucher của tôi
-        setActiveTab("my-vouchers");
+        setActiveTab('my-vouchers');
       } else {
         toast.error(response.data.message);
       }
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || "Lỗi khi nhận voucher";
+      const errorMessage = error.response?.data?.message || 'Lỗi khi nhận voucher';
       toast.error(errorMessage);
     } finally {
       setIsReceiving(false);
@@ -112,14 +93,11 @@ export default function Voucher() {
   };
 
   const copyVoucherCode = (code) => {
-    navigator.clipboard
-      .writeText(code)
-      .then(() => {
-        toast.success("Đã sao chép mã voucher!");
-      })
-      .catch(() => {
-        toast.error("Không thể sao chép mã voucher");
-      });
+    navigator.clipboard.writeText(code).then(() => {
+      toast.success('Đã sao chép mã voucher!');
+    }).catch(() => {
+      toast.error('Không thể sao chép mã voucher');
+    });
   };
 
   return (
@@ -131,7 +109,7 @@ export default function Voucher() {
           </div>
           <h3 className="username">{user?.username}</h3>
         </div>
-
+        
         <div className="menu-list">
           <Link to="/taikhoan" className="menu-item">
             <i className="fas fa-user"></i>
@@ -162,17 +140,15 @@ export default function Voucher() {
         </div>
 
         <div className="voucher-tabs">
-          <button
-            className={`tab-btn ${activeTab === "my-vouchers" ? "active" : ""}`}
-            onClick={() => setActiveTab("my-vouchers")}
+          <button 
+            className={`tab-btn ${activeTab === 'my-vouchers' ? 'active' : ''}`}
+            onClick={() => setActiveTab('my-vouchers')}
           >
             Voucher của tôi
           </button>
-          <button
-            className={`tab-btn ${
-              activeTab === "available-vouchers" ? "active" : ""
-            }`}
-            onClick={() => setActiveTab("available-vouchers")}
+          <button 
+            className={`tab-btn ${activeTab === 'available-vouchers' ? 'active' : ''}`}
+            onClick={() => setActiveTab('available-vouchers')}
           >
             Nhận Voucher
           </button>
@@ -184,7 +160,7 @@ export default function Voucher() {
               <div className="spinner"></div>
               <p>Đang tải voucher...</p>
             </div>
-          ) : activeTab === "my-vouchers" ? (
+          ) : activeTab === 'my-vouchers' ? (
             myVouchers.length > 0 ? (
               <div className="vouchers-grid">
                 {myVouchers.map((voucher) => (
@@ -192,27 +168,20 @@ export default function Voucher() {
                     <div className="voucher-content">
                       <div className="voucher-info">
                         <h3 className="voucher-value">
-                          {voucher.discount_type === "percent"
-                            ? `Giảm ${voucher.discount_value}%`
-                            : `Giảm ${voucher.discount_value.toLocaleString(
-                                "vi-VN"
-                              )}đ`}
+                          {voucher.discount_type === 'percent' 
+                            ? `Giảm ${voucher.discount_value}%` 
+                            : `Giảm ${voucher.discount_value.toLocaleString('vi-VN')}đ`}
                         </h3>
                         <p className="min-order">
-                          Đơn tối thiểu{" "}
-                          {voucher.min_order_value.toLocaleString("vi-VN")}đ
+                          Đơn tối thiểu {voucher.min_order_value.toLocaleString('vi-VN')}đ
                         </p>
                         {voucher.max_discount && (
                           <p className="max-discount">
-                            Giảm tối đa{" "}
-                            {voucher.max_discount.toLocaleString("vi-VN")}đ
+                            Giảm tối đa {voucher.max_discount.toLocaleString('vi-VN')}đ
                           </p>
                         )}
                         <p className="expiry">
-                          HSD:{" "}
-                          {new Date(voucher.end_date).toLocaleDateString(
-                            "vi-VN"
-                          )}
+                          HSD: {new Date(voucher.end_date).toLocaleDateString('vi-VN')}
                         </p>
                       </div>
                       <div className="voucher-code">
@@ -231,90 +200,65 @@ export default function Voucher() {
                   <i className="fas fa-ticket-alt"></i>
                 </span>
                 <p>Bạn chưa có voucher nào</p>
-                <button
+                <button 
                   className="get-voucher-btn"
-                  onClick={() => setActiveTab("available-vouchers")}
+                  onClick={() => setActiveTab('available-vouchers')}
                 >
                   Nhận Voucher Ngay
                 </button>
               </div>
             )
-          ) : availableVouchers.length > 0 ? (
-            <div className="vouchers-grid">
-              {availableVouchers.map((voucher) => (
-                <div key={voucher.id} className="voucher-box available">
-                  <div className="voucher-content">
-                    <div className="voucher-info">
-                      <h3 className="voucher-value">
-                        {voucher.discount_type === "percent"
-                          ? `Giảm ${voucher.discount_value}%`
-                          : `Giảm ${voucher.discount_value.toLocaleString(
-                              "vi-VN"
-                            )}đ`}
-                      </h3>
-                      <p className="min-order">
-                        Đơn tối thiểu{" "}
-                        {voucher.min_order_value.toLocaleString("vi-VN")}đ
-                      </p>
-                      {voucher.max_discount && (
-                        <p className="max-discount">
-                          Giảm tối đa{" "}
-                          {voucher.max_discount.toLocaleString("vi-VN")}đ
-                        </p>
-                      )}
-                      <p className="expiry">
-                        HSD:{" "}
-                        {new Date(voucher.end_date).toLocaleDateString("vi-VN")}
-                      </p>
-                    </div>
-                    <button
-                      className="receive-btn"
-                      onClick={() => handleReceiveVoucher(voucher.id)}
-                      disabled={isReceiving}
-                    >
-                      {isReceiving ? "Đang xử lý..." : "Nhận"}
-                    </button>
-                  </div>
-                  <div className="voucher-footer">
-                    <span className="remaining">
-                      Còn lại: {voucher.quantity - voucher.used_count}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
           ) : (
-            <div className="no-vouchers">
-              <span className="voucher-icon">
-                <i className="fas fa-ticket-alt"></i>
-              </span>
-              <p>Hiện không có voucher nào khả dụng</p>
-            </div>
+            availableVouchers.length > 0 ? (
+              <div className="vouchers-grid">
+                {availableVouchers.map((voucher) => (
+                  <div key={voucher.id} className="voucher-box available">
+                    <div className="voucher-content">
+                      <div className="voucher-info">
+                        <h3 className="voucher-value">
+                          {voucher.discount_type === 'percent' 
+                            ? `Giảm ${voucher.discount_value}%` 
+                            : `Giảm ${voucher.discount_value.toLocaleString('vi-VN')}đ`}
+                        </h3>
+                        <p className="min-order">
+                          Đơn tối thiểu {voucher.min_order_value.toLocaleString('vi-VN')}đ
+                        </p>
+                        {voucher.max_discount && (
+                          <p className="max-discount">
+                            Giảm tối đa {voucher.max_discount.toLocaleString('vi-VN')}đ
+                          </p>
+                        )}
+                        <p className="expiry">
+                          HSD: {new Date(voucher.end_date).toLocaleDateString('vi-VN')}
+                        </p>
+                      </div>
+                      <button 
+                        className="receive-btn"
+                        onClick={() => handleReceiveVoucher(voucher.id)}
+                        disabled={isReceiving}
+                      >
+                        {isReceiving ? 'Đang xử lý...' : 'Nhận'}
+                      </button>
+                    </div>
+                    <div className="voucher-footer">
+                      <span className="remaining">
+                        Còn lại: {voucher.quantity - voucher.used_count}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="no-vouchers">
+                <span className="voucher-icon">
+                  <i className="fas fa-ticket-alt"></i>
+                </span>
+                <p>Hiện không có voucher nào khả dụng</p>
+              </div>
+            )
           )}
         </div>
       </div>
-      {showLogoutPopup && (
-        <div className="logout-popup-overlay">
-          <div className="logout-popup">
-            <div className="popup-header">
-              <i
-                className="fas fa-sign-out-alt fa-2x"
-                style={{ color: "#0000a3" }}
-              ></i>
-              <h2 style={{ color: "#0000a3" }}>Đăng xuất</h2>
-            </div>
-            <p>Bạn có chắc chắn muốn đăng xuất?</p>
-            <div className="logout-popup-buttons">
-              <button onClick={confirmLogout} className="btn-logout">
-                Đăng xuất
-              </button>
-              <button onClick={closeLogoutPopup} className="btn-cancel">
-                Hủy
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

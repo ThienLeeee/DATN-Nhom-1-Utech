@@ -3,7 +3,7 @@ import { fetchSanphamIddm, fetchSanPhamTheoDm } from "../../../service/sanphamSe
 import { Link, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "/public/css/chitietsp.css";
-
+import Swal from 'sweetalert2';
 
 export default function ChiTietSanPham() {
   
@@ -179,6 +179,7 @@ export default function ChiTietSanPham() {
   };
 
   const handleAddToCart = (sanPhamMoi) => {
+    if (sanPhamMoi.trang_thai !== 'Còn hàng') { Swal.fire("Thông báo", "Sản phẩm đã hết hàng", "warning"); return; }
     let cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
     const itemIndex = cartItems.findIndex((item) => item.id === sanPhamMoi.id);
 
@@ -196,9 +197,11 @@ export default function ChiTietSanPham() {
     window.dispatchEvent(event);
     
     setPopupVisible(true);
+     navigate("/giohang");
   };
 
   const handleBuyNow = (sanPhamMoi) => {
+    if (sanPhamMoi.trang_thai !== 'Còn hàng') { Swal.fire("Thông báo", "Sản phẩm đã hết hàng", "warning"); return; }
     let cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
     const itemIndex = cartItems.findIndex((item) => item.id === sanPhamMoi.id);
 
@@ -215,11 +218,12 @@ export default function ChiTietSanPham() {
     const event = new CustomEvent('cartUpdated');
     window.dispatchEvent(event);
     
-    navigate("/giohang");
+    navigate("/thanhtoan");
   };
   
 
   const handleClosePopup = () => {
+    
     setPopupVisible(false); // Đóng popup
   };
 
@@ -331,6 +335,24 @@ export default function ChiTietSanPham() {
     // Tự động scroll lên đầu phần bình luận
     document.getElementById('binhluan').scrollIntoView({ behavior: 'smooth' });
   };
+
+  const calculateDiscount = (gia_sp, giam_gia) => {
+    // Check if gia_sp and giam_gia are defined
+    if (!gia_sp || !giam_gia) {
+        return 0;
+    }
+
+    const originalPrice = parseInt(gia_sp.replace(/\./g, ''));
+    const discountedPrice = parseInt(giam_gia.replace(/\./g, ''));
+
+    if (isNaN(originalPrice) || isNaN(discountedPrice)) {
+        return 0;
+    }
+
+    const discountPercentage = ((originalPrice - discountedPrice) / originalPrice) * 100;
+    return discountPercentage.toFixed(2);
+};
+
 
   return (
     <>
@@ -472,8 +494,35 @@ export default function ChiTietSanPham() {
                     Mã SP : <span itemProp="mpn">{sanpham.ma_san_pham}</span>
                   </strong>
                   <strong>
+                   
+                    <div className="cart-product d-flex justify-content-between align-items-center">
                     Tình trạng :
-                    <span style={{ color: "#006fd5" }}>Còn hàng</span>
+                            <span className="status-pro sts2" style={{
+                            fontSize: '13px',
+                            color: sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red',
+                            fontWeight: '400',
+                            position: 'relative',
+                            paddingLeft: '15px',
+                            border: `1px solid ${sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red'}`,
+                            borderRadius: '4px',
+                            padding: '4px 8px 4px 20px',
+                            display: 'inline-flex',
+                            alignItems: 'center'
+                        }}>
+                            <span style={{
+                                width: '6px',
+                                height: '6px',
+                                borderRadius: '50%',
+                                backgroundColor: sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red',
+                                position: 'absolute',
+                                left: '8px',
+                                top: '50%',
+                                transform: 'translateY(-50%)'
+                            }}></span>
+                            {sanpham.trang_thai}
+                        </span>
+                             
+                            </div>
                   </strong>
                 </div>
 
@@ -557,23 +606,40 @@ export default function ChiTietSanPham() {
                 </div>
 
                 <div
-                  className="item_info_detail gia_detail"
-                  itemProp="offers"
-                  itemScope=""
-                  itemType="http://schema.org/Offer"
-                >
-                  <strong>
-                    Giá bán (đã bao gồm VAT):
-                    <span itemProp="price">{sanpham.gia_sp}</span>
-                    <span itemProp="priceCurrency" content="VND">
-                      VNĐ
-                    </span>
-                  </strong>
-                  <link
-                    itemProp="availability"
-                    href="http://schema.org/InStock"
-                  />
+          className="item_info_detail gia_detail d-flex"
+          itemProp="offers"
+          itemScope=""
+          itemType="http://schema.org/Offer"
+        >
+          <strong className="d-flex">
+            <p style={{ marginRight: '5px', marginTop: '0' }}>Giá bán:</p>
+            {sanpham.giam_gia ? (
+              <>
+                <div className="price-sale" style={{ marginRight: '10px' }}>
+                  <span itemProp="price">{sanpham.giam_gia}</span>
+                  <span itemProp="priceCurrency" content="VND">VNĐ</span>
                 </div>
+                <div className="price-goc" style={{ marginRight: '10px' }}>
+                  <span style={{ color: "rgb(112, 112, 112)", font: "caption", textDecoration: 'line-through' }} itemProp="price">{sanpham.gia_sp}</span>
+                  <span style={{ color: "rgb(112, 112, 112)", font: "caption", textDecoration: 'line-through' }} itemProp="priceCurrency" content="VND">VNĐ</span>
+                </div>
+                <div style={{ color: 'red', border: '1px solid red', borderRadius: "5px", paddingLeft: "8px", paddingRight: "8px", paddingTop: "3px", paddingBottom: "3px" }}>
+                  -{calculateDiscount(sanpham.gia_sp, sanpham.giam_gia)}%
+                </div>
+              </>
+            ) : (
+              <div className="price-goc" style={{ marginRight: '10px' }}>
+                <span itemProp="price">{sanpham.gia_sp}</span>
+                <span itemProp="priceCurrency" content="VND">VNĐ</span>
+              </div>
+            )}
+          </strong>
+          <link
+            itemProp="availability"
+            href="http://schema.org/InStock"
+          />
+        </div>
+
                 <div className="item_info_detail">
                   <div className="addthis_inline_share_toolbox" />
                 </div>
@@ -1368,23 +1434,85 @@ export default function ChiTietSanPham() {
                           >
                             {sanpham.ten_sp}
                           </a>
-                          <div className="price-product">
-                            <span className="price-new">
-                              {" "}
-                              {sanpham.gia_sp} đ
-                            </span>
+                          <div className="price-product d-flex justify-content-between" style={{ margin: '8px 0', textAlign: 'left' }}>
+                      {sanpham.giam_gia ? (
+                        <div className="price-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '2px',  }}>
+                          <div style={{ 
+                            textDecoration: 'line-through', 
+                            color: '#707070', 
+                            fontSize: '14px', 
+                            fontWeight: 'normal' 
+                          }}>
+                            {sanpham.gia_sp}đ
                           </div>
-                          <div className="cart-product d-flex justify-content-between align-items-center">
-                            <span className="status-pro sts2">Còn hàng</span>
-                            <span
-                              className="mua_giohang"
-                              rel={7385}
-                              data-confirm=""
-                              onClick={() => handleAddToCart(sanpham)}
-                            >
-                              Mua ngay
-                            </span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <div style={{ 
+                              color: '#d70018', 
+                              fontSize: '16px', 
+                              fontWeight: '500' 
+                            }}>
+                              {sanpham.giam_gia}đ
+                            </div>
+                            <div style={{ 
+                              color: '#fff',
+                              fontSize: '12px',
+                              background: '#d70018',
+                              padding: '0 6px',
+                              borderRadius: '3px',
+                              fontWeight: '500',
+                              height: '20px',
+                              display: 'flex',
+                              alignItems: 'center'
+                            }}>
+                              -{calculateDiscount(sanpham.gia_sp, sanpham.giam_gia)}%
+                            </div>
                           </div>
+                        </div>
+                      ) : (
+                        <span style={{ 
+                          color: '#d70018', 
+                          fontSize: '16px', 
+                          fontWeight: '500' 
+                        }}>
+                          {sanpham.gia_sp}đ
+                        </span>
+                      )}
+                    
+                    </div>
+                    <div className="cart-product d-flex justify-content-between align-items-center">
+                            <span className="status-pro sts2" style={{
+                            fontSize: '13px',
+                            color: sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red',
+                            fontWeight: '400',
+                            position: 'relative',
+                            paddingLeft: '15px',
+                            border: `1px solid ${sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red'}`,
+                            borderRadius: '4px',
+                            padding: '4px 8px 4px 20px',
+                            display: 'inline-flex',
+                            alignItems: 'center'
+                        }}>
+                            <span style={{
+                                width: '6px',
+                                height: '6px',
+                                borderRadius: '50%',
+                                backgroundColor: sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red',
+                                position: 'absolute',
+                                left: '8px',
+                                top: '50%',
+                                transform: 'translateY(-50%)'
+                            }}></span>
+                            {sanpham.trang_thai}
+                        </span>
+                              <span
+                                className="mua_giohang"
+                                rel={sanpham.id}
+                                data-confirm=""
+                                onClick={() =>handleBuyNow(sanpham)}
+                              >
+                                Mua ngay
+                              </span>
+                            </div>
                         </div>
                       </div>
                     </div>

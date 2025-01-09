@@ -741,7 +741,7 @@ img {
     }
 
     .danh-muc-sp {
-
+       
         margin-right: 0 !important;
     }
 
@@ -4853,7 +4853,7 @@ label.label_check_box_form {
 
 @media (max-width: 730px) {
     .header-bottom-right {
-
+        flex-direction: row-reverse;
         flex-wrap: wrap;
     }
 
@@ -4889,14 +4889,13 @@ label.label_check_box_form {
     .right_bottom_detail {
         width: 100%;
     }
-    .info_detail{
-        display: none;
-    }
 }
 
 @media (max-width: 910px) {
 
-
+    .top_detail>div:first-child {
+        flex-wrap: wrap;
+    }
 
     .item_info_detail.gia_detail strong span {
         font-size: 20px;
@@ -5045,7 +5044,6 @@ label.label_check_box_form {
 }
 
 .wrap-bestsell .title-bestsell {
-    border-radius: 10px;
     background: #D82533;
     color: #fff;
     text-align: center;
@@ -5066,7 +5064,7 @@ label.label_check_box_form {
 
     /* Chiều cao cố định cho tất cả ảnh */
     min-width: 280px;
-    flex-shrink: 1;
+    flex-shrink: 0;
     margin-right: 20px;
     /* Thêm margin-right để tạo khoảng cách giữa các sản phẩm */
 }
@@ -5166,7 +5164,7 @@ label.label_check_box_form {
     }
 
     .bestsell-products {
-        gap: 35px;
+        gap: 12px;
     }
 
     .bestsell-products .product {
@@ -5204,9 +5202,6 @@ label.label_check_box_form {
 
 /* Đảm bảo container không bị overflow */
 .wrap-bestsell {
-    margin: auto;
-    margin-bottom: 10px;
-    max-width: 85%;
     overflow: hidden;
 }
 
@@ -5220,84 +5215,4 @@ label.label_check_box_form {
     height: 100%;
     object-fit: contain;
     /* Giữ tỷ lệ ảnh */
-}
-
-.badge-hot {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background-color: rgba(255, 0, 0, 0.7);
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.badge-hot i {
-    margin-right: 5px;
-}
-
-.slideshow-container {
-    position: relative;
-    max-width: 100%;
-    margin: auto;
-    overflow: hidden;
-}
-
-.slides {
-    display: none;
-    width: 100%;
-}
-
-.slides img {
-    width: 100%;
-    height: auto;
-}
-
-.prev,
-.next {
-    cursor: pointer;
-    position: absolute;
-    top: 50%;
-    width: auto;
-    padding: 16px;
-    color: white;
-    font-weight: bold;
-    font-size: 18px;
-    transition: 0.6s ease;
-    border-radius: 0 3px 3px 0;
-    user-select: none;
-}
-
-.next {
-    right: 0;
-    border-radius: 3px 0 0 3px;
-}
-
-.banner {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-}
-
-.banner img {
-    width: 48%;
-    border-radius: 5px;
-}
-
-@keyframes fade {
-    from {
-        opacity: .4
-    }
-
-    to {
-        opacity: 1
-    }
-}
-
-.fade {
-    animation: fade 1.5s;
 }

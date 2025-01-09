@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { fetchSanPhamTheoDm } from "../../../service/sanphamService";
 import { fetchDanhMucById } from "../../../service/danhmucService";
 import { useNavigate } from "react-router-dom";
-
+import Swal from 'sweetalert2';
 export default function SanPhamTheodm() {
   const [sanPham, setSanPham] = useState([]);
   const [tenDanhMuc, setTenDanhMuc] = useState("Đang tải danh mục...");
@@ -104,6 +104,11 @@ export default function SanPhamTheodm() {
   };
 
   const handleAddToCart = (sanPhamMoi) => {
+     if (sanPhamMoi.trang_thai !== 'Còn hàng') {
+            Swal.fire("Thông báo", "Sản phẩm đã hết hàng", "warning");
+            return;
+        }
+    
     const cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
     const itemIndex = cartItems.findIndex((item) => item.id === sanPhamMoi.id);
 
@@ -116,9 +121,15 @@ export default function SanPhamTheodm() {
 
     localStorage.setItem("cartItem", JSON.stringify(cartItems));
     window.dispatchEvent(new Event("cartUpdated"));
-    navigate("/giohang");
+    navigate("/thanhtoan");
   };
-
+ // Thêm hàm tính % giảm giá
+ const calculateDiscount = (originalPrice, discountedPrice) => {
+  const original = parseInt(originalPrice.replace(/\./g, ''));
+  const discounted = parseInt(discountedPrice.replace(/\./g, ''));
+  const discount = Math.round(((original - discounted) / original) * 100);
+  return discount;
+};
 
 
   return (
@@ -186,27 +197,7 @@ export default function SanPhamTheodm() {
               <div className="grid-products">
                 {filteredProducts.length > 0 ? (
                   filteredProducts.map((sanpham) => {
-                    // Xác định thư mục hình ảnh dựa trên id_danhmuc
-                    let imagePath = "";
-                    switch (sanpham.id_danhmuc) {
-                      case 1:
-                        imagePath = "Laptop";
-                        break;
-                      case 2:
-                        imagePath = "PC";
-                        break;
-                      case 3:
-                        imagePath = "Manhinh";
-                        break;
-                      case 4:
-                        imagePath = "Chuot";
-                        break;
-                      case 5:
-                        imagePath = "Banphim";
-                        break;
-                      default:
-                        imagePath = "Khac"; // Thư mục mặc định nếu có danh mục khác
-                    }
+             
 
                     return (
                       <div className="product" key={sanpham.id}>
@@ -366,13 +357,76 @@ export default function SanPhamTheodm() {
                             >
                               {sanpham.ten_sp}
                             </Link>
-                            <div className="price-product">
-                              <span className="price-new">
-                                {sanpham.gia_sp} đ
-                              </span>
+                            <div className="price-product d-flex justify-content-between" style={{ margin: '8px 0', textAlign: 'left' }}>
+                      {sanpham.giam_gia ? (
+                        <div className="price-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '2px',  }}>
+                          <div style={{ 
+                            textDecoration: 'line-through', 
+                            color: '#707070', 
+                            fontSize: '14px', 
+                            fontWeight: 'normal' 
+                          }}>
+                            {sanpham.gia_sp}đ
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <div style={{ 
+                              color: '#d70018', 
+                              fontSize: '16px', 
+                              fontWeight: '500' 
+                            }}>
+                              {sanpham.giam_gia}đ
                             </div>
+                            <div style={{ 
+                              color: '#fff',
+                              fontSize: '12px',
+                              background: '#d70018',
+                              padding: '0 6px',
+                              borderRadius: '3px',
+                              fontWeight: '500',
+                              height: '20px',
+                              display: 'flex',
+                              alignItems: 'center'
+                            }}>
+                              -{calculateDiscount(sanpham.gia_sp, sanpham.giam_gia)}%
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <span style={{ 
+                          color: '#d70018', 
+                          fontSize: '16px', 
+                          fontWeight: '500' 
+                        }}>
+                          {sanpham.gia_sp}đ
+                        </span>
+                      )}
+                    
+                    </div>
                             <div className="cart-product d-flex justify-content-between align-items-center">
-                              <span className="status-pro sts2">Còn hàng</span>
+                            <span className="status-pro sts2" style={{
+                            fontSize: '13px',
+                            color: sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red',
+                            fontWeight: '400',
+                            position: 'relative',
+                            paddingLeft: '15px',
+                            border: `1px solid ${sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red'}`,
+                            borderRadius: '4px',
+                            padding: '4px 8px 4px 20px',
+                            display: 'inline-flex',
+                            alignItems: 'center'
+                        }}>
+                            <span style={{
+                                width: '6px',
+                                height: '6px',
+                                borderRadius: '50%',
+                                backgroundColor: sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red',
+                                position: 'absolute',
+                                left: '8px',
+                                top: '50%',
+                                transform: 'translateY(-50%)'
+                            }}></span>
+                            {sanpham.trang_thai}
+                        </span>
                               <span
                                 className="mua_giohang"
                                 rel={sanpham.id}

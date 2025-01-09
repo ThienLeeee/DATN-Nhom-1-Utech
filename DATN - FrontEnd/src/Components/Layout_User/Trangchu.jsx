@@ -10,7 +10,7 @@ import "/public/css/trangchu.css";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth } from '../../context/AuthContext';
-
+import Swal from 'sweetalert2';
 export default function Trangchu() {
   const [sanPham, setSanpham] = useState([]);
   const [danhMuc, setDanhmuc] = useState([]);
@@ -138,22 +138,27 @@ export default function Trangchu() {
   };
 
   const handleAddToCart = (sanPhamMoi) => {
+    if (sanPhamMoi.trang_thai !== 'Còn hàng') {
+        Swal.fire("Thông báo", "Sản phẩm đã hết hàng", "warning");
+        return;
+    }
+
     let cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
     const itemIndex = cartItems.findIndex((item) => item.id === sanPhamMoi.id);
 
     if (itemIndex > -1) {
-      cartItems[itemIndex].quantity += 1;
+        cartItems[itemIndex].quantity += 1;
     } else {
-      const priceAsNumber = parseInt(sanPhamMoi.gia_sp.replace(/\./g, ""));
-      cartItems.push({ ...sanPhamMoi, gia_sp: priceAsNumber, quantity: 1 });
+        const priceAsNumber = parseInt(sanPhamMoi.gia_sp.replace(/\./g, ""));
+        cartItems.push({ ...sanPhamMoi, gia_sp: priceAsNumber, quantity: 1 });
     }
 
     localStorage.setItem("cartItem", JSON.stringify(cartItems));
 
     window.dispatchEvent(new Event("cartUpdated"));
 
-    navigate("/giohang");
-  };
+    navigate("/thanhtoan");
+};
 
   // Lọc sản phẩm theo categoryId
   const sanPhamdm1 = sanPham.filter(
@@ -863,28 +868,29 @@ export default function Trangchu() {
                       }}>
                       <span className="status-pro sts2" style={{
                         fontSize: '13px',
-                        color: '#32CD32',
+                        color: product.trang_thai === 'Còn hàng' ? '#32CD32' : 'red',
                         fontWeight: '400',
                         position: 'relative',
                         paddingLeft: '15px',
-                        border: '1px solid #32CD32',
+                        border: `1px solid ${product.trang_thai === 'Còn hàng' ? '#32CD32' : 'red'}`,
                         borderRadius: '4px',
                         padding: '4px 8px 4px 20px',
                         display: 'inline-flex',
                         alignItems: 'center'
-                      }}>
+                    }}>
                         <span style={{
-                          width: '6px',
-                          height: '6px',
-                          borderRadius: '50%',
-                          backgroundColor: '#32CD32',
-                          position: 'absolute',
-                          left: '8px',
-                          top: '50%',
-                          transform: 'translateY(-50%)'
+                            width: '6px',
+                            height: '6px',
+                            borderRadius: '50%',
+                            backgroundColor: product.trang_thai === 'Còn hàng' ? '#32CD32' : 'red',
+                            position: 'absolute',
+                            left: '8px',
+                            top: '50%',
+                            transform: 'translateY(-50%)'
                         }}></span>
-                        Còn hàng
-                      </span>
+                        {product.trang_thai}
+                    </span>
+
                       <span
                         className="mua_giohang"
                         onClick={() => handleAddToCart(product)}
@@ -1052,29 +1058,30 @@ export default function Trangchu() {
                               marginTop: '10px'
                             }}>
                             <span className="status-pro sts2" style={{
-                              fontSize: '13px',
-                              color: '#32CD32',
-                              fontWeight: '400',
-                              position: 'relative',
-                              paddingLeft: '15px',
-                              border: '1px solid #32CD32',
-                              borderRadius: '4px',
-                              padding: '4px 8px 4px 20px',
-                              display: 'inline-flex',
-                              alignItems: 'center'
-                            }}>
-                              <span style={{
+                            fontSize: '13px',
+                            color: sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red',
+                            fontWeight: '400',
+                            position: 'relative',
+                            paddingLeft: '15px',
+                            border: `1px solid ${sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red'}`,
+                            borderRadius: '4px',
+                            padding: '4px 8px 4px 20px',
+                            display: 'inline-flex',
+                            alignItems: 'center'
+                        }}>
+                            <span style={{
                                 width: '6px',
                                 height: '6px',
                                 borderRadius: '50%',
-                                backgroundColor: '#32CD32',
+                                backgroundColor: sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red',
                                 position: 'absolute',
                                 left: '8px',
                                 top: '50%',
                                 transform: 'translateY(-50%)'
-                              }}></span>
-                              Còn hàng
-                            </span>
+                            }}></span>
+                            {sanpham.trang_thai}
+                        </span>
+
                             <span
                               className="mua_giohang"
                               rel={7385}
@@ -1242,29 +1249,29 @@ export default function Trangchu() {
                               marginTop: '10px'
                             }}>
                             <span className="status-pro sts2" style={{
-                              fontSize: '13px',
-                              color: '#32CD32',
-                              fontWeight: '400',
-                              position: 'relative',
-                              paddingLeft: '15px',
-                              border: '1px solid #32CD32',
-                              borderRadius: '4px',
-                              padding: '4px 8px 4px 20px',
-                              display: 'inline-flex',
-                              alignItems: 'center'
-                            }}>
-                              <span style={{
+                            fontSize: '13px',
+                            color: sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red',
+                            fontWeight: '400',
+                            position: 'relative',
+                            paddingLeft: '15px',
+                            border: `1px solid ${sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red'}`,
+                            borderRadius: '4px',
+                            padding: '4px 8px 4px 20px',
+                            display: 'inline-flex',
+                            alignItems: 'center'
+                        }}>
+                            <span style={{
                                 width: '6px',
                                 height: '6px',
                                 borderRadius: '50%',
-                                backgroundColor: '#32CD32',
+                                backgroundColor: sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red',
                                 position: 'absolute',
                                 left: '8px',
                                 top: '50%',
                                 transform: 'translateY(-50%)'
-                              }}></span>
-                              Còn hàng
-                            </span>
+                            }}></span>
+                            {sanpham.trang_thai}
+                        </span>
                             <span
                               className="mua_giohang"
                               rel={7385}
@@ -1471,30 +1478,30 @@ export default function Trangchu() {
                               alignItems: 'center',
                               marginTop: '10px'
                             }}>
-                            <span className="status-pro sts2" style={{
-                              fontSize: '13px',
-                              color: '#32CD32',
-                              fontWeight: '400',
-                              position: 'relative',
-                              paddingLeft: '15px',
-                              border: '1px solid #32CD32',
-                              borderRadius: '4px',
-                              padding: '4px 8px 4px 20px',
-                              display: 'inline-flex',
-                              alignItems: 'center'
-                            }}>
-                              <span style={{
+                           <span className="status-pro sts2" style={{
+                            fontSize: '13px',
+                            color: sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red',
+                            fontWeight: '400',
+                            position: 'relative',
+                            paddingLeft: '15px',
+                            border: `1px solid ${sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red'}`,
+                            borderRadius: '4px',
+                            padding: '4px 8px 4px 20px',
+                            display: 'inline-flex',
+                            alignItems: 'center'
+                        }}>
+                            <span style={{
                                 width: '6px',
                                 height: '6px',
                                 borderRadius: '50%',
-                                backgroundColor: '#32CD32',
+                                backgroundColor: sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red',
                                 position: 'absolute',
                                 left: '8px',
                                 top: '50%',
                                 transform: 'translateY(-50%)'
-                              }}></span>
-                              Còn hàng
-                            </span>
+                            }}></span>
+                            {sanpham.trang_thai}
+                        </span>
                             <span
                               className="mua_giohang"
                               rel={7385}

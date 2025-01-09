@@ -306,7 +306,7 @@
   }
   .box-category-header p:hover{
     cursor: pointer ;
-    color: rgba(0, 0, 255, 0.586);
+   
   
   }
 
@@ -324,4 +324,15 @@
   .cancel-order-btn:hover {
     background-color: #d9363e;
   }
-  
+  .status-option {
+    padding: 10px;
+    cursor: pointer;
+    color: #000; /* Default text color */
+}
+
+.status-option.active {
+    background-color: #007bff; /* Highlight color */
+    color: #fff; /* Highlight text color */
+    font-weight: bold; /* Make text bold for better visibility */
+    border-radius: 5px;
+}

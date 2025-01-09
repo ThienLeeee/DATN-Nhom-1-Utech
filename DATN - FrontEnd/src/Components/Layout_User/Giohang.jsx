@@ -6,7 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import Swal from "sweetalert2";
 export default function Giohang() {
   const [sanPham, setSanpham] = useState([]);
   const [totalQuantity, setTotalQuantity] = useState(0);
@@ -55,17 +55,28 @@ export default function Giohang() {
   };
 
   const updateQuantity = (id, newQuantity) => {
-    const updatedItems = sanPham.map((item) =>
-      item.id === id ? { ...item, quantity: Math.max(1, newQuantity) } : item
-    );
-
-    setSanpham(updatedItems);
-    localStorage.setItem("cartItem", JSON.stringify(updatedItems));
-
-    // Dispatch event để cập nhật số lượng trong Header
-    window.dispatchEvent(new Event("cartUpdated"));
+    const item = sanPham.find((item) => item.id === id);
+    
+    if (item) {
+      if (newQuantity > item.soluong) {
+        Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Số lượng sản phẩm không đủ. Vui lòng chọn số lượng nhỏ hơn.', });
+        return;
+      }
+  
+      const updatedItems = sanPham.map((item) =>
+        item.id === id ? { ...item, quantity: Math.max(1, newQuantity) } : item
+      );
+  
+      setSanpham(updatedItems);
+      localStorage.setItem("cartItem", JSON.stringify(updatedItems));
+  
+      // Dispatch event để cập nhật số lượng trong Header
+      window.dispatchEvent(new Event("cartUpdated"));
+    } else {
+      alert("Sản phẩm không tồn tại trong giỏ hàng.");
+    }
   };
-
+  
   const removeItem = (id) => {
     const updatedItems = sanPham.filter((item) => item.id !== id);
 
@@ -101,31 +112,43 @@ export default function Giohang() {
     setShowDeletePopup(false);
   };
 
-  const handleCheckout = (e) => {
-    e.preventDefault();
+  // Hàm xử lý thanh toán
+const handleCheckout = (e) => {
+  e.preventDefault();
 
-    if (sanPham.length === 0) {
-      toast.error("Giỏ hàng trống, không thể thanh toán!");
-      return;
-    }
+  if (sanPham.length === 0) {
+    toast.error("Giỏ hàng trống, không thể thanh toán!");
+    return;
+  }
 
-    // Tạo dữ liệu đơn hàng tạm thời
-    const orderData = {
-      items: sanPham,
-      totalQuantity,
-      totalPrice,
-      discountAmount,
-      finalPrice,
-      voucher: selectedVoucher,
-      status: "pending"
-    };
+  // Tính toán giảm giá từ voucher (nếu có)
+  let updatedFinalPrice = totalPrice;
+  if (selectedVoucher) {
+    const discount = calculateVoucherDiscount(selectedVoucher, totalPrice);
+    setDiscountAmount(discount);
+    updatedFinalPrice -= discount;
+    setFinalPrice(updatedFinalPrice);
+  } else {
+    setFinalPrice(updatedFinalPrice);
+  }
 
-    // Lưu đơn hàng tạm vào localStorage
-    localStorage.setItem("checkoutItems", JSON.stringify(orderData));
-
-    // Điều hướng đến trang thanh toán
-    navigate("/thanhtoan");
+  // Tạo dữ liệu đơn hàng tạm thời
+  const orderData = {
+    items: sanPham,
+    totalQuantity,
+    totalPrice,
+    discountAmount,
+    finalPrice: updatedFinalPrice,
+    voucher: selectedVoucher,
+    status: "pending"
   };
+
+  // Lưu đơn hàng tạm vào localStorage
+  localStorage.setItem("checkoutItems", JSON.stringify(orderData));
+
+  // Điều hướng đến trang thanh toán
+  navigate("/thanhtoan");
+};
 
   const calculateDiscountPercent = (originalPrice, discountedPrice) => {
     const original = typeof originalPrice === 'string' 

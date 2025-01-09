@@ -7,22 +7,6 @@ import '/public/css/taikhoan.css';
 export default function Taikhoan() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [showLogoutPopup, setShowLogoutPopup] = useState(false);
-
-  const handleLogout = () => {
-    setShowLogoutPopup(true);
-  };
-
-  const confirmLogout = () => {
-    localStorage.removeItem("cartItem");
-    logout();
-    navigate("/");
-    window.location.reload();
-  };
-
-  const closeLogoutPopup = () => {
-    setShowLogoutPopup(false);
-  };
 
   // Hàm format ngày tháng
   const formatDate = (dateString) => {
@@ -34,7 +18,10 @@ export default function Taikhoan() {
     return `${day}/${month}/${year}`;
   };
 
-
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   // Mảng chứa các thông tin cần hiển thị
   const userInfo = [
@@ -97,22 +84,6 @@ export default function Taikhoan() {
           ))}
         </div>
       </div>
-
-      {showLogoutPopup && (
-        <div className="logout-popup-overlay">
-          <div className="logout-popup">
-            <div className="popup-header">
-              <i className="fas fa-sign-out-alt fa-2x" style={{ color: '#0000a3' }}></i>
-              <h2 style={{ color: '#0000a3' }}>Đăng xuất</h2>
-            </div>
-            <p>Bạn có chắc chắn muốn đăng xuất?</p>
-            <div className="logout-popup-buttons">
-              <button onClick={confirmLogout} className="btn-logout">Đăng xuất</button>
-              <button onClick={closeLogoutPopup} className="btn-cancel">Hủy</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

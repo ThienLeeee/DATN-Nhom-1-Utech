@@ -42,9 +42,6 @@ export default function Dangnhap() {
       login(user);
       localStorage.setItem('token', token);
   
-      // Hiển thị popup thành công
-      setShowSuccessPopup(true);
-  
       // Xóa giỏ hàng theo cấu trúc removeItem
       const cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
       if (cartItems.length > 0) {
@@ -54,10 +51,7 @@ export default function Dangnhap() {
       // Dispatch event để cập nhật số lượng trong Header
       window.dispatchEvent(new Event("cartUpdated"));
   
-      // Thêm thời gian chờ trước khi điều hướng
-      setTimeout(() => {
-        window.location.href = "http://localhost:5173/";
-      }, 2000); // 2 giây
+      window.location.href = "http://localhost:5173/";
     } catch (error) {
       setError(error.response?.data?.message || "Đăng nhập thất bại!");
     }
@@ -176,13 +170,6 @@ export default function Dangnhap() {
         {showSuccessPopup && (
           <div className="popup-overlay" onClick={handlePopupClick}>
             <div className="popup-content">
-              <div className="popup-icon">
-                <img
-                  src="https://img.icons8.com/ios-filled/50/4CAF50/checkmark.png"
-                  alt="Success Icon"
-                  className="check-icon"
-                />
-              </div>
               <h3 className="popup-title">Đăng nhập thành công!</h3>
               <p className="popup-message">
                 {previousPath ? "Đang chuyển bạn về trang trước đó..." : "Chào mừng bạn đã quay trở lại."}
