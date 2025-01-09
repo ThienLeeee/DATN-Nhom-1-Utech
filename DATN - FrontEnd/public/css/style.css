@@ -4889,6 +4889,9 @@ label.label_check_box_form {
     .right_bottom_detail {
         width: 100%;
     }
+    .info_detail{
+        display: none;
+    }
 }
 
 @media (max-width: 910px) {
