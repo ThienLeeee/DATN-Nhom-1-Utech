@@ -7,10 +7,10 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ChatBox from "./ChatBox";
 import "/public/css/trangchu.css";
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { useAuth } from '../../context/AuthContext';
-import Swal from 'sweetalert2';
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useAuth } from "../../context/AuthContext";
+import Swal from "sweetalert2";
 export default function Trangchu() {
   const [sanPham, setSanpham] = useState([]);
   const [danhMuc, setDanhmuc] = useState([]);
@@ -22,61 +22,66 @@ export default function Trangchu() {
   const [promotionalProducts, setPromotionalProducts] = useState([]);
   const [currentPromotionalSlide, setCurrentPromotionalSlide] = useState(0);
   const [wishlist, setWishlist] = useState(() => {
-    const savedWishlist = localStorage.getItem('wishlist');
+    const savedWishlist = localStorage.getItem("wishlist");
     return savedWishlist ? JSON.parse(savedWishlist) : [];
   });
   const { user } = useAuth();
 
   useEffect(() => {
-    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+    localStorage.setItem("wishlist", JSON.stringify(wishlist));
   }, [wishlist]);
 
   useEffect(() => {
     const fetchWishlist = async () => {
       if (user) {
         try {
-          const response = await axios.get(`http://localhost:3000/api/wishlist/${user.username}`);
+          const response = await axios.get(
+            `http://localhost:3000/api/wishlist/${user.username}`
+          );
           setWishlist(response.data);
         } catch (error) {
-          console.error('Lỗi khi lấy danh sách yêu thích:', error);
+          console.error("Lỗi khi lấy danh sách yêu thích:", error);
         }
       }
     };
-    
+
     fetchWishlist();
   }, [user]);
 
   const handleAddToWishlist = async (product) => {
     if (!user) {
-      toast.warning('Vui lòng đăng nhập để thêm sản phẩm vào danh sách yêu thích!', {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      toast.warning(
+        "Vui lòng đăng nhập để thêm sản phẩm vào danh sách yêu thích!",
+        {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        }
+      );
       return;
     }
 
-    const isProductInWishlist = wishlist.some(item => item.id === product.id);
-    
+    const isProductInWishlist = wishlist.some((item) => item.id === product.id);
+
     if (isProductInWishlist) {
-      toast.info('Sản phẩm đã có trong danh sách yêu thích!');
+      toast.info("Sản phẩm đã có trong danh sách yêu thích!");
       return;
     }
 
     try {
-      await axios.post('http://localhost:3000/api/wishlist/add', {
+      await axios.post("http://localhost:3000/api/wishlist/add", {
         username: user.username,
-        product
+        product,
       });
 
       setWishlist([...wishlist, product]);
-      toast.success('Đã thêm sản phẩm vào danh sách yêu thích!');
+      toast.success("Đã thêm sản phẩm vào danh sách yêu thích!");
     } catch (error) {
-      console.error('Lỗi khi thêm vào danh sách yêu thích:', error);
-      toast.error('Có lỗi xảy ra khi thêm sản phẩm vào danh sách yêu thích!');
+      console.error("Lỗi khi thêm vào danh sách yêu thích:", error);
+      toast.error("Có lỗi xảy ra khi thêm sản phẩm vào danh sách yêu thích!");
     }
   };
 
@@ -138,19 +143,19 @@ export default function Trangchu() {
   };
 
   const handleAddToCart = (sanPhamMoi) => {
-    if (sanPhamMoi.trang_thai !== 'Còn hàng') {
-        Swal.fire("Thông báo", "Sản phẩm đã hết hàng", "warning");
-        return;
+    if (sanPhamMoi.trang_thai !== "Còn hàng") {
+      Swal.fire("Thông báo", "Sản phẩm đã hết hàng", "warning");
+      return;
     }
 
     let cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
     const itemIndex = cartItems.findIndex((item) => item.id === sanPhamMoi.id);
 
     if (itemIndex > -1) {
-        cartItems[itemIndex].quantity += 1;
+      cartItems[itemIndex].quantity += 1;
     } else {
-        const priceAsNumber = parseInt(sanPhamMoi.gia_sp.replace(/\./g, ""));
-        cartItems.push({ ...sanPhamMoi, gia_sp: priceAsNumber, quantity: 1 });
+      const priceAsNumber = parseInt(sanPhamMoi.gia_sp.replace(/\./g, ""));
+      cartItems.push({ ...sanPhamMoi, gia_sp: priceAsNumber, quantity: 1 });
     }
 
     localStorage.setItem("cartItem", JSON.stringify(cartItems));
@@ -158,7 +163,7 @@ export default function Trangchu() {
     window.dispatchEvent(new Event("cartUpdated"));
 
     navigate("/thanhtoan");
-};
+  };
 
   // Lọc sản phẩm theo categoryId
   const sanPhamdm1 = sanPham.filter(
@@ -173,8 +178,8 @@ export default function Trangchu() {
 
   // Thêm hàm tính % giảm giá
   const calculateDiscount = (originalPrice, discountedPrice) => {
-    const original = parseInt(originalPrice.replace(/\./g, ''));
-    const discounted = parseInt(discountedPrice.replace(/\./g, ''));
+    const original = parseInt(originalPrice.replace(/\./g, ""));
+    const discounted = parseInt(discountedPrice.replace(/\./g, ""));
     const discount = Math.round(((original - discounted) / original) * 100);
     return discount;
   };
@@ -199,8 +204,6 @@ export default function Trangchu() {
                         >
                           {danhmuc.tendm}
                         </Link>
-
-                  
                       </li>
                     ))
                   ) : (
@@ -735,7 +738,10 @@ export default function Trangchu() {
             {hotProducts.map((product) => (
               <div className="product" key={product.id}>
                 <div className="box-product">
-                  <div className="pic-product" data-tooltip={`sticky${product.id}`}>
+                  <div
+                    className="pic-product"
+                    data-tooltip={`sticky${product.id}`}
+                  >
                     <Link
                       to={`/chitietsp/sanPham/${product.id}`}
                       className="d-block"
@@ -747,8 +753,6 @@ export default function Trangchu() {
                         className="w100 trans03"
                       />
                     </Link>
-
-                    
 
                     <div className="hot-icon blink" />
                     <div className="desc-product">
@@ -778,10 +782,16 @@ export default function Trangchu() {
                           ) : (
                             // Monitor specs
                             <>
-                              <li>Kiểu màn hình: {product.cau_hinh.kieu_man_hinh}</li>
+                              <li>
+                                Kiểu màn hình: {product.cau_hinh.kieu_man_hinh}
+                              </li>
                               <li>Kích thước: {product.cau_hinh.kich_thuoc}</li>
-                              <li>Độ phân giải: {product.cau_hinh.do_phan_giai}</li>
-                              <li>Tần số quét: {product.cau_hinh.tan_so_quet}</li>
+                              <li>
+                                Độ phân giải: {product.cau_hinh.do_phan_giai}
+                              </li>
+                              <li>
+                                Tần số quét: {product.cau_hinh.tan_so_quet}
+                              </li>
                               <li>Tấm nền: {product.cau_hinh.tam_nen}</li>
                             </>
                           )}
@@ -799,97 +809,144 @@ export default function Trangchu() {
                     >
                       {product.ten_sp}
                     </Link>
-                    <div className="price-product d-flex justify-content-between" style={{ margin: '8px 0', textAlign: 'left' }}>
+                    <div
+                      className="price-product d-flex justify-content-between"
+                      style={{ margin: "8px 0", textAlign: "left" }}
+                    >
                       {product.giam_gia ? (
-                        <div className="price-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '2px',  }}>
-                          <div style={{ 
-                            textDecoration: 'line-through', 
-                            color: '#707070', 
-                            fontSize: '14px', 
-                            fontWeight: 'normal' 
-                          }}>
+                        <div
+                          className="price-wrapper"
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "2px",
+                          }}
+                        >
+                          <div
+                            style={{
+                              textDecoration: "line-through",
+                              color: "#707070",
+                              fontSize: "14px",
+                              fontWeight: "normal",
+                            }}
+                          >
                             {product.gia_sp}đ
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <div style={{ 
-                              color: '#d70018', 
-                              fontSize: '16px', 
-                              fontWeight: '500' 
-                            }}>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "8px",
+                            }}
+                          >
+                            <div
+                              style={{
+                                color: "#d70018",
+                                fontSize: "16px",
+                                fontWeight: "500",
+                              }}
+                            >
                               {product.giam_gia}đ
                             </div>
-                            <div style={{ 
-                              color: '#fff',
-                              fontSize: '12px',
-                              background: '#d70018',
-                              padding: '0 6px',
-                              borderRadius: '3px',
-                              fontWeight: '500',
-                              height: '20px',
-                              display: 'flex',
-                              alignItems: 'center'
-                            }}>
-                              -{calculateDiscount(product.gia_sp, product.giam_gia)}%
+                            <div
+                              style={{
+                                color: "#fff",
+                                fontSize: "12px",
+                                background: "#d70018",
+                                padding: "0 6px",
+                                borderRadius: "3px",
+                                fontWeight: "500",
+                                height: "20px",
+                                display: "flex",
+                                alignItems: "center",
+                              }}
+                            >
+                              -
+                              {calculateDiscount(
+                                product.gia_sp,
+                                product.giam_gia
+                              )}
+                              %
                             </div>
                           </div>
                         </div>
                       ) : (
-                        <span style={{ 
-                          color: '#d70018', 
-                          fontSize: '16px', 
-                          fontWeight: '500' 
-                        }}>
+                        <span
+                          style={{
+                            color: "#d70018",
+                            fontSize: "16px",
+                            fontWeight: "500",
+                          }}
+                        >
                           {product.gia_sp}đ
                         </span>
                       )}
-                      <button 
-                      
-                      className="wishlist-btn "
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleAddToWishlist(product);
-                        
-                      }}
-                      title="Thêm vào yêu thích"
-                    >
-                      <i style={{color:'red' , fontSize: '25px', }} className={`fas fa-heart ${
-                        wishlist.some(w => w.id === product.id) ? 'active' : ''
-                      }`}>
-
-                      </i>
-                    </button>
+                      <button
+                        className="wishlist-btn "
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleAddToWishlist(product);
+                        }}
+                        title="Thêm vào yêu thích"
+                      >
+                        <i
+                          style={{ color: "red", fontSize: "25px" }}
+                          className={`fas fa-heart ${
+                            wishlist.some((w) => w.id === product.id)
+                              ? "active"
+                              : ""
+                          }`}
+                        ></i>
+                      </button>
                     </div>
-                    <div className="cart-product d-flex flex-wrap justify-content-between align-items-center" 
-                      style={{ 
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginTop: '10px'
-                      }}>
-                      <span className="status-pro sts2" style={{
-                        fontSize: '13px',
-                        color: product.trang_thai === 'Còn hàng' ? '#32CD32' : 'red',
-                        fontWeight: '400',
-                        position: 'relative',
-                        paddingLeft: '15px',
-                        border: `1px solid ${product.trang_thai === 'Còn hàng' ? '#32CD32' : 'red'}`,
-                        borderRadius: '4px',
-                        padding: '4px 8px 4px 20px',
-                        display: 'inline-flex',
-                        alignItems: 'center'
-                    }}>
-                        <span style={{
-                            width: '6px',
-                            height: '6px',
-                            borderRadius: '50%',
-                            backgroundColor: product.trang_thai === 'Còn hàng' ? '#32CD32' : 'red',
-                            position: 'absolute',
-                            left: '8px',
-                            top: '50%',
-                            transform: 'translateY(-50%)'
-                        }}></span>
+                    <div
+                      className="cart-product d-flex flex-wrap justify-content-between align-items-center"
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginTop: "10px",
+                      }}
+                    >
+                      <span
+                        className="status-pro sts2"
+                        style={{
+                          fontSize: "13px",
+                          color:
+                            product.trang_thai === "Còn hàng"
+                              ? "#32CD32"
+                              : "red",
+                          fontWeight: "400",
+                          position: "relative",
+                          paddingLeft: "15px",
+                          border: `1px solid ${
+                            product.trang_thai === "Còn hàng"
+                              ? "#32CD32"
+                              : "red"
+                          }`,
+                          borderRadius: "4px",
+                          padding: "4px 8px 4px 20px",
+                          display: "inline-flex",
+                          alignItems: "center",
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: "6px",
+                            height: "6px",
+                            borderRadius: "50%",
+                            backgroundColor:
+                              product.trang_thai === "Còn hàng"
+                                ? "#32CD32"
+                                : "red",
+                            position: "absolute",
+                            left: "8px",
+                            top: "50%",
+                            transform: "translateY(-50%)",
+                          }}
+                        ></span>
                         {product.trang_thai}
-                    </span>
+                      </span>
 
                       <span
                         className="mua_giohang"
@@ -934,8 +991,6 @@ export default function Trangchu() {
                       </li>
                     ))}
                 </ul>
-
-               
               </div>
             </div>
             <div className="hidden_tab" id="splist11" rel={11} title="LAPTOP">
@@ -956,10 +1011,8 @@ export default function Trangchu() {
                               alt={`${sanpham.ten_sp}`}
                               className="w100 trans03"
                             />
-                          
                           </Link>
 
-                         
                           <div className="hot-icon blink" />
                           <div className="desc-product">
                             <div>
@@ -990,97 +1043,144 @@ export default function Trangchu() {
                           >
                             {sanpham.ten_sp}
                           </Link>
-                          <div className="price-product d-flex justify-content-between" style={{ margin: '8px 0', textAlign: 'left' }}>
-                      {sanpham.giam_gia ? (
-                        <div className="price-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '2px',  }}>
-                          <div style={{ 
-                            textDecoration: 'line-through', 
-                            color: '#707070', 
-                            fontSize: '14px', 
-                            fontWeight: 'normal' 
-                          }}>
-                            {sanpham.gia_sp}đ
+                          <div
+                            className="price-product d-flex justify-content-between"
+                            style={{ margin: "8px 0", textAlign: "left" }}
+                          >
+                            {sanpham.giam_gia ? (
+                              <div
+                                className="price-wrapper"
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  gap: "2px",
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    textDecoration: "line-through",
+                                    color: "#707070",
+                                    fontSize: "14px",
+                                    fontWeight: "normal",
+                                  }}
+                                >
+                                  {sanpham.gia_sp}đ
+                                </div>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "8px",
+                                  }}
+                                >
+                                  <div
+                                    style={{
+                                      color: "#d70018",
+                                      fontSize: "16px",
+                                      fontWeight: "500",
+                                    }}
+                                  >
+                                    {sanpham.giam_gia}đ
+                                  </div>
+                                  <div
+                                    style={{
+                                      color: "#fff",
+                                      fontSize: "12px",
+                                      background: "#d70018",
+                                      padding: "0 6px",
+                                      borderRadius: "3px",
+                                      fontWeight: "500",
+                                      height: "20px",
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    -
+                                    {calculateDiscount(
+                                      sanpham.gia_sp,
+                                      sanpham.giam_gia
+                                    )}
+                                    %
+                                  </div>
+                                </div>
+                              </div>
+                            ) : (
+                              <span
+                                style={{
+                                  color: "#d70018",
+                                  fontSize: "16px",
+                                  fontWeight: "500",
+                                }}
+                              >
+                                {sanpham.gia_sp}đ
+                              </span>
+                            )}
+                            <button
+                              className="wishlist-btn "
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleAddToWishlist(sanpham);
+                              }}
+                              title="Thêm vào yêu thích"
+                            >
+                              <i
+                                style={{ color: "red", fontSize: "20px" }}
+                                className={`fas fa-heart ${
+                                  wishlist.some((w) => w.id === sanpham.id)
+                                    ? "active"
+                                    : ""
+                                }`}
+                              ></i>
+                            </button>
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <div style={{ 
-                              color: '#d70018', 
-                              fontSize: '16px', 
-                              fontWeight: '500' 
-                            }}>
-                              {sanpham.giam_gia}đ
-                            </div>
-                            <div style={{ 
-                              color: '#fff',
-                              fontSize: '12px',
-                              background: '#d70018',
-                              padding: '0 6px',
-                              borderRadius: '3px',
-                              fontWeight: '500',
-                              height: '20px',
-                              display: 'flex',
-                              alignItems: 'center'
-                            }}>
-                              -{calculateDiscount(sanpham.gia_sp, sanpham.giam_gia)}%
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <span style={{ 
-                          color: '#d70018', 
-                          fontSize: '16px', 
-                          fontWeight: '500' 
-                        }}>
-                          {sanpham.gia_sp}đ
-                        </span>
-                      )}
-                      <button 
-                      
-                      className="wishlist-btn "
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleAddToWishlist(sanpham);
-                        
-                      }}
-                      title="Thêm vào yêu thích"
-                    >
-                      <i style={{color:'red' , fontSize: '20px', }} className={`fas fa-heart ${
-                        wishlist.some(w => w.id === sanpham.id) ? 'active' : ''
-                      }`}>
-
-                      </i>
-                    </button>
-                    </div>
-                          <div className="cart-product d-flex flex-wrap justify-content-between align-items-center" 
-                            style={{ 
-                              display: 'flex',
-                              justifyContent: 'space-between',
-                              alignItems: 'center',
-                              marginTop: '10px'
-                            }}>
-                            <span className="status-pro sts2" style={{
-                            fontSize: '13px',
-                            color: sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red',
-                            fontWeight: '400',
-                            position: 'relative',
-                            paddingLeft: '15px',
-                            border: `1px solid ${sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red'}`,
-                            borderRadius: '4px',
-                            padding: '4px 8px 4px 20px',
-                            display: 'inline-flex',
-                            alignItems: 'center'
-                        }}>
-                            <span style={{
-                                width: '6px',
-                                height: '6px',
-                                borderRadius: '50%',
-                                backgroundColor: sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red',
-                                position: 'absolute',
-                                left: '8px',
-                                top: '50%',
-                                transform: 'translateY(-50%)'
-                            }}></span>
-                            {sanpham.trang_thai}
-                        </span>
+                          <div
+                            className="cart-product d-flex flex-wrap justify-content-between align-items-center"
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              marginTop: "10px",
+                            }}
+                          >
+                            <span
+                              className="status-pro sts2"
+                              style={{
+                                fontSize: "13px",
+                                color:
+                                  sanpham.trang_thai === "Còn hàng"
+                                    ? "#32CD32"
+                                    : "red",
+                                fontWeight: "400",
+                                position: "relative",
+                                paddingLeft: "15px",
+                                border: `1px solid ${
+                                  sanpham.trang_thai === "Còn hàng"
+                                    ? "#32CD32"
+                                    : "red"
+                                }`,
+                                borderRadius: "4px",
+                                padding: "4px 8px 4px 20px",
+                                display: "inline-flex",
+                                alignItems: "center",
+                              }}
+                            >
+                              <span
+                                style={{
+                                  width: "6px",
+                                  height: "6px",
+                                  borderRadius: "50%",
+                                  backgroundColor:
+                                    sanpham.trang_thai === "Còn hàng"
+                                      ? "#32CD32"
+                                      : "red",
+                                  position: "absolute",
+                                  left: "8px",
+                                  top: "50%",
+                                  transform: "translateY(-50%)",
+                                }}
+                              ></span>
+                              {sanpham.trang_thai}
+                            </span>
 
                             <span
                               className="mua_giohang"
@@ -1099,7 +1199,6 @@ export default function Trangchu() {
                   <p>Sản phẩm đang trong quá trình cập nhật...</p>
                 )}
               </div>
-             
             </div>
           </div>
         </div>
@@ -1149,10 +1248,8 @@ export default function Trangchu() {
                               alt={`${sanpham.ten_sp}`}
                               className="w100 trans03"
                             />
-                          
                           </Link>
 
-                      
                           <div className="hot-icon blink" />
                           <div className="desc-product">
                             <div>
@@ -1181,97 +1278,144 @@ export default function Trangchu() {
                           >
                             {sanpham.ten_sp}
                           </Link>
-                          <div className="price-product d-flex justify-content-between" style={{ margin: '8px 0', textAlign: 'left' }}>
-                      {sanpham.giam_gia ? (
-                        <div className="price-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '2px',  }}>
-                          <div style={{ 
-                            textDecoration: 'line-through', 
-                            color: '#707070', 
-                            fontSize: '14px', 
-                            fontWeight: 'normal' 
-                          }}>
-                            {sanpham.gia_sp}đ
+                          <div
+                            className="price-product d-flex justify-content-between"
+                            style={{ margin: "8px 0", textAlign: "left" }}
+                          >
+                            {sanpham.giam_gia ? (
+                              <div
+                                className="price-wrapper"
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  gap: "2px",
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    textDecoration: "line-through",
+                                    color: "#707070",
+                                    fontSize: "14px",
+                                    fontWeight: "normal",
+                                  }}
+                                >
+                                  {sanpham.gia_sp}đ
+                                </div>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "8px",
+                                  }}
+                                >
+                                  <div
+                                    style={{
+                                      color: "#d70018",
+                                      fontSize: "16px",
+                                      fontWeight: "500",
+                                    }}
+                                  >
+                                    {sanpham.giam_gia}đ
+                                  </div>
+                                  <div
+                                    style={{
+                                      color: "#fff",
+                                      fontSize: "12px",
+                                      background: "#d70018",
+                                      padding: "0 6px",
+                                      borderRadius: "3px",
+                                      fontWeight: "500",
+                                      height: "20px",
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    -
+                                    {calculateDiscount(
+                                      sanpham.gia_sp,
+                                      sanpham.giam_gia
+                                    )}
+                                    %
+                                  </div>
+                                </div>
+                              </div>
+                            ) : (
+                              <span
+                                style={{
+                                  color: "#d70018",
+                                  fontSize: "16px",
+                                  fontWeight: "500",
+                                }}
+                              >
+                                {sanpham.gia_sp}đ
+                              </span>
+                            )}
+                            <button
+                              className="wishlist-btn "
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleAddToWishlist(sanpham);
+                              }}
+                              title="Thêm vào yêu thích"
+                            >
+                              <i
+                                style={{ color: "red", fontSize: "20px" }}
+                                className={`fas fa-heart ${
+                                  wishlist.some((w) => w.id === sanpham.id)
+                                    ? "active"
+                                    : ""
+                                }`}
+                              ></i>
+                            </button>
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <div style={{ 
-                              color: '#d70018', 
-                              fontSize: '16px', 
-                              fontWeight: '500' 
-                            }}>
-                              {sanpham.giam_gia}đ
-                            </div>
-                            <div style={{ 
-                              color: '#fff',
-                              fontSize: '12px',
-                              background: '#d70018',
-                              padding: '0 6px',
-                              borderRadius: '3px',
-                              fontWeight: '500',
-                              height: '20px',
-                              display: 'flex',
-                              alignItems: 'center'
-                            }}>
-                              -{calculateDiscount(sanpham.gia_sp, sanpham.giam_gia)}%
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <span style={{ 
-                          color: '#d70018', 
-                          fontSize: '16px', 
-                          fontWeight: '500' 
-                        }}>
-                          {sanpham.gia_sp}đ
-                        </span>
-                      )}
-                      <button 
-                      
-                      className="wishlist-btn "
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleAddToWishlist(sanpham);
-                        
-                      }}
-                      title="Thêm vào yêu thích"
-                    >
-                      <i style={{color:'red' , fontSize: '20px', }} className={`fas fa-heart ${
-                        wishlist.some(w => w.id === sanpham.id) ? 'active' : ''
-                      }`}>
-
-                      </i>
-                    </button>
-                    </div>
-                          <div className="cart-product d-flex flex-wrap justify-content-between align-items-center" 
-                            style={{ 
-                              display: 'flex',
-                              justifyContent: 'space-between',
-                              alignItems: 'center',
-                              marginTop: '10px'
-                            }}>
-                            <span className="status-pro sts2" style={{
-                            fontSize: '13px',
-                            color: sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red',
-                            fontWeight: '400',
-                            position: 'relative',
-                            paddingLeft: '15px',
-                            border: `1px solid ${sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red'}`,
-                            borderRadius: '4px',
-                            padding: '4px 8px 4px 20px',
-                            display: 'inline-flex',
-                            alignItems: 'center'
-                        }}>
-                            <span style={{
-                                width: '6px',
-                                height: '6px',
-                                borderRadius: '50%',
-                                backgroundColor: sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red',
-                                position: 'absolute',
-                                left: '8px',
-                                top: '50%',
-                                transform: 'translateY(-50%)'
-                            }}></span>
-                            {sanpham.trang_thai}
-                        </span>
+                          <div
+                            className="cart-product d-flex flex-wrap justify-content-between align-items-center"
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              marginTop: "10px",
+                            }}
+                          >
+                            <span
+                              className="status-pro sts2"
+                              style={{
+                                fontSize: "13px",
+                                color:
+                                  sanpham.trang_thai === "Còn hàng"
+                                    ? "#32CD32"
+                                    : "red",
+                                fontWeight: "400",
+                                position: "relative",
+                                paddingLeft: "15px",
+                                border: `1px solid ${
+                                  sanpham.trang_thai === "Còn hàng"
+                                    ? "#32CD32"
+                                    : "red"
+                                }`,
+                                borderRadius: "4px",
+                                padding: "4px 8px 4px 20px",
+                                display: "inline-flex",
+                                alignItems: "center",
+                              }}
+                            >
+                              <span
+                                style={{
+                                  width: "6px",
+                                  height: "6px",
+                                  borderRadius: "50%",
+                                  backgroundColor:
+                                    sanpham.trang_thai === "Còn hàng"
+                                      ? "#32CD32"
+                                      : "red",
+                                  position: "absolute",
+                                  left: "8px",
+                                  top: "50%",
+                                  transform: "translateY(-50%)",
+                                }}
+                              ></span>
+                              {sanpham.trang_thai}
+                            </span>
                             <span
                               className="mua_giohang"
                               rel={7385}
@@ -1354,10 +1498,8 @@ export default function Trangchu() {
                               alt={`${sanpham.ten_sp}`}
                               className="w100 trans03"
                             />
-                          
                           </Link>
 
-                        
                           <div className="hot-icon blink" />
                           <div className="desc-product">
                             <div>
@@ -1411,97 +1553,144 @@ export default function Trangchu() {
                           >
                             {sanpham.ten_sp}
                           </Link>
-                          <div className="price-product d-flex justify-content-between" style={{ margin: '8px 0', textAlign: 'left' }}>
-                      {sanpham.giam_gia ? (
-                        <div className="price-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '2px',  }}>
-                          <div style={{ 
-                            textDecoration: 'line-through', 
-                            color: '#707070', 
-                            fontSize: '14px', 
-                            fontWeight: 'normal' 
-                          }}>
-                            {sanpham.gia_sp}đ
+                          <div
+                            className="price-product d-flex justify-content-between"
+                            style={{ margin: "8px 0", textAlign: "left" }}
+                          >
+                            {sanpham.giam_gia ? (
+                              <div
+                                className="price-wrapper"
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  gap: "2px",
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    textDecoration: "line-through",
+                                    color: "#707070",
+                                    fontSize: "14px",
+                                    fontWeight: "normal",
+                                  }}
+                                >
+                                  {sanpham.gia_sp}đ
+                                </div>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "8px",
+                                  }}
+                                >
+                                  <div
+                                    style={{
+                                      color: "#d70018",
+                                      fontSize: "16px",
+                                      fontWeight: "500",
+                                    }}
+                                  >
+                                    {sanpham.giam_gia}đ
+                                  </div>
+                                  <div
+                                    style={{
+                                      color: "#fff",
+                                      fontSize: "12px",
+                                      background: "#d70018",
+                                      padding: "0 6px",
+                                      borderRadius: "3px",
+                                      fontWeight: "500",
+                                      height: "20px",
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    -
+                                    {calculateDiscount(
+                                      sanpham.gia_sp,
+                                      sanpham.giam_gia
+                                    )}
+                                    %
+                                  </div>
+                                </div>
+                              </div>
+                            ) : (
+                              <span
+                                style={{
+                                  color: "#d70018",
+                                  fontSize: "16px",
+                                  fontWeight: "500",
+                                }}
+                              >
+                                {sanpham.gia_sp}đ
+                              </span>
+                            )}
+                            <button
+                              className="wishlist-btn "
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleAddToWishlist(sanpham);
+                              }}
+                              title="Thêm vào yêu thích"
+                            >
+                              <i
+                                style={{ color: "red", fontSize: "20px" }}
+                                className={`fas fa-heart ${
+                                  wishlist.some((w) => w.id === sanpham.id)
+                                    ? "active"
+                                    : ""
+                                }`}
+                              ></i>
+                            </button>
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <div style={{ 
-                              color: '#d70018', 
-                              fontSize: '16px', 
-                              fontWeight: '500' 
-                            }}>
-                              {sanpham.giam_gia}đ
-                            </div>
-                            <div style={{ 
-                              color: '#fff',
-                              fontSize: '12px',
-                              background: '#d70018',
-                              padding: '0 6px',
-                              borderRadius: '3px',
-                              fontWeight: '500',
-                              height: '20px',
-                              display: 'flex',
-                              alignItems: 'center'
-                            }}>
-                              -{calculateDiscount(sanpham.gia_sp, sanpham.giam_gia)}%
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <span style={{ 
-                          color: '#d70018', 
-                          fontSize: '16px', 
-                          fontWeight: '500' 
-                        }}>
-                          {sanpham.gia_sp}đ
-                        </span>
-                      )}
-                      <button 
-                      
-                      className="wishlist-btn "
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleAddToWishlist(sanpham);
-                        
-                      }}
-                      title="Thêm vào yêu thích"
-                    >
-                      <i style={{color:'red' , fontSize: '20px', }} className={`fas fa-heart ${
-                        wishlist.some(w => w.id === sanpham.id) ? 'active' : ''
-                      }`}>
-
-                      </i>
-                    </button>
-                    </div>
-                          <div className="cart-product d-flex flex-wrap justify-content-between align-items-center" 
-                            style={{ 
-                              display: 'flex',
-                              justifyContent: 'space-between',
-                              alignItems: 'center',
-                              marginTop: '10px'
-                            }}>
-                           <span className="status-pro sts2" style={{
-                            fontSize: '13px',
-                            color: sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red',
-                            fontWeight: '400',
-                            position: 'relative',
-                            paddingLeft: '15px',
-                            border: `1px solid ${sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red'}`,
-                            borderRadius: '4px',
-                            padding: '4px 8px 4px 20px',
-                            display: 'inline-flex',
-                            alignItems: 'center'
-                        }}>
-                            <span style={{
-                                width: '6px',
-                                height: '6px',
-                                borderRadius: '50%',
-                                backgroundColor: sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red',
-                                position: 'absolute',
-                                left: '8px',
-                                top: '50%',
-                                transform: 'translateY(-50%)'
-                            }}></span>
-                            {sanpham.trang_thai}
-                        </span>
+                          <div
+                            className="cart-product d-flex flex-wrap justify-content-between align-items-center"
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              marginTop: "10px",
+                            }}
+                          >
+                            <span
+                              className="status-pro sts2"
+                              style={{
+                                fontSize: "13px",
+                                color:
+                                  sanpham.trang_thai === "Còn hàng"
+                                    ? "#32CD32"
+                                    : "red",
+                                fontWeight: "400",
+                                position: "relative",
+                                paddingLeft: "15px",
+                                border: `1px solid ${
+                                  sanpham.trang_thai === "Còn hàng"
+                                    ? "#32CD32"
+                                    : "red"
+                                }`,
+                                borderRadius: "4px",
+                                padding: "4px 8px 4px 20px",
+                                display: "inline-flex",
+                                alignItems: "center",
+                              }}
+                            >
+                              <span
+                                style={{
+                                  width: "6px",
+                                  height: "6px",
+                                  borderRadius: "50%",
+                                  backgroundColor:
+                                    sanpham.trang_thai === "Còn hàng"
+                                      ? "#32CD32"
+                                      : "red",
+                                  position: "absolute",
+                                  left: "8px",
+                                  top: "50%",
+                                  transform: "translateY(-50%)",
+                                }}
+                              ></span>
+                              {sanpham.trang_thai}
+                            </span>
                             <span
                               className="mua_giohang"
                               rel={7385}
@@ -1519,11 +1708,10 @@ export default function Trangchu() {
                   <p>Sản phẩm đang trong quá trình cập nhật...</p>
                 )}
               </div>
-             
             </div>
           </div>
         </div>
-        <ChatBox/>
+        <ChatBox />
       </div>
     </>
   );
