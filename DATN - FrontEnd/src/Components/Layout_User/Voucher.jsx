@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import CryptoJS from 'crypto-js';
 import { toast } from 'react-toastify';
 import '/public/css/taikhoan.css';
 
