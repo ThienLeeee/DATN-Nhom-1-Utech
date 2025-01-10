@@ -51,13 +51,33 @@
     animation: slideIn 0.5s ease-in-out;
   }
   .wishlist-btn {
-    background: none; /* Loại bỏ màu nền */
-    border: none; /* Loại bỏ viền */
-    padding: 0; /* Loại bỏ khoảng cách bên trong */
-    margin: 0; /* Loại bỏ khoảng cách bên ngoài */
-    display: flex; /* Để căn chỉnh icon nằm sát trái */
-    align-items: center; /* Canh giữa theo chiều dọc nếu cần */
-    cursor: pointer; /* Thêm hiệu ứng con trỏ chuột */
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
   
+  .wishlist-btn .fa-heart {
+    transition: all 0.3s ease;
+    color: #ccc;
+    font-size: 20px;
+  }
+  
+  .wishlist-btn:hover .fa-heart {
+    transform: scale(1.1);
+  }
+  
+  /* Khi sản phẩm đã được thêm vào wishlist */
+  .wishlist-btn.active .fa-heart,
+  .wishlist-btn .fa-heart.active {
+    color: #ff4081;
+    animation: heartBeat 0.3s ease-in-out;
+  }
+  
+  @keyframes heartBeat {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
   }
   

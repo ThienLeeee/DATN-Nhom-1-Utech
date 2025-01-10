@@ -2242,7 +2242,16 @@ router.post('/wishlist/add', async (req, res) => {
       const productExists = userWishlist.products.some(p => p.id === product.id);
       
       if (productExists) {
-        return res.status(400).json({ message: 'Sản phẩm đã có trong danh sách yêu thích' });
+        // Nếu sản phẩm đã tồn tại, xóa nó khỏi danh sách
+        await wishlistCollection.updateOne(
+          { username },
+          { $pull: { products: { id: product.id } } }
+        );
+        return res.status(200).json({ 
+          success: true,
+          message: 'Đã xóa sản phẩm khỏi danh sách yêu thích',
+          action: 'remove'
+        });
       }
       
       // Thêm sản phẩm mới vào danh sách
@@ -2258,10 +2267,15 @@ router.post('/wishlist/add', async (req, res) => {
       });
     }
     
-    res.status(200).json({ message: 'Đã thêm sản phẩm vào danh sách yêu thích' });
+    res.status(200).json({ 
+      success: true,
+      message: 'Đã thêm sản phẩm vào danh sách yêu thích',
+      action: 'add'
+    });
   } catch (error) {
     res.status(500).json({ 
-      message: 'Lỗi khi thêm vào danh sách yêu thích',
+      success: false,
+      message: 'Lỗi khi thao tác với danh sách yêu thích',
       error: error.message 
     });
   }
@@ -2274,14 +2288,25 @@ router.delete('/wishlist/remove', async (req, res) => {
     const db = await connectDb();
     const wishlistCollection = db.collection('wishlist');
     
-    await wishlistCollection.updateOne(
+    const result = await wishlistCollection.updateOne(
       { username },
       { $pull: { products: { id: productId } } }
     );
-    
-    res.status(200).json({ message: 'Đã xóa sản phẩm khỏi danh sách yêu thích' });
+
+    if (result.modifiedCount > 0) {
+      res.status(200).json({ 
+        success: true,
+        message: 'Đã xóa sản phẩm khỏi danh sách yêu thích' 
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: 'Không tìm thấy sản phẩm trong danh sách yêu thích'
+      });
+    }
   } catch (error) {
     res.status(500).json({ 
+      success: false,
       message: 'Lỗi khi xóa khỏi danh sách yêu thích',
       error: error.message 
     });
@@ -2857,7 +2882,7 @@ router.get('/vouchers', async (req, res) => {
   try {
     const db = await connectDb();
     const vouchersCollection = db.collection('vouchers');
-    const vouchers = await vouchersCollection.find().toArray();
+    const vouchers = await vouchersCollection.find({}).toArray();
     res.status(200).json(vouchers);
   } catch (error) {
     res.status(500).json({ message: 'Lỗi khi lấy danh sách voucher', error: error.message });
@@ -3034,12 +3059,10 @@ router.get('/vouchers/user/:userId', async (req, res) => {
     const userVouchersCollection = db.collection('user_vouchers');
     const vouchersCollection = db.collection('vouchers');
 
-    // Lấy tất cả voucher của user
     const userVouchers = await userVouchersCollection.find({ 
       user_id: parseInt(userId)
     }).toArray();
 
-    // Lấy thông tin chi tiết của từng voucher
     const voucherDetails = await Promise.all(
       userVouchers.map(async (uv) => {
         const voucher = await vouchersCollection.findOne({ id: uv.voucher_id });

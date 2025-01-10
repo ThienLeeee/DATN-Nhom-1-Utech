@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import '/public/css/taikhoan.css';
 
 export default function Voucher() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [availableVouchers, setAvailableVouchers] = useState([]); 
   const [myVouchers, setMyVouchers] = useState([]);
@@ -39,8 +39,13 @@ export default function Voucher() {
           return isActive && isValid && hasQuantity && notReceived;
         });
 
+        // Lọc voucher của user để loại bỏ những voucher không còn tồn tại trong database
+        const validUserVouchers = myVouchersResponse.data.filter(userVoucher => 
+          vouchersResponse.data.some(v => v.id === userVoucher.id)
+        );
+
         setAvailableVouchers(activeVouchers);
-        setMyVouchers(myVouchersResponse.data);
+        setMyVouchers(validUserVouchers);
       } catch (error) {
         console.error('Lỗi khi lấy danh sách voucher:', error);
         toast.error('Có lỗi xảy ra khi tải voucher');
@@ -49,7 +54,16 @@ export default function Voucher() {
       }
     };
 
+    // Gọi lần đầu khi component mount
     fetchVouchers();
+
+    // Thiết lập interval để poll mỗi 30 giây
+    const intervalId = setInterval(fetchVouchers, 30000);
+
+    // Cleanup khi component unmount
+    return () => {
+      clearInterval(intervalId);
+    };
   }, [user, navigate]);
 
   const handleLogout = () => {
@@ -170,14 +184,14 @@ export default function Voucher() {
                         <h3 className="voucher-value">
                           {voucher.discount_type === 'percent' 
                             ? `Giảm ${voucher.discount_value}%` 
-                            : `Giảm ${voucher.discount_value.toLocaleString('vi-VN')}đ`}
+                            : `Giảm ${voucher.discount_value?.toLocaleString('vi-VN') || 0}đ`}
                         </h3>
                         <p className="min-order">
-                          Đơn tối thiểu {voucher.min_order_value.toLocaleString('vi-VN')}đ
+                          Đơn tối thiểu {voucher.min_order_value?.toLocaleString('vi-VN') || 0}đ
                         </p>
                         {voucher.max_discount && (
                           <p className="max-discount">
-                            Giảm tối đa {voucher.max_discount.toLocaleString('vi-VN')}đ
+                            Giảm tối đa {voucher.max_discount?.toLocaleString('vi-VN') || 0}đ
                           </p>
                         )}
                         <p className="expiry">
@@ -218,14 +232,14 @@ export default function Voucher() {
                         <h3 className="voucher-value">
                           {voucher.discount_type === 'percent' 
                             ? `Giảm ${voucher.discount_value}%` 
-                            : `Giảm ${voucher.discount_value.toLocaleString('vi-VN')}đ`}
+                            : `Giảm ${voucher.discount_value?.toLocaleString('vi-VN') || 0}đ`}
                         </h3>
                         <p className="min-order">
-                          Đơn tối thiểu {voucher.min_order_value.toLocaleString('vi-VN')}đ
+                          Đơn tối thiểu {voucher.min_order_value?.toLocaleString('vi-VN') || 0}đ
                         </p>
                         {voucher.max_discount && (
                           <p className="max-discount">
-                            Giảm tối đa {voucher.max_discount.toLocaleString('vi-VN')}đ
+                            Giảm tối đa {voucher.max_discount?.toLocaleString('vi-VN') || 0}đ
                           </p>
                         )}
                         <p className="expiry">
@@ -242,7 +256,7 @@ export default function Voucher() {
                     </div>
                     <div className="voucher-footer">
                       <span className="remaining">
-                        Còn lại: {voucher.quantity - voucher.used_count}
+                        Còn lại: {(voucher.quantity - (voucher.used_count || 0)) || 0}
                       </span>
                     </div>
                   </div>

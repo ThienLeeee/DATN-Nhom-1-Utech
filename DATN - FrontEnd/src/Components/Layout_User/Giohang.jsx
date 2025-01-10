@@ -162,21 +162,31 @@ const handleCheckout = (e) => {
     return Math.round(((original - discounted) / original) * 100);
   };
 
-  // Fetch vouchers của user
+  // Thêm useEffect để lấy voucher của user
   useEffect(() => {
     const fetchUserVouchers = async () => {
       if (!user) return;
       
       try {
-        const response = await axios.get(`http://localhost:3000/api/vouchers/user/${user.id}`);
+        // Lấy tất cả voucher có sẵn
+        const vouchersResponse = await axios.get('http://localhost:3000/api/vouchers');
+        
+        // Lấy voucher của user
+        const myVouchersResponse = await axios.get(`http://localhost:3000/api/vouchers/user/${user.id}`);
+
         // Lọc voucher còn hiệu lực và chưa sử dụng
-        const validVouchers = response.data.filter(voucher => 
-          !voucher.used && 
-          new Date(voucher.end_date) >= new Date()
-        );
+        const validVouchers = myVouchersResponse.data.filter(userVoucher => {
+          const voucherExists = vouchersResponse.data.some(v => v.id === userVoucher.id);
+          const isValid = new Date(userVoucher.end_date) >= new Date();
+          const notUsed = !userVoucher.used;
+          
+          return voucherExists && isValid && notUsed;
+        });
+
         setMyVouchers(validVouchers);
       } catch (error) {
         console.error('Lỗi khi lấy voucher:', error);
+        toast.error('Có lỗi xảy ra khi tải voucher');
       }
     };
 
@@ -266,22 +276,6 @@ const handleCheckout = (e) => {
       setIsChecking(false);
     }
   };
-
-  // Thêm useEffect để lấy danh sách voucher khi component mount
-  useEffect(() => {
-    const fetchVouchers = async () => {
-      if (!user) return;
-      
-      try {
-        const response = await axios.get(`http://localhost:3000/api/vouchers/user/${user.id}`);
-        setMyVouchers(response.data);
-      } catch (error) {
-        console.error('Lỗi khi lấy danh sách voucher:', error);
-      }
-    };
-
-    fetchVouchers();
-  }, [user]);
 
   return (
     <div className="wrap-main wrap-page">
@@ -593,42 +587,13 @@ const handleCheckout = (e) => {
         <div className="voucher-modal">
           <div className="voucher-modal-content">
             <div className="modal-header">
-              <h3>Chọn Voucher</h3>
+              <h3>Voucher của bạn</h3>
               <button className="close-btn" onClick={() => setShowVoucherModal(false)}>
                 <i className="fas fa-times"></i>
               </button>
             </div>
 
-            <div className="voucher-input-section">
-              <div className="voucher-input-wrapper">
-                <input
-                  type="text"
-                  className="voucher-input"
-                  placeholder="Nhập mã voucher của bạn"
-                  value={voucherCode}
-                  onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      handleApplyVoucherCode();
-                    }
-                  }}
-                />
-                <button 
-                  className={`apply-code-btn ${isChecking ? 'loading' : ''}`}
-                  onClick={handleApplyVoucherCode}
-                  disabled={!voucherCode.trim() || isChecking}
-                >
-                  {isChecking ? '' : 'Áp dụng'}
-                </button>
-              </div>
-              <div className="voucher-input-hint">
-                Nhập mã voucher để được giảm giá cho đơn hàng
-              </div>
-            </div>
-
             <div className="vouchers-list">
-              <h4 className="vouchers-section-title">Voucher có sẵn</h4>
               {myVouchers.length > 0 ? (
                 myVouchers.map((voucher) => (
                   <div 
@@ -641,14 +606,14 @@ const handleCheckout = (e) => {
                       <h4>
                         {voucher.discount_type === 'percent' 
                           ? `Giảm ${voucher.discount_value}%` 
-                          : `Giảm ${voucher.discount_value.toLocaleString('vi-VN')}đ`}
+                          : `Giảm ${voucher.discount_value?.toLocaleString('vi-VN') || 0}đ`}
                       </h4>
                       <p className="min-order">
-                        Đơn tối thiểu {voucher.min_order_value.toLocaleString('vi-VN')}đ
+                        Đơn tối thiểu {voucher.min_order_value?.toLocaleString('vi-VN') || 0}đ
                       </p>
                       {voucher.max_discount && (
                         <p className="max-discount">
-                          Giảm tối đa {voucher.max_discount.toLocaleString('vi-VN')}đ
+                          Giảm tối đa {voucher.max_discount?.toLocaleString('vi-VN') || 0}đ
                         </p>
                       )}
                       <p className="expiry">

@@ -866,3 +866,7 @@
     font-weight: bold;
   }
 }
+
+.user-button .username {
+  font-weight: normal;
+}

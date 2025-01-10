@@ -11,6 +11,92 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "../../context/AuthContext";
 import Swal from "sweetalert2";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+// Cập nhật style cho toast
+const toastConfig = {
+  position: "top-right",
+  autoClose: 3000,
+  hideProgressBar: false,
+  closeOnClick: true,
+  pauseOnHover: true,
+  draggable: true,
+  icon: false,
+  style: {
+    fontSize: '14px',
+    fontWeight: '500',
+    borderRadius: '10px',
+    padding: '16px',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+    minHeight: '60px',
+    display: 'flex',
+    alignItems: 'center'
+  }
+};
+
+// Style cho từng loại toast
+const successToastStyle = {
+  ...toastConfig,
+  icon: false,
+  style: {
+    ...toastConfig.style,
+    background: 'linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(76, 175, 80, 0.05) 100%)',
+    border: '1px solid rgba(76, 175, 80, 0.2)',
+    color: '#1b5e20',
+  }
+};
+
+const warningToastStyle = {
+  ...toastConfig,
+  icon: false,
+  style: {
+    ...toastConfig.style,
+    background: 'linear-gradient(135deg, rgba(255, 152, 0, 0.15) 0%, rgba(255, 152, 0, 0.05) 100%)',
+    border: '1px solid rgba(255, 152, 0, 0.2)',
+    color: '#e65100',
+  }
+};
+
+const infoToastStyle = {
+  ...toastConfig,
+  icon: false,
+  style: {
+    ...toastConfig.style,
+    background: 'linear-gradient(135deg, rgba(33, 150, 243, 0.15) 0%, rgba(33, 150, 243, 0.05) 100%)',
+    border: '1px solid rgba(33, 150, 243, 0.2)',
+    color: '#0d47a1',
+  }
+};
+
+const errorToastStyle = {
+  ...toastConfig,
+  icon: false,
+  style: {
+    ...toastConfig.style,
+    background: 'linear-gradient(135deg, rgba(244, 67, 54, 0.15) 0%, rgba(244, 67, 54, 0.05) 100%)',
+    border: '1px solid rgba(244, 67, 54, 0.2)',
+    color: '#b71c1c',
+  }
+};
+
+// Thêm style mới cho toast xóa thành công
+const removeSuccessStyle = {
+  ...toastConfig,
+  icon: false,
+  style: {
+    ...toastConfig.style,
+    background: '#1f2937', // Nền đen
+    color: '#fff',
+    fontSize: '14px',
+    fontWeight: '500',
+    borderRadius: '10px',
+    padding: '16px',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+    border: 'none'
+  }
+};
+
 export default function Trangchu() {
   const [sanPham, setSanpham] = useState([]);
   const [danhMuc, setDanhmuc] = useState([]);
@@ -51,37 +137,135 @@ export default function Trangchu() {
   const handleAddToWishlist = async (product) => {
     if (!user) {
       toast.warning(
-        "Vui lòng đăng nhập để thêm sản phẩm vào danh sách yêu thích!",
-        {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        }
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <i className="fas fa-exclamation-circle" style={{ fontSize: '24px' }}></i>
+          <span style={{ flex: 1 }}>Vui lòng đăng nhập để thêm sản phẩm vào danh sách yêu thích!</span>
+        </div>,
+        warningToastStyle
       );
-      return;
-    }
-
-    const isProductInWishlist = wishlist.some((item) => item.id === product.id);
-
-    if (isProductInWishlist) {
-      toast.info("Sản phẩm đã có trong danh sách yêu thích!");
+      localStorage.setItem('previousPath', '/');
+      navigate('/dangnhap');
       return;
     }
 
     try {
-      await axios.post("http://localhost:3000/api/wishlist/add", {
-        username: user.username,
-        product,
+      // Cập nhật UI ngay lập tức
+      setWishlist(prev => {
+        const isInWishlist = prev.some(item => item.id === product.id);
+        if (isInWishlist) {
+          return prev.filter(item => item.id !== product.id);
+        } else {
+          return [...prev, product];
+        }
       });
 
-      setWishlist([...wishlist, product]);
-      toast.success("Đã thêm sản phẩm vào danh sách yêu thích!");
+      const response = await axios.post('http://localhost:3000/api/wishlist/add', {
+        username: user.username,
+        product: product
+      });
+
+      if (response.data.success) {
+        if (response.data.action === 'add') {
+          // Toast thêm thành công
+          toast.success(
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{
+                background: '#ffffff',
+                borderRadius: '50%',
+                width: '24px',
+                height: '24px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <i className="fas fa-check" style={{ 
+                  color: '#10b981',
+                  fontSize: '14px' 
+                }}></i>
+              </div>
+              <span style={{ flex: 1 }}>{response.data.message}</span>
+            </div>,
+            {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              style: {
+                background: '#1f2937', // Nền đen
+                color: '#fff',
+                fontSize: '14px',
+                fontWeight: '500',
+                borderRadius: '10px',
+                padding: '16px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                border: 'none'
+              },
+              icon: false
+            }
+          );
+        } else {
+          // Toast xóa thành công
+          toast.success(
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{
+                background: '#ffffff',
+                borderRadius: '50%',
+                width: '24px',
+                height: '24px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <i className="fas fa-trash-alt" style={{ 
+                  color: '#ff4444',
+                  fontSize: '14px' 
+                }}></i>
+              </div>
+              <span style={{ flex: 1 }}>{response.data.message}</span>
+            </div>,
+            {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              style: {
+                background: '#1f2937',
+                color: '#fff',
+                fontSize: '14px',
+                fontWeight: '500',
+                borderRadius: '10px',
+                padding: '16px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                border: 'none'
+              },
+              icon: false
+            }
+          );
+        }
+      }
     } catch (error) {
-      console.error("Lỗi khi thêm vào danh sách yêu thích:", error);
-      toast.error("Có lỗi xảy ra khi thêm sản phẩm vào danh sách yêu thích!");
+      // Hoàn tác UI nếu có lỗi
+      setWishlist(prev => {
+        const isInWishlist = prev.some(item => item.id === product.id);
+        if (isInWishlist) {
+          return prev.filter(item => item.id !== product.id);
+        } else {
+          return [...prev, product];
+        }
+      });
+      toast.error(
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <i className="fas fa-times-circle" style={{ fontSize: '24px' }}></i>
+          <span style={{ flex: 1 }}>Có lỗi xảy ra khi thực hiện thao tác</span>
+        </div>,
+        errorToastStyle
+      );
     }
   };
 
@@ -186,6 +370,10 @@ export default function Trangchu() {
 
   return (
     <>
+      <ToastContainer
+        toastStyle={{ padding: 0 }}
+        closeButton={false}
+      />
       {/* slideshow-banner-container */}
       <div className="slideshow">
         <div className="wrap-content d-flex justify-content-between">
@@ -882,21 +1070,17 @@ export default function Trangchu() {
                         </span>
                       )}
                       <button
-                        className="wishlist-btn "
+                        className={`wishlist-btn ${wishlist.some((w) => w.id === product.id) ? 'active' : ''}`}
                         onClick={(e) => {
                           e.preventDefault();
                           handleAddToWishlist(product);
                         }}
-                        title="Thêm vào yêu thích"
+                        title={wishlist.some((w) => w.id === product.id) ? "Xóa khỏi yêu thích" : "Thêm vào yêu thích"}
                       >
-                        <i
-                          style={{ color: "red", fontSize: "25px" }}
-                          className={`fas fa-heart ${
-                            wishlist.some((w) => w.id === product.id)
-                              ? "active"
-                              : ""
-                          }`}
-                        ></i>
+                        <i 
+                          className="fas fa-heart"
+                          aria-label={wishlist.some((w) => w.id === product.id) ? "Đã yêu thích" : "Chưa yêu thích"}
+                        />
                       </button>
                     </div>
                     <div
@@ -1116,21 +1300,17 @@ export default function Trangchu() {
                               </span>
                             )}
                             <button
-                              className="wishlist-btn "
+                              className={`wishlist-btn ${wishlist.some((w) => w.id === sanpham.id) ? 'active' : ''}`}
                               onClick={(e) => {
                                 e.preventDefault();
                                 handleAddToWishlist(sanpham);
                               }}
-                              title="Thêm vào yêu thích"
+                              title={wishlist.some((w) => w.id === sanpham.id) ? "Xóa khỏi yêu thích" : "Thêm vào yêu thích"}
                             >
-                              <i
-                                style={{ color: "red", fontSize: "20px" }}
-                                className={`fas fa-heart ${
-                                  wishlist.some((w) => w.id === sanpham.id)
-                                    ? "active"
-                                    : ""
-                                }`}
-                              ></i>
+                              <i 
+                                className="fas fa-heart"
+                                aria-label={wishlist.some((w) => w.id === sanpham.id) ? "Đã yêu thích" : "Chưa yêu thích"}
+                              />
                             </button>
                           </div>
                           <div
@@ -1351,21 +1531,17 @@ export default function Trangchu() {
                               </span>
                             )}
                             <button
-                              className="wishlist-btn "
+                              className={`wishlist-btn ${wishlist.some((w) => w.id === sanpham.id) ? 'active' : ''}`}
                               onClick={(e) => {
                                 e.preventDefault();
                                 handleAddToWishlist(sanpham);
                               }}
-                              title="Thêm vào yêu thích"
+                              title={wishlist.some((w) => w.id === sanpham.id) ? "Xóa khỏi yêu thích" : "Thêm vào yêu thích"}
                             >
-                              <i
-                                style={{ color: "red", fontSize: "20px" }}
-                                className={`fas fa-heart ${
-                                  wishlist.some((w) => w.id === sanpham.id)
-                                    ? "active"
-                                    : ""
-                                }`}
-                              ></i>
+                              <i 
+                                className="fas fa-heart"
+                                aria-label={wishlist.some((w) => w.id === sanpham.id) ? "Đã yêu thích" : "Chưa yêu thích"}
+                              />
                             </button>
                           </div>
                           <div
@@ -1626,21 +1802,17 @@ export default function Trangchu() {
                               </span>
                             )}
                             <button
-                              className="wishlist-btn "
+                              className={`wishlist-btn ${wishlist.some((w) => w.id === sanpham.id) ? 'active' : ''}`}
                               onClick={(e) => {
                                 e.preventDefault();
                                 handleAddToWishlist(sanpham);
                               }}
-                              title="Thêm vào yêu thích"
+                              title={wishlist.some((w) => w.id === sanpham.id) ? "Xóa khỏi yêu thích" : "Thêm vào yêu thích"}
                             >
-                              <i
-                                style={{ color: "red", fontSize: "20px" }}
-                                className={`fas fa-heart ${
-                                  wishlist.some((w) => w.id === sanpham.id)
-                                    ? "active"
-                                    : ""
-                                }`}
-                              ></i>
+                              <i 
+                                className="fas fa-heart"
+                                aria-label={wishlist.some((w) => w.id === sanpham.id) ? "Đã yêu thích" : "Chưa yêu thích"}
+                              />
                             </button>
                           </div>
                           <div

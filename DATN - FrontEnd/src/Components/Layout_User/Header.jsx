@@ -99,9 +99,9 @@ export default function Header() {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: '8px 15px',
-    height: '42px',
-    width: '135px',
+    padding: '8px 14px',
+    height: '40px',
+    width: '125px',
     backgroundColor: 'white',
     border: '1.5px solid #e0e0e0',
     borderRadius: '8px',
@@ -112,8 +112,8 @@ export default function Header() {
 
   // Style chung cho icon
   const iconStyle = {
-    width: '22px',
-    height: '22px',
+    width: '21px',
+    height: '21px',
     marginRight: '8px'
   };
 
@@ -227,10 +227,33 @@ export default function Header() {
                     <button
                       onClick={() => setShowUserMenu(!showUserMenu)}
                       className="user-button"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        padding: '8px 14px',
+                        height: '40px',
+                        backgroundColor: 'white',
+                        border: '1.5px solid #e0e0e0',
+                        borderRadius: '8px',
+                        cursor: 'pointer'
+                      }}
                     >
-                      <img src="/public/img/icon/user-icon.png" alt="User" />
-                      <span className="username">{user.username}</span>
-                      <i className="fas fa-chevron-down"></i>
+                      <img 
+                        src="/public/img/icon/user-icon.png" 
+                        alt="User" 
+                        style={{ width: '24px', height: '24px' }}
+                      />
+                      <span 
+                        className="username" 
+                        style={{ 
+                          fontWeight: 'normal',
+                          fontSize: '14.5px'
+                        }}
+                      >
+                        {user.username}
+                      </span>
+                      <i className="fas fa-chevron-down" style={{ fontSize: '12px' }}></i>
                     </button>
 
                     {showUserMenu && (
@@ -254,6 +277,14 @@ export default function Header() {
                           >
                             <i className="fas fa-shopping-bag"></i>
                             <span>Thông tin đơn hàng</span>
+                          </Link>
+                          <Link
+                            to="/yeuthich"
+                            className="menu-link"
+                            onClick={() => setShowUserMenu(false)}
+                          >
+                            <i className="fas fa-heart" style={{ color: '#ff4444' }}></i>
+                            <span>Danh sách yêu thích</span>
                           </Link>
                           <div className="menu-separator"></div>
                           <button
@@ -289,22 +320,6 @@ export default function Header() {
                   </button>
                 )}
               </div>
-
-              <Link
-                to="/yeuthich"
-                style={commonButtonStyle}
-              >
-                <i 
-                  className="fas fa-heart" 
-                  style={{
-                    ...iconStyle,
-                    color: '#ff4444'
-                  }}
-                ></i>
-                <span style={textStyle}>
-                  Yêu thích
-                </span>
-              </Link>
 
               <Link
                 to="/giohang"
