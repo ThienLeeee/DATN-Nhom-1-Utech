@@ -1690,16 +1690,40 @@ router.get('/donHang', async (req, res) => {
 router.put('/donHang/:id/status', async (req, res) => {
   try {
     const { id } = req.params;
-    const { trangThai,lyDoHuy } = req.body;
+    const { trangThai, lyDoHuy, danhGia } = req.body;
     const db = await connectDb();
     const donHangCollection = db.collection('donHang');
-    
+
+    // Tạo đối tượng cập nhật
+    const updateFields = { trangThai };
+
+    // Nếu trạng thái là "Hủy" thì cập nhật lý do hủy
+    if (trangThai === "Hủy" && lyDoHuy) {
+      updateFields.lyDoHuy = lyDoHuy;
+    }
+
+    // Nếu trạng thái là "Hoàn thành" thì cập nhật đánh giá
+    if (trangThai === "Hoàn thành" && danhGia) {
+      if (danhGia < 1 || danhGia > 5) {
+        return res.status(400).json({ message: "Đánh giá phải nằm trong khoảng từ 1 đến 5 sao" });
+      }
+      updateFields.danhGia = danhGia;
+    }
+
+    // Cập nhật thông tin đơn hàng
     const result = await donHangCollection.updateOne(
       { id: parseInt(id) },
-      { $set: { trangThai, lyDoHuy  } }
+      { $set: updateFields }
     );
-    
+
     if (result.modifiedCount > 0) {
+      // Kiểm tra và cập nhật trạng thái thanh toán nếu cần
+      if (trangThai === "Hoàn thành") {
+        await donHangCollection.updateOne(
+          { id: parseInt(id) },
+          { $set: { trangthai_thanhtoan: "Đã thanh toán" } }
+        );
+      }
       res.status(200).json({ message: 'Cập nhật trạng thái thành công' });
     } else {
       res.status(404).json({ message: 'Không tìm thấy đơn hàng' });

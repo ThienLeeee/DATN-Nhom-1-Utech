@@ -164,3 +164,50 @@ tfoot td {
     height: 60px;
   }
 } 
+
+.order-products {
+  margin-top: 20px;
+}
+
+.products-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.product-item {
+  display: flex;
+  gap: 15px;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 5px;
+  width: calc(50% - 15px);
+}
+
+.product-image img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.product-details h4 {
+  margin: 0 0 10px;
+}
+
+.order-summary {
+  margin-top: 20px;
+  border-top: 1px solid #ddd;
+  padding-top: 10px;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.summary-item.total {
+  font-weight: bold;
+  color: #ff0000;
+}

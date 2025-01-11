@@ -46,6 +46,13 @@ export default function ChiTietDonHang() {
       minute: '2-digit'
     });
   };
+ // Hàm format tiền tệ
+ const formatCurrency = (amount) => {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND'
+  }).format(amount);
+};
 
   // const calculateTotal = () => {
   //   if (!order.sanPham) return 0;
@@ -72,22 +79,39 @@ export default function ChiTietDonHang() {
         </button>
         <h2>Chi tiết đơn hàng #{order.id}</h2>
       </div>
-
+  
       <div className="order-info-grid">
         <div className="order-info-card">
           <h3>Thông tin đơn hàng</h3>
           <div className="info-group">
             <p><strong>Mã đơn hàng:</strong> #{order.id}</p>
             <p><strong>Ngày đặt:</strong> {formatDate(order.ngayDat)}</p>
-            <p><strong>Trạng thái:</strong> 
+            <p><p><strong>Trạng thái:</strong> 
               <span className={`status-badge ${order.trangThai?.toLowerCase()}`}>
                 {order.trangThai}
               </span>
             </p>
+
+            {order.trangThai === "Hủy" && (
+              <div className="cancel-reason">
+                <p><strong>Lý do hủy:</strong> {order.lyDoHuy || "Không có lý do"}</p>
+              </div>
+            )}
+
+            {order.trangThai === "Hoàn thành" && order.danhGia && (
+              <div className="completion-review">
+           
+               
+                <p><strong>Đánh giá sao:</strong>  <span>{'⭐'.repeat(order.danhGia)}</span></p>
+              </div>
+            )}
+
+           
+            </p>
             <p><strong>Hình thức thanh toán:</strong> {order.hinhThucThanhToan}</p>
           </div>
         </div>
-
+  
         <div className="order-info-card">
           <h3>Thông tin khách hàng</h3>
           <div className="info-group">
@@ -98,74 +122,78 @@ export default function ChiTietDonHang() {
           </div>
         </div>
       </div>
+  
+      {order.sanPham && (
+        <div className="order-products">
+          <h3>Thông tin sản phẩm</h3>
+          <div className="products-list">
+            {order.sanPham.map((item, index) => (
+              <div key={index} className="product-item">
+                <div className="product-image">
+                  <img 
+                    src={`/img/sanpham/${item.hinh_anh?.chinh}`} 
+                    alt={item.ten_sp} 
+                    onError={(e) => { e.target.src = '/img/icon/default-product.png'; }}
+                  />
+                </div>
+                <div className="product-details">
+                  <h4 style={{marginTop:"17px"}}>{item.ten_sp}</h4>
+                  <div className="price-qty">
+                           <div className="summary-item">
+                           <p><strong>Giá sản phẩm:</strong></p>
+                           <div>
+                            {item.gia_giam ? (
+                          <>
+                              <span style={{color: 'silver', textDecoration: 'line-through', opacity: '0.7', marginRight: '5px'}} className="price">
+                                  {formatCurrency(item.gia_goc)}
+                              </span>
+                              <span className="price">{formatCurrency(item.gia_giam)}</span>
+                          </>
+                      ) : (
+                          <span className="price">{formatCurrency(item.gia_goc)}</span>
+                      )}
 
-      {/* <div className="order-products-card">
-        <h3>Sản phẩm đã đặt</h3>
-        <div className="products-table-container">
-          <table className="products-table">
-            <thead>
-              <tr>
-                <th>Sản phẩm</th>
-                <th>Đơn giá</th>
-                <th>Số lượng</th>
-                <th>Thành tiền</th>
-              </tr>
-            </thead>
-            <tbody>
-              {order.sanPham && order.sanPham.map((product) => (
-                product.items && product.items.map((item) => (
-                  <tr key={item._id}>
-                    <td>
-                      <div className="product-info">
-                        <img 
-                          src={imageErrors[item._id] 
-                            ? '/img/default.jpg' 
-                            : `/img/${item.hinh_anh.chinh}`}
-                          alt={item.ten_sp}
-                          style={{
-                            width: '100px',
-                            height: '100px',
-                            objectFit: 'cover',
-                            borderRadius: '8px'
-                          }}
-                          onError={() => {
-                            if (!imageErrors[item._id]) {
-                              setImageErrors(prev => ({
-                                ...prev,
-                                [item._id]: true
-                              }));
-                            }
-                          }}
-                        />
-                        <div className="product-details">
-                          <p className="product-name">{item.ten_sp}</p>
-                          <p className="product-code">Mã SP: {item.ma_san_pham}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>{formatCurrency(item.gia_sp)}</td>
-                    <td>{item.quantity}</td>
-                    <td>{formatCurrency(item.gia_sp * item.quantity)}</td>
-                  </tr>
-                ))
-              ))}
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colSpan="3"><strong>Tổng tiền:</strong></td>
-                <td><strong>{formatCurrency(calculateTotal())}</strong></td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-      </div> */}
-
-      {order.ghiChu && (
-        <div className="order-note-card">
-          <h3>Ghi chú</h3>
-          <p>{order.ghiChu}</p>
+                            </div>
+                           </div>
+                            
+                            <div className="summary-item">
+                            <p><strong>Số lượng:</strong></p>
+                            <span className="quantity"> {item.soLuong}</span>
+                            </div>
+                            
+                          </div>
+                 
+           
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
+  
+  <div className="order-summary">
+      <h3>Tóm tắt đơn hàng</h3>
+     
+      <div className="summary-item">
+        <p><strong>Giảm giá:</strong></p>
+        <p>{formatCurrency(order.giamGia)}</p>
+      </div>
+      <div className="summary-item">
+        <p><strong>Tổng tiền hàng:</strong></p>
+        <p>{formatCurrency(order.tongTien)}</p>
+      </div>
+      <div className="summary-item">
+        <p><strong>Trạng thái thanh toán:</strong></p>
+        <p>{order.trangthai_thanhtoan}</p>
+      </div>
+      <div className="summary-item">
+        <p><strong>Hình thức thanh toán:</strong></p>
+        <p>{order.hinhThucThanhToan}</p>
+      </div>
+    </div>
+  
+     
     </div>
   );
+  
 } 

@@ -122,6 +122,50 @@ export default function Thongtindonhang() {
           Swal.fire("Lỗi", "Đã xảy ra lỗi. Vui lòng thử lại sau!", "error");
         }
       };
+      const handleAddRating = async (orderId) => {
+        try {
+          const { value: rating } = await Swal.fire({
+            title: "Đánh giá đơn hàng",
+            input: "number",
+            inputLabel: "Nhập đánh giá của bạn (1-5 sao):",
+            inputAttributes: {
+              min: 1,
+              max: 5,
+              step: 1
+            },
+            inputPlaceholder: "Nhập từ 1 đến 5",
+            showCancelButton: true,
+            cancelButtonText: "Hủy",
+            confirmButtonText: "Gửi đánh giá",
+          });
+      
+          if (rating) {
+            if (rating < 1 || rating > 5) {
+              Swal.fire("Lỗi", "Đánh giá phải nằm trong khoảng từ 1 đến 5 sao.", "error");
+              return;
+            }
+      
+            const response = await axios.put(`http://localhost:3000/api/donHang/${orderId}/status`, {
+              trangThai: "Hoàn thành",
+              danhGia: parseInt(rating)
+            });
+      
+            if (response.status === 200) {
+              setOrders((prevOrders) =>
+                prevOrders.map((order) =>
+                  order.id === orderId ? { ...order, danhGia: parseInt(rating) } : order
+                )
+              );
+              Swal.fire("Thành công!", "Đánh giá của bạn đã được gửi.", "success");
+            } else {
+              Swal.fire("Lỗi", response.data.message || "Không thể gửi đánh giá.", "error");
+            }
+          }
+        } catch (error) {
+          console.error("Lỗi khi gửi đánh giá:", error);
+          Swal.fire("Lỗi", "Đã xảy ra lỗi. Vui lòng thử lại sau!", "error");
+        }
+      };
       
       
   return (
@@ -294,6 +338,21 @@ export default function Thongtindonhang() {
                       Hủy đơn hàng
                     </button>
                   )}
+                              {order.trangThai === "Hoàn thành" && !order.danhGia && (
+                <button
+                  className="add-rating-btn"
+                  onClick={() => handleAddRating(order.id)}
+                >
+                  Đánh giá đơn hàng
+                </button>
+              )}
+
+              {order.danhGia && (
+                <div className="order-rating">
+                  <label>Đánh giá của bạn:</label>
+                  <span>{'⭐'.repeat(order.danhGia)}</span>
+                </div>
+              )}
 
                   </div>
                 </div>

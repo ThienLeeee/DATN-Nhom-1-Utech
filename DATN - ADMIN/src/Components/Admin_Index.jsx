@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, } from "react-router-dom";
 import NavBar from "./Layout_Admin/NavBar";
 import Header from "./Layout_Admin/Header";
 import Footer from "./Layout_Admin/Footer";
@@ -18,6 +18,7 @@ import AddProductQuantity from "./Layout_Admin/Admin_quanlisoluong";
 import Admin_sale from "./Layout_Admin/Admin_sale";
 import Admin_voucher from "./Layout_Admin/Admin_voucher";
 import Trangchu from"./Layout_Admin/Trangchu"
+import Revenue from "./Layout_Admin/Admin_quanlidoanhthu";
 export default function Admin_Index() {
   return (
     <div className="row">
@@ -33,6 +34,7 @@ export default function Admin_Index() {
               <Route path="/" element={<Trangchu></Trangchu>} />
          
               <Route path="/addproductquantity" element={<AddProductQuantity></AddProductQuantity>}></Route>
+             <Route path="/revenue" element={<Revenue></Revenue>}></Route>
               <Route path="/admin-dm" element={<Admin_dm />} />
               <Route path="/category/add" element={<AddCategory />} />
               <Route path="/category/edit/:id" element={<EditCategory />} />

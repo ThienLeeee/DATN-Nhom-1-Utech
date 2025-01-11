@@ -69,7 +69,9 @@ export default function NavBar() {
         <div>
           <p style={{ cursor: "pointer" }}>
             <i className="bi bi-cash-coin me-2"></i>
-            Quản lí doanh thu
+           <Link to='/Revenue' className="text-decoration-none text-white">
+           Quản lí doanh thu
+           </Link>
           </p>
           <p style={{ cursor: "pointer" }}>
             <i className="bi bi-plus-slash-minus me-2"></i>

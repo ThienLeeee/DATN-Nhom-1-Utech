@@ -28,6 +28,24 @@ export default function Admin_dh() {
     try {
       // Lấy đơn hàng hiện tại
       const currentOrder = orders.find((order) => order.id === orderId);
+      if (!currentOrder) {
+        Swal.fire({
+          icon: "error",
+          title: "Lỗi",
+          text: "Không tìm thấy đơn hàng.",
+        });
+        return;
+      }
+  
+      // Kiểm tra điều kiện: chỉ cho phép hủy khi trạng thái là "Chưa xử lý"
+      if (newStatus === "Hủy" && currentOrder.trangThai !== "Chờ xử lý") {
+        Swal.fire({
+          icon: "warning",
+          title: "Không hợp lệ",
+          text: "Không được hủy đơn hàng ở trạng thái này.",
+        });
+        return;
+      }
   
       // Lấy chỉ số của trạng thái hiện tại và trạng thái mới
       const currentStatusIndex = validStatusOrder.indexOf(currentOrder.trangThai);
@@ -54,17 +72,20 @@ export default function Admin_dh() {
       });
   
       if (result.isConfirmed) {
+        // Chuẩn bị dữ liệu cập nhật
+        const updateData = { trangThai: newStatus };
+        if (newStatus === "Hoàn thành" && currentOrder.hinhThucThanhToan === "THANH TOÁN QUA COD") {
+          updateData.trangthai_thanhtoan = "Đã thanh toán"; // Cập nhật trạng thái thanh toán
+        }
+  
         // Gửi yêu cầu cập nhật trạng thái lên server
-        const response = await fetch(
-          `http://localhost:3000/api/donHang/${orderId}/status`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ trangThai: newStatus }),
-          }
-        );
+        const response = await fetch(`http://localhost:3000/api/donHang/${orderId}/status`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updateData),
+        });
   
         if (response.ok) {
           // Cập nhật danh sách đơn hàng sau khi thay đổi trạng thái
@@ -94,6 +115,7 @@ export default function Admin_dh() {
     }
   };
   
+
   
 
   const filterOrders = () => {
@@ -141,11 +163,11 @@ export default function Admin_dh() {
           className="status-filter"
         >
           <option value="all">Tất cả đơn hàng</option>
-          <option value="Đang xử lý">Chưa xử lý</option>
+          <option value="Chờ xử lý">Chưa xử lý</option>
           <option value="Đang xử lý">Đang xử lý</option>
           <option value="Đang giao hàng">Đang vận chuyển</option>
           <option value="Đã giao hàng">Hoàn thành</option>
-          <option value="Đã hủy">Hủy</option>
+          <option value="Hủy">Hủy</option>
         </select>
       </div>
 
