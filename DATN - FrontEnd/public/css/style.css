@@ -33,7 +33,7 @@
 }
 
 :root {
-    --main-color: #0000a3;
+    --main-color: #0090d0;
     --second-color: #0e0e74;
     --hover-color: #e91c20;
 }
@@ -621,9 +621,8 @@ img {
 }
 
 .wrap-home {
-    max-width: 100%;
     padding: 0px;
-    margin: 0;
+    margin: auto;
 }
 
 .wrap-content {
@@ -699,6 +698,7 @@ img {
 
 /* Menu  */
 .menu {
+    border-top: 1px solid white;
     background-color: var(--main-color);
     position: relative;
     z-index: 10;
@@ -741,7 +741,7 @@ img {
     }
 
     .danh-muc-sp {
-       
+
         margin-right: 0 !important;
     }
 
@@ -1588,6 +1588,7 @@ img {
 
 /* Sản phẩm bán chạy */
 .wrap-bestseller {
+    
     padding: 20px 0;
     overflow: hidden;
 }
@@ -4840,30 +4841,7 @@ label.label_check_box_form {
     bottom: 140px;
 }
 
-@media (max-width: 992px) {
-    .header-top {
-        display: none;
-    }
 
-    .owl-wrapper {
-        flex-wrap: wrap;
-        justify-content: space-between;
-    }
-}
-
-@media (max-width: 730px) {
-    .header-bottom-right {
-        flex-direction: row-reverse;
-        flex-wrap: wrap;
-    }
-
-    .logo-header {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-}
 
 @media (max-width: 910px) {
     .top_detail {
@@ -5037,14 +5015,21 @@ label.label_check_box_form {
 }
 
 /* Style cho phần sản phẩm bán chạy */
+.title-hot{
+    width:50%;
+    text-align: center;
+}
+
 .wrap-bestsell {
+    border-radius: 10px;
+    background: linear-gradient(90deg, #e23459, #c44069, #a04f7c, #6c6497, #3879b3, #0b8cca, #0190d0);
     margin: 20px 0;
-    padding: 0 15px;
+    padding: 15px;
     /* Thêm padding cho container */
 }
 
 .wrap-bestsell .title-bestsell {
-    background: #D82533;
+
     color: #fff;
     text-align: center;
     padding: 10px;
@@ -5174,6 +5159,10 @@ label.label_check_box_form {
     .bestsell-products .box-product {
         padding: 10px;
     }
+    .title-hot {
+        width: 100%;
+      }
+    
 }
 
 .bestsell-products .slick-track {

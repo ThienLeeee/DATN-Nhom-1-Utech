@@ -21,6 +21,8 @@ export default function Thanhtoan() {
   });
 
   const [isSuccess, setIsSuccess] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -50,10 +52,28 @@ export default function Thanhtoan() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "" }));
+  };
+
+  const validate = () => {
+    const newErrors = {};
+    if (!formData.ten_thanhtoan) newErrors.ten_thanhtoan = "Vui lòng nhập họ và tên.";
+    if (!formData.diachi_thanhtoan) newErrors.diachi_thanhtoan = "Vui lòng nhập địa chỉ.";
+    if (!formData.dienthoai_thanhtoan) newErrors.dienthoai_thanhtoan = "Vui lòng nhập số điện thoại.";
+    if (!formData.email_thanhtoan) newErrors.email_thanhtoan = "Vui lòng nhập email.";
+    if (!formData.ht_thanhtoan) newErrors.ht_thanhtoan = "Vui lòng chọn hình thức thanh toán.";
+    return newErrors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    setErrors({});
+    setIsLoading(true);
     try {
       const checkoutData = JSON.parse(localStorage.getItem("checkoutItems"));
       if (!checkoutData || checkoutData.items.length === 0) {
@@ -209,11 +229,21 @@ export default function Thanhtoan() {
     } catch (error) {
       console.error("Lỗi:", error);
       alert("Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="wrap-main wrap-page">
+      {isLoading && (
+        <div className="loading-popup">
+          <div className="loading-popup-content">
+            <p>Đang tiến hành thanh toán, vui lòng đợi trong vài giây...</p>
+            <div className="loading-icon"></div>
+          </div>
+        </div>
+      )}
       {!isSuccess ? (
         <div className="sub_main">
           <div className="title_main">
@@ -234,8 +264,8 @@ export default function Thanhtoan() {
                       value={formData.ten_thanhtoan}
                       onChange={handleChange}
                       placeholder={user?.fullname ? "" : "Nhập họ và tên"}
-                      required
                     />
+                    {errors.ten_thanhtoan && <div className="error-message">{errors.ten_thanhtoan}</div>}
                   </div>
                   <div className="form-group">
                     <label htmlFor="diachi_thanhtoan">Địa chỉ</label>
@@ -246,8 +276,8 @@ export default function Thanhtoan() {
                       value={formData.diachi_thanhtoan}
                       onChange={handleChange}
                       placeholder={user?.address ? "" : "Nhập địa chỉ"}
-                      required
                     />
+                    {errors.diachi_thanhtoan && <div className="error-message">{errors.diachi_thanhtoan}</div>}
                   </div>
                   <div className="form-group">
                     <label htmlFor="dienthoai_thanhtoan">Điện thoại</label>
@@ -258,8 +288,8 @@ export default function Thanhtoan() {
                       value={formData.dienthoai_thanhtoan}
                       onChange={handleChange}
                       placeholder={user?.phone ? "" : "Nhập số điện thoại"}
-                      required
                     />
+                    {errors.dienthoai_thanhtoan && <div className="error-message">{errors.dienthoai_thanhtoan}</div>}
                   </div>
                   <div className="form-group">
                     <label htmlFor="email_thanhtoan">Email</label>
@@ -270,8 +300,8 @@ export default function Thanhtoan() {
                       value={formData.email_thanhtoan}
                       onChange={handleChange}
                       placeholder={user?.email ? "" : "Nhập email"}
-                      required
                     />
+                    {errors.email_thanhtoan && <div className="error-message">{errors.email_thanhtoan}</div>}
                   </div>
                   <div className="form-group">
                     <label htmlFor="noidung_thanhtoan">Ghi chú</label>
@@ -297,6 +327,7 @@ export default function Thanhtoan() {
                       onChange={handleChange}
                     />
                     <label htmlFor="payment_momo">Thanh toán qua momo</label>
+                   
                   </div>
                   <div className="form-group payment-method">
                     <input
@@ -311,13 +342,14 @@ export default function Thanhtoan() {
                   <div className="form-group payment-method">
                     <input
                       type="radio"
-                      id="payment_cod"
+                      id="payment_vnpay"
                       name="ht_thanhtoan"
                       value="THANH TOÁN QUA VNPAY"
                       onChange={handleChange}
                     />
-                    <label htmlFor="payment_cod">Thanh toán qua vnpay</label>
+                    <label htmlFor="payment_vnpay">Thanh toán qua vnpay</label>
                   </div>
+                  {errors.ht_thanhtoan && <div className="error-message">{errors.ht_thanhtoan}</div>}
                   <div className="form-group submit-button">
                     <button type="submit" className="btn-thanhtoan">
                       Thanh Toán

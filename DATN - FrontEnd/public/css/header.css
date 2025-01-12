@@ -22,7 +22,7 @@
 .header-top {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(to right, #1a237e, #283593);
+  background: #004275;
   padding: 8px 0;
   color: #fff;
   font-size: 13px;
@@ -30,11 +30,16 @@
   animation: slideDown 0.5s ease-out;
 }
 
+.header-top.hidden {
+  display: none;
+}
+
 @keyframes slideDown {
   from {
     transform: translateY(-100%);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -78,6 +83,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -103,9 +109,11 @@
   0% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.2);
   }
+
   100% {
     transform: scale(1);
   }
@@ -120,6 +128,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -192,6 +201,7 @@
     opacity: 0;
     transform: scale(0.5);
   }
+
   100% {
     opacity: 1;
     transform: scale(1);
@@ -208,6 +218,7 @@
   from {
     transform: translateY(0);
   }
+
   to {
     transform: translateY(-4px);
   }
@@ -255,26 +266,59 @@
   font-weight: var(--fw-bold);
 }
 
-.cart-header {
-  padding-left: 48px;
-  padding-top: 10px;
-  min-height: 35px;
-  background: url('../images/bag_icon.png')no-repeat left center;
+
+
+.cart-header-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  height: 40px;
+  width: 150px;
+  border-radius: 8px;
+  color: white;
+  text-decoration: none;
+  margin-left: 12px;
+  position: relative;
+}
+
+.cart-name {
+  font-size: 14px;
+  margin: 0;
+}
+
+.login-text {
+  font-size: 14px;
+  margin: 0;
 }
 
 @media(max-width:768px) {
+
   .cart-header {
     padding-left: 0;
     padding-top: 10px;
   }
 
+  .cart-header-link {
+    width: 60px;
+  }
+
+  .cart-name {
+    display: none;
+  }
+
+
+
   .hotline-header {
-    order: 1;
-    padding-left: 0;
+    display: none;
   }
 
   .wrap-content {
     flex-wrap: wrap;
+  }
+
+  span.cart-count-icon {
+    right: 10px;
   }
 
 }
@@ -295,20 +339,20 @@
 
 
 
-#timkiem #btn {
+.nut_tim {
   position: absolute;
   top: 0;
   right: 0;
   height: 45px;
   width: 70px;
   border-radius: 0 10px 10px 0;
-  background: #007bff;
+  background: #004275;
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-#timkiem #btn:hover {
+.nut_tim:hover {
   background: #0056b3;
 }
 
@@ -580,7 +624,7 @@
     flex-direction: column;
     gap: 12px;
   }
-  
+
   .header-top-left,
   .header-top-right {
     flex-direction: column;
@@ -588,7 +632,7 @@
     width: 100%;
     text-align: center;
   }
-  
+
   .social-links {
     margin: 12px 0 0;
     padding: 12px 0 0;
@@ -606,11 +650,9 @@
   left: -75%;
   width: 50%;
   height: 100%;
-  background: linear-gradient(
-    to right,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.3) 100%
-  );
+  background: linear-gradient(to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.3) 100%);
   transform: skewX(-25deg);
   animation: shine 3s infinite;
 }
@@ -619,6 +661,7 @@
   0% {
     left: -75%;
   }
+
   100% {
     left: 125%;
   }
@@ -626,6 +669,7 @@
 
 /* Đảm bảo animations chỉ chạy khi người dùng không prefer-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
+
   .header-top,
   .info-header,
   .social-link,
@@ -633,7 +677,7 @@
   .info-header.working-hours i {
     animation: none;
   }
-  
+
   .header-top::before {
     display: none;
   }
@@ -641,10 +685,12 @@
 
 /* Header Bottom - Main Structure */
 .header-bottom {
-  padding: 15px 0;
-  background: #ffffff;
+ 
+  background: #0090d0;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
+
+
 
 /* Logo */
 
@@ -669,6 +715,7 @@
   border-radius: 10px;
   position: relative;
   transition: all 0.3s ease;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 }
 
 #timkiem:focus-within {
@@ -702,20 +749,9 @@
   font-size: 14px;
 }
 
-#timkiem #btn {
-  position: absolute;
-  top: 0;
-  right: 0;
-  height: 45px;
-  width: 70px;
-  border-radius: 0 10px 10px 0;
-  background: #007bff;
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
 
-#timkiem #btn:hover {
+
+.nut_tim:hover {
   background: #0056b3;
 }
 
@@ -775,44 +811,105 @@
 
 /* Responsive */
 @media (max-width: 992px) {
+  .hotline-header {
+    display: none;
+  }
+
+  .cart-name {
+    display: none;
+  }
+
+  .cart-header-link {
+    width: 65px;
+  }
+
+  span.cart-count-icon {
+    right: 10px;
+  }
+
   #timkiem {
-    width: 100%;
-    margin: 15px 0;
+    width: 85%;
+
   }
+
   #timkiem input[type="text"] {
-    max-width: 589px;
+    max-width: 490px;
+    
+    background: none;
   }
+
   .header-bottom-right {
     flex-wrap: wrap;
+  }
+
+  #timkiem{
+    margin-left: 10px;
+  }
+}
+
+@media (max-width: 992px) {
+  .header-top {
+    display: none;
+  }
+
+  .owl-wrapper {
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 730px) {
+  .logo-header img {
+    height: 40px;
+  }
+
+  .header-bottom-right {
+    flex-wrap: wrap;
+  }
+
+  .logo-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 
 @media (max-width: 768px) {
+  #timkiem {
+    flex: 1;
+    height: 40px;
+    margin: 0;
+  }
+
   .list {
     width: 120px;
   }
-  
+
   #timkiem input[type="text"] {
     left: 1px;
+    height: 40px;
   }
-  
-  .user-button span,
 
-  .cart-header p {
-    width: 100px;
-    display: none;
+  .nut_tim {
+    height: 38px;
+    width: 45px;
   }
+
 }
 
 /* Thêm media queries cho user menu trên mobile */
 @media (max-width: 768px) {
   .user-menu {
-    position: fixed; /* Thay đổi từ absolute sang fixed */
+    position: fixed;
+    /* Thay đổi từ absolute sang fixed */
     top: auto;
-    bottom: 0; /* Hiển thị từ dưới lên */
+    bottom: 0;
+    /* Hiển thị từ dưới lên */
     left: 0;
     right: 0;
-    width: 100%; /* Full width trên mobile */
+    width: 100%;
+    /* Full width trên mobile */
     border-radius: 12px 12px 0 0;
     transform: translateY(100%);
     transition: transform 0.3s ease;
@@ -831,11 +928,13 @@
   }
 
   .user-button span {
-    display: none; /* Ẩn username trên mobile */
+    display: none;
+    /* Ẩn username trên mobile */
   }
 
   .user-button i.fa-chevron-down {
-    display: none; /* Ẩn mũi tên dropdown trên mobile */
+    display: none;
+    /* Ẩn mũi tên dropdown trên mobile */
   }
 
   /* Điều chỉnh cart header trên mobile */
@@ -846,27 +945,105 @@
   }
 
   .cart-header p {
-    display: none; /* Ẩn text "Giỏ hàng" */
+    display: none;
+    /* Ẩn text "Giỏ hàng" */
   }
 
-  /* Thêm badge hiển thị số lượng sản phẩm */
-  .cart-header .cart-count {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background: #007bff;
-    color: white;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: bold;
-  }
+
+}
+
+.cart-icon-img {
+  width: 35px;
+  height: 35px;
+  margin-right: 8px;
+  background-color: white;
+  border-radius: 20%;
+  padding: 5px;
+}
+
+.cart-count-icon {
+  position: absolute;
+  top: -8px;
+  right: 80px;
+  background-color: #ff4444;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .user-button .username {
   font-weight: normal;
+}
+
+/* Tìm kiếm */
+.dropdown-results {
+  position: absolute;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+  margin-top: 45px;
+  padding: 0;
+  list-style: none;
+}
+
+.dropdown-item {
+  padding: 10px;
+  border-bottom: 1px solid #f1f1f1;
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-link {
+  text-decoration: none;
+  color: #333;
+  display: flex;
+  width: 100%;
+}
+
+.dropdown-product {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.product-search-image {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.product-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.product-name {
+  font-size: 14px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.product-price {
+  font-size: 15px;
+  color: red;
+  margin: 0;
 }

@@ -3,6 +3,7 @@ import { fetchDanhmuc } from "../../../service/danhmucService";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { fetchSanPhamTheoSearch } from "../../../service/sanphamService";
 import "/public/css/header.css";
 export default function Header() {
   const [keyword, setKeyword] = useState("");
@@ -10,6 +11,8 @@ export default function Header() {
   const [danhMuc, setDanhmuc] = useState([]);
   const [isActive, setIsActive] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const handleClick = () => {
     setIsActive(!isActive);
   };
@@ -23,6 +26,22 @@ export default function Header() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const navigate = useNavigate();
   const menuRef = useRef(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 0) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   useEffect(() => {
     setIsActive(false);
@@ -80,13 +99,13 @@ export default function Header() {
     if (cartItems.length > 0) {
       localStorage.removeItem("cartItem");
     }
-  // Dispatch event để cập nhật số lượng trong Header
-  window.dispatchEvent(new Event("cartUpdated"));
+    // Dispatch event để cập nhật số lượng trong Header
+    window.dispatchEvent(new Event("cartUpdated"));
     // Gọi hàm logout và chuyển hướng trang
     logout();
     navigate("/");
   };
-  
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (keyword) {
@@ -94,59 +113,38 @@ export default function Header() {
     }
   };
 
-  // Style chung cho các nút
-  const commonButtonStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '8px 14px',
-    height: '40px',
-    width: '125px',
-    backgroundColor: 'white',
-    border: '1.5px solid #e0e0e0',
-    borderRadius: '8px',
-    color: '#2c3e50',
-    textDecoration: 'none',
-    marginLeft: '12px'
-  };
+   // Tìm kiếm
+   const handleInputChange = async (e) => {
+    const value = e.target.value;
+    setKeyword(value);
 
-  // Style chung cho icon
-  const iconStyle = {
-    width: '21px',
-    height: '21px',
-    marginRight: '8px'
-  };
 
-  // Style cho text
-  const textStyle = {
-    fontSize: '14px',
-    margin: 0
-  };
+    if (value.trim() !== "") {
+      try {
+        const results = await fetchSanPhamTheoSearch(value);
+        console.log(results);
 
-  // Style cho badge giỏ hàng
-  const badgeStyle = {
-    position: 'absolute',
-    top: '-8px',
-    right: '-8px',
-    background: '#ff4444',
-    color: 'white',
-    borderRadius: '50%',
-    width: '20px',
-    height: '20px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '12px'
+        setSearchResults(results);
+        setIsDropdownVisible(true);
+      } catch (error) {
+        console.error("Lỗi khi tìm kiếm sản phẩm:", error);
+        setSearchResults([]);
+        setIsDropdownVisible(false);
+      }
+    } else {
+      setSearchResults([]);
+      setIsDropdownVisible(false);
+    }
   };
 
   return (
     <>
       {/* header */}
       <div
-        className="header"
+        className={`header ${isScrolled ? "ef-slide-down" : ""}`}
         style={{ position: "relative", left: 0, right: 0, top: 0, zIndex: 100 }}
       >
-        <div className="header-top">
+        <div className={`header-top ${isScrolled ? "hidden" : ""}`}>
           <div className="wrap-content">
             <div className="header-top-content">
               <div className="header-top-left">
@@ -200,17 +198,16 @@ export default function Header() {
                   name="frm2"
                   className="frm_timkiem"
                 >
-                 
                   <input
-                    onChange={(e) => setKeyword(e.target.value)}
+                    onChange={handleInputChange}
                     type="text"
                     name="timkiem"
                     id="name_tk"
                     className="input ui-autocomplete-input"
                     placeholder="Bạn cần tìm sản phẩm nào ?"
                     autoComplete="off"
+                    value={keyword}
                   />
-
                   <button type="submit" value="" id="btn" className="nut_tim">
                     <img
                       src="/public/img/icon/magnifying-glass-solid.svg"
@@ -219,7 +216,38 @@ export default function Header() {
                     />
                   </button>
                 </form>
-              </div>{" "}
+                {isDropdownVisible && searchResults.length > 0 && (
+                  <ul className="dropdown-results">
+                    {searchResults.map((item, index) => (
+                      <li key={index} className="dropdown-item">
+                        <Link
+                          to={`/chitietsp/sanPham/${item.id}`}
+                          className="dropdown-link"
+                        >
+                          <div
+                            className="dropdown-product"
+                            onClick={() => setIsDropdownVisible(false)}
+                          >
+                            <img
+                              src={`/img/sanpham/${item.hinh_anh.chinh}`}
+                              alt={item.ten_sp}
+                              className="product-search-image"
+                            />
+                            <div className="product-info">
+                              <p className="product-name">{item.ten_sp}</p>
+                              <p className="product-price">
+                                Giá:{" "}
+                                <strong>{item.gia_sp.toLocaleString()}</strong>{" "}
+                                VNĐ
+                              </p>
+                            </div>
+                          </div>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
 
               <div className="hotline-header">
                 {user ? (
@@ -228,36 +256,45 @@ export default function Header() {
                       onClick={() => setShowUserMenu(!showUserMenu)}
                       className="user-button"
                       style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        padding: '8px 14px',
-                        height: '40px',
-                        backgroundColor: 'white',
-                        border: '1.5px solid #e0e0e0',
-                        borderRadius: '8px',
-                        cursor: 'pointer'
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        padding: "8px 14px",
+                        height: "40px",
+                        background: "none",
+                        border: "none",
+                        borderRadius: "8px",
+                        cursor: "pointer",
+                        position: "relative",
+                        color: "white",
+                        boxShadow: "none",
                       }}
                     >
-                      <img 
-                        src="/public/img/icon/user-icon.png" 
-                        alt="User" 
-                        style={{ width: '24px', height: '24px' }}
+                      <img
+                        src="/public/img/icon/user-icon.png"
+                        alt="User"
+                        style={{ width: "35px", height: "35px" }}
                       />
-                      <span 
-                        className="username" 
-                        style={{ 
-                          fontWeight: 'normal',
-                          fontSize: '14.5px'
+                      <span
+                        className="username"
+                        style={{
+                          fontWeight: "normal",
+                          fontSize: "14.5px",
+                          color: "white",
                         }}
                       >
                         {user.username}
                       </span>
-                      <i className="fas fa-chevron-down" style={{ fontSize: '12px' }}></i>
+                      <i
+                        className="fas fa-chevron-down"
+                        style={{ fontSize: "12px" }}
+                      ></i>
                     </button>
 
                     {showUserMenu && (
-                      <div className={`user-menu ${showUserMenu ? 'active' : ''}`}>
+                      <div
+                        className={`user-menu ${showUserMenu ? "active" : ""}`}
+                      >
                         <div className="welcome-message">
                           <p>Xin chào, {user.fullname || user.username}!</p>
                         </div>
@@ -283,7 +320,10 @@ export default function Header() {
                             className="menu-link"
                             onClick={() => setShowUserMenu(false)}
                           >
-                            <i className="fas fa-heart" style={{ color: '#ff4444' }}></i>
+                            <i
+                              className="fas fa-heart"
+                              style={{ color: "#ff4444" }}
+                            ></i>
                             <span>Danh sách yêu thích</span>
                           </Link>
                           <div className="menu-separator"></div>
@@ -305,42 +345,46 @@ export default function Header() {
                   <button
                     onClick={() => navigate("/dangnhap")}
                     style={{
-                      ...commonButtonStyle,
-                      cursor: 'pointer'
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: "8px 14px",
+                      height: "40px",
+                      width: "145px",
+                      background: "none",
+                      border: "none",
+                      borderRadius: "8px",
+                      color: "white",
+                      textDecoration: "none",
+                      marginLeft: "12px",
+                      position: "relative",
                     }}
                   >
                     <img
                       src="/public/img/icon/user-icon.png"
                       alt="Login"
-                      style={iconStyle}
+                      style={{
+                        borderRadius: "50%",
+                        width: "21px",
+                        height: "21px",
+                        marginRight: "8px",
+                      }}
                     />
-                    <span style={textStyle}>
-                      Đăng nhập
-                    </span>
+                    <span className="login-text">Đăng nhập</span>
                   </button>
                 )}
               </div>
-
-              <Link
-                to="/giohang"
-                style={{
-                  ...commonButtonStyle,
-                  position: 'relative'
-                }}
-              >
+              <Link to="/giohang" className="cart-header-link">
                 <img
-                  src="/public/img/icon/bag_icon.png"
+                  src="/public/img/icon/cart-icon.png"
                   alt="Cart"
-                  style={iconStyle}
+                  className="cart-icon-img"
                 />
-                <span style={textStyle}>
-                  Giỏ hàng
-                </span>
-                <span style={badgeStyle}>
-                  {cartCount}
-                </span>
+
+                <span className="cart-name">Giỏ hàng</span>
+
+                <span className="cart-count-icon">{cartCount}</span>
               </Link>
-              
             </div>
           </div>
         </div>
@@ -355,9 +399,11 @@ export default function Header() {
                   title="Danh mục sản phẩm"
                   onClick={() => toggleMenu()}
                 >
-                 
-                  Danh mục sản phẩm 
-                  <i className="fas fa-chevron-down" style={{ marginLeft: "8px" }}></i>
+                  Danh mục sản phẩm
+                  <i
+                    className="fas fa-chevron-down"
+                    style={{ marginLeft: "8px" }}
+                  ></i>
                 </span>
                 <div
                   className={`show-menu isPage ${
@@ -715,8 +761,7 @@ export default function Header() {
                     Giới thiệu
                   </Link>
                 </li>
-                
-                
+
                 <li className="li-normal">
                   <Link to="/tintuc">Tin tức & Sự kiện</Link>
                 </li>
@@ -731,6 +776,7 @@ export default function Header() {
                   </Link>
                 </li>
               </ul>
+
               <li
                 className={`submenu ${isActive ? "active" : ""}`}
                 onClick={() => handleClick()}

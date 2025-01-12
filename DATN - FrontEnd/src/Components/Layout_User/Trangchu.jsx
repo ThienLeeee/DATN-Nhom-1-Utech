@@ -921,7 +921,7 @@ export default function Trangchu() {
 
         {/* hot-products */}
         <div className="wrap-bestsell">
-          <div className="title-bestsell">SẢN PHẨM BÁN CHẠY</div>
+          <div className="title-bestsell"><img className="title-hot" src="/public/img/title/hot-sale-moi-ngay.gif" alt="sphot" /></div>
           <div className="bestsell-products">
             {hotProducts.map((product) => (
               <div className="product" key={product.id}>
