@@ -1,22 +1,24 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import FacebookLogin from "react-facebook-login";
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+
 import "/public/css/dangnhap.css";
 import "/public/css/popup.css";
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from "../../context/AuthContext";
 
 export default function Dangnhap() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [showAlert, setShowAlert] = useState(false);
   const [error, setError] = useState("");
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [previousPath, setPreviousPath] = useState(null);
 
   useEffect(() => {
-    const savedPath = localStorage.getItem('previousPath');
+    const savedPath = localStorage.getItem("previousPath");
     if (savedPath) {
       setPreviousPath(savedPath);
     }
@@ -25,39 +27,32 @@ export default function Dangnhap() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
-  
+
     try {
-      const response = await axios.post('http://localhost:3000/api/accounts/login', {
+      const response = await axios.post("http://localhost:3000/api/accounts/login", {
         username,
         password,
       });
-  
+
       const { user, token } = response.data;
-  
-      if (user.role === 'admin') {
+
+      if (user.role === "admin") {
         window.location.href = "http://localhost:5174/";
         return;
       }
-  
+
       login(user);
-      localStorage.setItem('token', token);
-  
-      // Xóa giỏ hàng theo cấu trúc removeItem
-      const cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
-      if (cartItems.length > 0) {
-        localStorage.removeItem("cartItem");
-      }
-  
-      // Dispatch event để cập nhật số lượng trong Header
-      window.dispatchEvent(new Event("cartUpdated"));
-  
-      window.location.href = "http://localhost:5173/";
+      localStorage.setItem("token", token);
+      setShowSuccessPopup(true);
+
+      setTimeout(() => {
+        window.location.href = "http://localhost:5173/";
+      }, 2000);
     } catch (error) {
       setError(error.response?.data?.message || "Đăng nhập thất bại!");
     }
   };
-  
-  
+
   const togglePassword = () => {
     const passwordField = document.getElementById("password");
     if (passwordField.type === "password") {
@@ -67,14 +62,62 @@ export default function Dangnhap() {
     }
   };
 
-  const handlePopupClick = () => {
-    setShowSuccessPopup(false);
-    if (previousPath) {
-      navigate(previousPath);
-      localStorage.removeItem('previousPath');
-    } else {
-      navigate('/');
+  // Facebook login
+  const responseFacebook = async (response) => {
+    if (response.accessToken) {
+      try {
+        const res = await axios.post('http://localhost:3000/api/facebook-login', {
+          accessToken: response.accessToken,
+        });
+
+        const { user, token } = res.data;
+        console.log('User:', user);
+        console.log('Token:', token);
+        login(user);
+        // Lưu token vào localStorage
+        localStorage.setItem('token', token);
+
+        // Chuyển hướng về trang chủ
+        navigate('/'); // Sử dụng React Router để chuyển hướng
+        alert('Đăng nhập bằng Facebook thành công');
+      } catch (error) {
+        console.error('Facebook login failed:', error);
+      }
     }
+  };
+
+  // Google login
+  const GOOGLE_CLIENT_ID = "961938347086-inarcnt70odddjhmnecu42igfiingl0r.apps.googleusercontent.com";
+
+  const responseGoogle = async (response) => {
+    if (response.credential) {
+      try {
+        const res = await axios.post('http://localhost:3000/api/auth/google', { token: response.credential });
+
+        console.log("Google login successful:", res.data);
+        const { user, token } = res.data;
+        console.log('User:', user);
+        console.log('Token:', token);
+        login(user);
+        // Lưu token vào localStorage
+        localStorage.setItem('token', token);
+
+        // Chuyển hướng về trang chủ
+        navigate('/'); // Sử dụng React Router để chuyển hướng
+        alert('Đăng nhập bằng Google thành công');
+      } catch (error) {
+        console.error("Error during Google login:", error);
+        alert('Login failed');
+      }
+    } else {
+      console.error('Google credential is missing!');
+      alert('Login failed');
+    }
+  };
+
+  const failureGoogle = (error) => {
+    console.error('Google login failed:', error);
+    alert('Login failed');
   };
 
   return (
@@ -127,14 +170,48 @@ export default function Dangnhap() {
                 {error && (
                   <div className="alert alert-danger text-center">{error}</div>
                 )}
-               
                 <button type="submit" className="btn btn-primary w-100">
                   Đăng nhập
                 </button>
               </form>
+              <div className="text-center mt-3">
+                <p>Hoặc đăng nhập bằng:</p>
+                <div className="d-flex justify-content-center">
+                  <FacebookLogin
+                    appId="1134390881723150" // Thay bằng App ID của bạn
+                    autoLoad={false}
+                    fields="name,email,picture"
+                    callback={responseFacebook}
+                    textButton=" Facebook"
+                    cssClass="btn btn-outline-primary me-3 p-2 flex-grow-1"
+                    icon={<i className="fab fa-facebook-f me-2"></i>} // Sử dụng mã HTML của icon
+                  />
+
+                  <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+                    <div>
+                      <GoogleLogin
+                        onSuccess={responseGoogle}  // Handle successful login
+                        onError={failureGoogle}      // Handle login failure
+                        useOneTap
+                      />
+                    </div>
+                  </GoogleOAuthProvider>
+
+                  {/* <GoogleLogin
+                  clientId="YOUR_GOOGLE_CLIENT_ID" // Thay bằng Google Client ID của bạn
+                  buttonText="Google"
+                  onSuccess={responseGoogle}
+                  onFailure={(error) => console.error("Google login error:", error)}
+                  cookiePolicy={"single_host_origin"}
+                  className="btn btn-outline-danger flex-grow-1"
+                /> */}
+                </div>
+              </div>
               <hr />
               <div className="text-center mb-3">
-                <Link to="/forgot-password" className="text-decoration-none">Quên mật khẩu?</Link>
+                <Link to="/forgot-password" className="text-decoration-none">
+                  Quên mật khẩu?
+                </Link>
               </div>
               <div className="text-center mb-3">
                 Bạn chưa có tài khoản? <Link to="/Dangky">Đăng ký</Link>
@@ -143,33 +220,16 @@ export default function Dangnhap() {
           </div>
         </div>
 
-        {/* Thông báo chào mừng dạng pop-up cho admin */}
-        {showAlert && (
-          <div className="modal-popup">
-            <div className="modal-content">
-              <span className="close-button" onClick={() => setShowAlert(false)}>
-                &times;
-              </span>
-              <img
-                src="/public/img/logo/logo_no_bg.png"
-                alt="Welcome Icon"
-                className="modal-image"
-              />
-              <button
-                className="modal-button"
-                onClick={() => {
-                  window.location.href = "http://localhost:5174/";
-                }}
-              >
-                Đi đến trang Admin
-              </button>
-            </div>
-          </div>
-        )}
-
         {showSuccessPopup && (
-          <div className="popup-overlay" onClick={handlePopupClick}>
+          <div className="popup-overlay">
             <div className="popup-content">
+              <div className="popup-icon">
+                <img
+                  src="https://img.icons8.com/ios-filled/50/4CAF50/checkmark.png"
+                  alt="Success Icon"
+                  className="check-icon"
+                />
+              </div>
               <h3 className="popup-title">Đăng nhập thành công!</h3>
               <p className="popup-message">
                 {previousPath ? "Đang chuyển bạn về trang trước đó..." : "Chào mừng bạn đã quay trở lại."}

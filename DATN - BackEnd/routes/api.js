@@ -3236,4 +3236,164 @@ router.post('/vouchers/use', async (req, res) => {
   }
 });
 
+// Facebook Login Route
+router.post('/facebook-login', async (req, res) => {
+  const { accessToken } = req.body;
+
+  if (!accessToken) {
+    return res.status(400).json({ message: 'Access token is required.' });
+  }
+
+  try {
+    // Gọi Graph API để xác thực token và lấy thông tin người dùng
+    const facebookResponse = await axios.get(
+      `https://graph.facebook.com/me?fields=id,name,email,picture&access_token=${accessToken}`
+    );
+
+    const { id, name, email, picture } = facebookResponse.data;
+
+    // Kết nối với cơ sở dữ liệu
+    const db = await connectDb();
+    const usersCollection = db.collection('users');
+
+    // Kiểm tra người dùng đã tồn tại hay chưa
+    let existingUser = await usersCollection.findOne({ email });
+
+    if (!existingUser) {
+      // Mã hóa mật khẩu
+      const salt = bcrypt.genSaltSync(10);
+      const hashedPassword = bcrypt.hashSync('1a2b3c4d5e6', salt);
+
+      // Nếu người dùng chưa tồn tại, tạo tài khoản mới
+      // Lấy ID mới cho tài khoản nếu cần
+      let lastUser = await usersCollection.find().sort({ id: -1 }).limit(1).toArray();
+      let newId = lastUser[0] ? lastUser[0].id + 1 : 1;
+
+      // Tạo tài khoản mới cho người dùng Facebook
+      let newUser = {
+        id: newId,
+        username: name,   // Có thể dùng tên người dùng từ Facebook
+        email: email,
+        password: hashedPassword,
+        role: 'user',  // Vai trò người dùng mặc định
+        createdAt: new Date(),
+        status: 'active',
+        profile: {
+          fullName: name,
+          phone: '',
+          address: '',
+          avatar: picture.data.url  // Lưu ảnh đại diện từ Facebook
+        }
+      };
+
+      // Thêm tài khoản mới vào cơ sở dữ liệu
+      await usersCollection.insertOne(newUser);
+    }
+
+    // Tạo JWT token cho người dùng
+    const token = jwt.sign(
+      { id: existingUser.id, username: existingUser.username, role: existingUser.role },
+      'secretkey',
+      { expiresIn: '24h' }
+    );
+
+    // Trả về thông tin người dùng và token
+    res.json({
+      message: 'Đăng nhập thành công qua Facebook',
+      user: {
+        id: existingUser ? existingUser.id : newUser.id,
+        username: existingUser ? existingUser.username : newUser.username,
+        email: email,
+        role: existingUser ? existingUser.role : newUser.role,
+        profile: existingUser ? existingUser.profile : newUser.profile
+      },
+      token
+    });
+  } catch (error) {
+    console.error('Lỗi đăng nhập Facebook:', error.message);
+    res.status(500).json({ message: 'Đăng nhập Facebook thất bại' });
+  }
+});
+
+
+// Xử lý POST yêu cầu xác minh Google token từ client
+router.post("/auth/google", async (req, res, next) => {
+  const { token } = req.body;  // Get the token from the request body
+
+  try {
+    // Verify the token with Google's API
+    const googleResponse = await axios.get(
+      `https://oauth2.googleapis.com/tokeninfo?id_token=${token}`
+    );
+
+    const googleUser = googleResponse.data;
+
+    if (googleUser && googleUser.sub) {
+      // Kết nối với cơ sở dữ liệu
+      const db = await connectDb();
+      const usersCollection = db.collection('users');
+
+      // Kiểm tra người dùng đã tồn tại hay chưa
+      let existingUser = await usersCollection.findOne({ email: googleUser.email });
+
+      // Nếu người dùng chưa tồn tại, tạo tài khoản mới
+      if (!existingUser) {
+        // Mã hóa mật khẩu
+        const salt = bcrypt.genSaltSync(10);
+        const hashedPassword = bcrypt.hashSync('1a2b3c4d5e6', salt);
+        // Lấy ID mới cho tài khoản nếu cần
+        let lastUser = await usersCollection.find().sort({ id: -1 }).limit(1).toArray();
+        let newId = lastUser[0] ? lastUser[0].id + 1 : 1;
+
+        // Tạo tài khoản mới cho người dùng Google
+        let newUser = {
+          id: newId,
+          username: googleUser.name,   // Có thể dùng tên người dùng từ Google
+          email: googleUser.email,
+          password: hashedPassword,  // Mật khẩu mặc định, có thể yêu cầu người dùng thay đổi sau
+          role: 'user',  // Vai trò người dùng mặc định
+          createdAt: new Date(),
+          status: 'active',
+          profile: {
+            fullName: googleUser.name,
+            phone: '',
+            address: '',
+            avatar: googleUser.picture  // Lưu ảnh đại diện từ Google
+          }
+        };
+
+        // Thêm tài khoản mới vào cơ sở dữ liệu
+        await usersCollection.insertOne(newUser);
+        existingUser = newUser; // Ensure the created user is used in the response
+      }
+
+      // Tạo JWT token cho người dùng
+      const token = jwt.sign(
+        { id: existingUser.id, username: existingUser.username, role: existingUser.role },
+        'secretkey',
+        { expiresIn: '24h' }
+      );
+
+      // Trả về thông tin người dùng và token
+      res.json({
+        message: 'Đăng nhập thành công qua Google',
+        user: {
+          id: existingUser.id,
+          username: existingUser.username,
+          email: existingUser.email,
+          role: existingUser.role,
+          profile: existingUser.profile
+        },
+        token
+      });
+    } else {
+      // Invalid token
+      return res.status(400).json({ message: "Invalid Google token" });
+    }
+  } catch (error) {
+    console.error("Error verifying token:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
 module.exports = router

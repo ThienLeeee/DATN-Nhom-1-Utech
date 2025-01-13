@@ -1,10 +1,13 @@
 var express = require('express')
+const passport = require('passport');
+const jwt = require('jsonwebtoken');
 var router = express.Router()
 
 /* GET userM page. */
 
 //Thực hiện gọi đến model db
 const connectDb = require('../models/db')
+require('../models/passport')
 
 //Hiển thị trang quản lý account
 router.get('/', async (req, res, next) => {
