@@ -117,14 +117,17 @@ export default function Header() {
    const handleInputChange = async (e) => {
     const value = e.target.value;
     setKeyword(value);
-
-
+  
     if (value.trim() !== "") {
       try {
         const results = await fetchSanPhamTheoSearch(value);
-        console.log(results);
-
-        setSearchResults(results);
+  
+        // Lọc sản phẩm có is_hidden: true
+        const visibleResults = results.filter((product) => product.is_hidden);
+  
+        console.log(visibleResults);
+  
+        setSearchResults(visibleResults); // Cập nhật kết quả hiển thị
         setIsDropdownVisible(true);
       } catch (error) {
         console.error("Lỗi khi tìm kiếm sản phẩm:", error);
@@ -136,6 +139,7 @@ export default function Header() {
       setIsDropdownVisible(false);
     }
   };
+  
 
   return (
     <>

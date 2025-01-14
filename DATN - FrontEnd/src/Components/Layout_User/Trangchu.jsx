@@ -299,13 +299,15 @@ export default function Trangchu() {
         const response = await axios.get(
           "http://localhost:3000/api/sanPham/ban-chay"
         );
-        setHotProducts(response.data);
+        const visibleProducts = response.data.filter(product => product.is_hidden); // Filter only products with is_hidden set to true
+        setHotProducts(visibleProducts);
       } catch (error) {
         console.error("Lỗi khi lấy sản phẩm bán chạy:", error);
       }
     };
     fetchHotProducts();
   }, []);
+  
 
   useEffect(() => {
     const fetchPromotionalProducts = async () => {
@@ -351,14 +353,15 @@ export default function Trangchu() {
 
   // Lọc sản phẩm theo categoryId
   const sanPhamdm1 = sanPham.filter(
-    (sanpham) => sanpham.id_danhmuc === 1 && !isCategoryLocked(1)
-  );
-  const sanPhamdm2 = sanPham.filter(
-    (sanpham) => sanpham.id_danhmuc === 2 && !isCategoryLocked(2)
-  );
-  const sanPhamdm3 = sanPham.filter(
-    (sanpham) => sanpham.id_danhmuc === 3 && !isCategoryLocked(3)
-  );
+    (sanpham) => sanpham.id_danhmuc === 1 && !isCategoryLocked(1) && sanpham.is_hidden
+);
+const sanPhamdm2 = sanPham.filter(
+    (sanpham) => sanpham.id_danhmuc === 2 && !isCategoryLocked(2) && sanpham.is_hidden
+);
+const sanPhamdm3 = sanPham.filter(
+    (sanpham) => sanpham.id_danhmuc === 3 && !isCategoryLocked(3) && sanpham.is_hidden
+);
+
 
   // Thêm hàm tính % giảm giá
   const calculateDiscount = (originalPrice, discountedPrice) => {
@@ -1132,12 +1135,12 @@ export default function Trangchu() {
                         {product.trang_thai}
                       </span>
 
-                      <span
+                      {/* <span
                         className="mua_giohang"
                         onClick={() => handleAddToCart(product)}
                       >
                         Mua ngay
-                      </span>
+                      </span> */}
                     </div>
                   </div>
                 </div>
@@ -1362,14 +1365,14 @@ export default function Trangchu() {
                               {sanpham.trang_thai}
                             </span>
 
-                            <span
+                            {/* <span
                               className="mua_giohang"
                               rel={7385}
                               data-confirm=""
                               onClick={() => handleAddToCart(sanpham)}
                             >
                               Mua ngay
-                            </span>
+                            </span> */}
                           </div>
                         </div>
                       </div>
@@ -1592,14 +1595,14 @@ export default function Trangchu() {
                               ></span>
                               {sanpham.trang_thai}
                             </span>
-                            <span
+                            {/* <span
                               className="mua_giohang"
                               rel={7385}
                               data-confirm=""
                               onClick={() => handleAddToCart(sanpham)}
                             >
                               Mua ngay
-                            </span>
+                            </span> */}
                           </div>
                         </div>
                       </div>
@@ -1863,14 +1866,14 @@ export default function Trangchu() {
                               ></span>
                               {sanpham.trang_thai}
                             </span>
-                            <span
+                            {/* <span
                               className="mua_giohang"
                               rel={7385}
                               data-confirm=""
                               onClick={() => handleAddToCart(sanpham)}
                             >
                               Mua ngay
-                            </span>
+                            </span> */}
                           </div>
                         </div>
                       </div>

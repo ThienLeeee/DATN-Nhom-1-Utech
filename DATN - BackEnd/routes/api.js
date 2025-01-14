@@ -459,7 +459,7 @@ const getImagePath = (id_danhmuc) => {
 };
 
 // Chức năng thêm sản phẩm
-router.post('/sanPham',upload.fields([
+router.post('/sanPham', upload.fields([
   { name: 'hinh_anh[chinh]', maxCount: 1 },
   { name: 'hinh_anh[phu1]', maxCount: 1 },
   { name: 'hinh_anh[phu2]', maxCount: 1 },
@@ -469,16 +469,18 @@ router.post('/sanPham',upload.fields([
 ]), async (req, res, next) => {
   const db = await connectDb();
   const sanPhamCollection = db.collection('sanPham');
-  let { ma_san_pham, ten_sp, gia_sp, bao_hanh, thuong_hieu, id_danhmuc, cau_hinh,soluong } = req.body;
+  let { ma_san_pham, ten_sp, gia_sp, bao_hanh, thuong_hieu, id_danhmuc, cau_hinh, soluong } = req.body;
+
   try {
     cau_hinh = JSON.parse(cau_hinh);  // Chuyển cau_hinh thành đối tượng nếu nó là chuỗi JSON
   } catch (error) {
     return res.status(400).json({ message: 'Cấu hình sản phẩm không hợp lệ.' });
   }
+
   // Parse id_danhmuc as an integer and determine the folder based on category ID
   const categoryId = parseInt(id_danhmuc);
   const folder = getImagePath(categoryId);
-   // Kiểm tra giá trị soluong
+
   // Kiểm tra mã sản phẩm đã tồn tại trong cơ sở dữ liệu chưa
   const existingProductByCode = await sanPhamCollection.findOne({ ma_san_pham });
   if (existingProductByCode) {
@@ -490,6 +492,16 @@ router.post('/sanPham',upload.fields([
   if (existingProductByName) {
     return res.status(400).json({ message: 'Tên sản phẩm đã tồn tại.' });
   }
+
+  // Ensure soluong is an integer
+  soluong = parseInt(soluong);
+  if (isNaN(soluong) || soluong < 0) {
+    return res.status(400).json({ message: 'Số lượng sản phẩm không hợp lệ.' });
+  }
+
+  // Set availability based on quantity
+  const trang_thai = soluong > 0 ? 'Còn hàng' : 'Hết hàng';
+
   // Construct hinh_anh object to include the single uploaded image with folder path
   let hinh_anh = {
     chinh: req.files['hinh_anh[chinh]'] ? `${req.files['hinh_anh[chinh]'][0].originalname}` : '',
@@ -499,6 +511,7 @@ router.post('/sanPham',upload.fields([
     phu4: req.files['hinh_anh[phu4]'] ? `${req.files['hinh_anh[phu4]'][0].originalname}` : '',
     phu5: req.files['hinh_anh[phu5]'] ? `${req.files['hinh_anh[phu5]'][0].originalname}` : ''
   };
+
   // Find the last product to generate a new ID
   let lastProduct = await sanPhamCollection
     .find()
@@ -506,14 +519,15 @@ router.post('/sanPham',upload.fields([
     .limit(1)
     .toArray();
   let id = lastProduct[0] ? lastProduct[0].id + 1 : 1;
-  // tùy chỉnh cấu hình 
+
+  // Tùy chỉnh cấu hình
   let customCauHinh;
   switch (categoryId) {
     case 1: // Laptop
       customCauHinh = {
         cpu: cau_hinh.cpu,
         ram: cau_hinh.ram,
-        o_cung:cau_hinh.o_cung,
+        o_cung: cau_hinh.o_cung,
         vga: cau_hinh.vga,
         man_hinh: cau_hinh.man_hinh,
         // Thêm các cấu hình khác cho Laptop
@@ -524,13 +538,12 @@ router.post('/sanPham',upload.fields([
         cpu: cau_hinh.cpu,
         ram: cau_hinh.ram,
         vga: cau_hinh.vga,
-       
         // Thêm các cấu hình khác cho PC
       };
       break;
     case 3: // Màn hình
       customCauHinh = {
-        kieu_man_hinh:cau_hinh.kieu_man_hinh,
+        kieu_man_hinh: cau_hinh.kieu_man_hinh,
         kich_thuoc: cau_hinh.kich_thuoc,
         tuong_thich_vesa: cau_hinh.tuong_thich_vesa,
         cong_ket_noi: cau_hinh.cong_ket_noi,
@@ -567,7 +580,7 @@ router.post('/sanPham',upload.fields([
         trong_luong: cau_hinh.trong_luong,
         // Thêm các cấu hình khác cho bàn phím
       };
-    
+      break;
     default:
       customCauHinh = {
         ...cau_hinh,
@@ -575,7 +588,8 @@ router.post('/sanPham',upload.fields([
       };
       break;
   }
-  // Create the new product object
+
+  // Create the new product object with is_hidden field
   let newProduct = { 
     id, 
     ma_san_pham, 
@@ -586,14 +600,17 @@ router.post('/sanPham',upload.fields([
     id_danhmuc: categoryId, 
     cau_hinh: customCauHinh, 
     hinh_anh,
-    soluong
+    soluong,
+    trang_thai, // Include the availability status
+    is_hidden: true // Default to true, indicating the product is hidden
   };
+
   // Insert the new product into the database
   await sanPhamCollection.insertOne(newProduct);
   if (newProduct) {
     res.status(200).json(newProduct);
   } else {
-    res.status(404).json({ message: 'Add product not successful' });
+    res.status(404).json({ message: 'Thêm sản phẩm không thành công.' });
   }
 });
 
@@ -881,18 +898,40 @@ router.get('/sanPham/ban-chay', async (req, res) => {
   }
 });
 
-//Hiển thị 1 sản phẩm theo id
+// Router để lấy sản phẩm theo id
 router.get('/sanPham/:id', async (req, res, next) => {
   let id = req.params.id
   const db = await connectDb()
   const sanPhamCollection = db.collection('sanPham')
   const sanPham = await sanPhamCollection.findOne({ id: parseInt(id) })
   if (sanPham) {
+    if (sanPham.is_hidden === false) {
+      return res.status(404).json({ message: 'Không tìm thấy sản phẩm' })
+    }
     res.status(200).json(sanPham)
   } else {
     res.status(404).json({ message: 'Không tìm thấy sản phẩm' })
   }
 })
+
+router.post('/sanPham/:id/toggleVisibility', async (req, res, next) => {
+  let id = req.params.id;
+  const db = await connectDb();
+  const sanPhamCollection = db.collection('sanPham');
+  const sanPham = await sanPhamCollection.findOne({ id: parseInt(id) });
+
+  if (sanPham) {
+    sanPham.is_hidden = !sanPham.is_hidden;
+    await sanPhamCollection.updateOne({ id: parseInt(id) }, { $set: { is_hidden: sanPham.is_hidden } });
+
+    const message = sanPham.is_hidden 
+      ? 'Sản phẩm đã hiện' 
+      : 'Sản phẩm đã ẩn ';
+    res.status(200).json({ message, is_hidden: sanPham.is_hidden });
+  } else {
+    res.status(404).json({ message: 'Không tìm thấy sản phẩm' });
+  }
+});
 
 
   // cập nhật soluong sản phẩm
@@ -1698,9 +1737,11 @@ router.put('/donHang/:id/status', async (req, res) => {
     const updateFields = { trangThai };
 
     // Nếu trạng thái là "Hủy" thì cập nhật lý do hủy
-    if (trangThai === "Hủy" && lyDoHuy) {
-      updateFields.lyDoHuy = lyDoHuy;
-    }
+    if (trangThai === "Hủy") { 
+      if (lyDoHuy) { updateFields.lyDoHuy = lyDoHuy; 
+
+      } 
+      updateFields.trangthai_thanhtoan = "Chưa thanh toán"; }
 
     // Nếu trạng thái là "Hoàn thành" thì cập nhật đánh giá
     if (trangThai === "Hoàn thành" && danhGia) {

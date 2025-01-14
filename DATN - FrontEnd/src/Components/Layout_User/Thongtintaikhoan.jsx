@@ -2,10 +2,10 @@ import '../../../public/css/thongtintaikhoan.css';
 import { useAuth } from '@/context/AuthContext';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate,Link } from 'react-router-dom';
+import {Link } from 'react-router-dom';
 
 export default function Thongtintaikhoan() {
-  const { user, updateUser, logout } = useAuth();
+  const { user, updateUser, } = useAuth();
   const [formData, setFormData] = useState({
     username: '',
     gioitinh: '',
@@ -15,8 +15,7 @@ export default function Thongtintaikhoan() {
   const [message, setMessage] = useState('');
 
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-
+  
   useEffect(() => {
     if (user) {
       // Fetch user details from backend
@@ -81,12 +80,6 @@ export default function Thongtintaikhoan() {
     }
   };
 
-  const handleLogout = () => {
-    if (window.confirm('Bạn có chắc chắn muốn đăng xuất?')) {
-      logout();
-      navigate('/');
-    }
-  };
 
   if (loading) {
     return <p>Đang tải thông tin người dùng...</p>;
@@ -108,9 +101,7 @@ export default function Thongtintaikhoan() {
           </Link>
           
           <li>
-            <button onClick={handleLogout} className="logout-button">
-              Đăng xuất
-            </button>
+          
           </li>
         </ul>
       </div>

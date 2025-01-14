@@ -19,14 +19,22 @@ export default function SanPhamTheodm() {
     const loadSanPham = async () => {
       try {
         const fetchedSanPham = await fetchSanPhamTheoDm(id);
-        setSanPham(fetchedSanPham);
-        const uniqueBrands = Array.from(new Set(fetchedSanPham.map((sp) => sp.thuong_hieu)));
+        
+        // Lọc sản phẩm có is_hidden: true
+        const visibleProducts = fetchedSanPham.filter((sp) => sp.is_hidden);
+  
+        setSanPham(visibleProducts);
+  
+        // Lấy danh sách thương hiệu duy nhất từ các sản phẩm hiển thị
+        const uniqueBrands = Array.from(
+          new Set(visibleProducts.map((sp) => sp.thuong_hieu))
+        );
         setBrands(uniqueBrands);
       } catch (error) {
         console.error("Lỗi tải sản phẩm:", error);
       }
     };
-
+  
     const loadTenDanhMuc = async () => {
       try {
         const danhMucData = await fetchDanhMucById(id);
@@ -35,10 +43,11 @@ export default function SanPhamTheodm() {
         console.error("Lỗi tải tên danh mục:", error);
       }
     };
-
+  
     loadSanPham();
     loadTenDanhMuc();
   }, [id]);
+  
 
   // Lọc và sắp xếp sản phẩm
   const filteredProducts = useMemo(() => {
@@ -103,26 +112,26 @@ export default function SanPhamTheodm() {
     setSortBy(parseInt(event.target.value));
   };
 
-  const handleAddToCart = (sanPhamMoi) => {
-     if (sanPhamMoi.trang_thai !== 'Còn hàng') {
-            Swal.fire("Thông báo", "Sản phẩm đã hết hàng", "warning");
-            return;
-        }
+  // const handleAddToCart = (sanPhamMoi) => {
+  //    if (sanPhamMoi.trang_thai !== 'Còn hàng') {
+  //           Swal.fire("Thông báo", "Sản phẩm đã hết hàng", "warning");
+  //           return;
+  //       }
     
-    const cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
-    const itemIndex = cartItems.findIndex((item) => item.id === sanPhamMoi.id);
+  //   const cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
+  //   const itemIndex = cartItems.findIndex((item) => item.id === sanPhamMoi.id);
 
-    if (itemIndex > -1) {
-      cartItems[itemIndex].quantity += 1;
-    } else {
-      const priceAsNumber = parseInt(sanPhamMoi.gia_sp.replace(/\./g, ""));
-      cartItems.push({ ...sanPhamMoi, gia_sp: priceAsNumber, quantity: 1 });
-    }
+  //   if (itemIndex > -1) {
+  //     cartItems[itemIndex].quantity += 1;
+  //   } else {
+  //     const priceAsNumber = parseInt(sanPhamMoi.gia_sp.replace(/\./g, ""));
+  //     cartItems.push({ ...sanPhamMoi, gia_sp: priceAsNumber, quantity: 1 });
+  //   }
 
-    localStorage.setItem("cartItem", JSON.stringify(cartItems));
-    window.dispatchEvent(new Event("cartUpdated"));
-    navigate("/thanhtoan");
-  };
+  //   localStorage.setItem("cartItem", JSON.stringify(cartItems));
+  //   window.dispatchEvent(new Event("cartUpdated"));
+  //   navigate("/thanhtoan");
+  // };
  // Thêm hàm tính % giảm giá
  const calculateDiscount = (originalPrice, discountedPrice) => {
   const original = parseInt(originalPrice.replace(/\./g, ''));
@@ -427,14 +436,14 @@ export default function SanPhamTheodm() {
                             }}></span>
                             {sanpham.trang_thai}
                         </span>
-                              <span
+                              {/* <span
                                 className="mua_giohang"
                                 rel={sanpham.id}
                                 data-confirm=""
                                 onClick={() => handleAddToCart(sanpham)}
                               >
                                 Mua ngay
-                              </span>
+                              </span> */}
                             </div>
                           </div>
                         </div>

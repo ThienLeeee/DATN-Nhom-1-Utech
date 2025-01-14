@@ -67,10 +67,7 @@ export default function Voucher() {
     };
   }, [user, navigate]);
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
+
 
   const handleReceiveVoucher = async (voucherId) => {
     if (isReceiving) return;
@@ -142,10 +139,7 @@ export default function Voucher() {
             <i className="fas fa-ticket-alt"></i>
             <span>Voucher của tôi</span>
           </Link>
-          <button onClick={handleLogout} className="menu-item logout">
-            <i className="fas fa-sign-out-alt"></i>
-            <span>Đăng xuất</span>
-          </button>
+         
         </div>
       </div>
 

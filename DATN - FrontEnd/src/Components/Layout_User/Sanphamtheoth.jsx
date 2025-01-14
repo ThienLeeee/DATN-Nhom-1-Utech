@@ -19,7 +19,11 @@ export default function SanPhamThuongHieu() {
             id_danhmuc,
             thuong_hieu
           );
-          setSanPham(response.products || []); // Đảm bảo dữ liệu chính xác
+          // Lọc các sản phẩm có is_hidden: true
+          const visibleProducts = (response.products || []).filter(
+            (product) => product.is_hidden
+          );
+          setSanPham(visibleProducts);
         } catch (error) {
           console.error(
             "Error fetching products by category and brand:",
@@ -30,30 +34,31 @@ export default function SanPhamThuongHieu() {
         }
       }
     };
-
+  
     loadSanPham();
   }, [id_danhmuc, thuong_hieu]);
-  const handleAddToCart = (sanPhamMoi) => {
-    if (sanPhamMoi.trang_thai !== 'Còn hàng') {
-      Swal.fire("Thông báo", "Sản phẩm đã hết hàng", "warning");
-      return;
-  }
-    let cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
-    const itemIndex = cartItems.findIndex((item) => item.id === sanPhamMoi.id);
+  
+  // const handleAddToCart = (sanPhamMoi) => {
+  //   if (sanPhamMoi.trang_thai !== 'Còn hàng') {
+  //     Swal.fire("Thông báo", "Sản phẩm đã hết hàng", "warning");
+  //     return;
+  // }
+  //   let cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
+  //   const itemIndex = cartItems.findIndex((item) => item.id === sanPhamMoi.id);
 
-    if (itemIndex > -1) {
-      cartItems[itemIndex].quantity += 1;
-    } else {
-      const priceAsNumber = parseInt(sanPhamMoi.gia_sp.replace(/\./g, ""));
-      cartItems.push({ ...sanPhamMoi, gia_sp: priceAsNumber, quantity: 1 });
-    }
+  //   if (itemIndex > -1) {
+  //     cartItems[itemIndex].quantity += 1;
+  //   } else {
+  //     const priceAsNumber = parseInt(sanPhamMoi.gia_sp.replace(/\./g, ""));
+  //     cartItems.push({ ...sanPhamMoi, gia_sp: priceAsNumber, quantity: 1 });
+  //   }
 
-    localStorage.setItem("cartItem", JSON.stringify(cartItems));
+  //   localStorage.setItem("cartItem", JSON.stringify(cartItems));
 
-    window.dispatchEvent(new Event("cartUpdated"));
+  //   window.dispatchEvent(new Event("cartUpdated"));
 
-    navigate("/thanhtoan");
-  };
+  //   navigate("/thanhtoan");
+  // };
   // Thêm hàm tính % giảm giá
   const calculateDiscount = (originalPrice, discountedPrice) => {
     const original = parseInt(originalPrice.replace(/\./g, ''));
@@ -195,14 +200,14 @@ export default function SanPhamThuongHieu() {
                             }}></span>
                             {sanpham.trang_thai}
                         </span>
-                              <span
+                              {/* <span
                                 className="mua_giohang"
                                 rel={7385}
                                 data-confirm=""
                                 onClick={() => handleAddToCart(sanpham)}
                               >
                                 Mua ngay
-                              </span>
+                              </span> */}
                             </div>
                           </div>
                         </div>

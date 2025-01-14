@@ -1,28 +1,29 @@
-import { useState, useEffect } from "react";
-import "/public/css/Admin_dh.css";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import '/public/css/Admin_dh.css';
+import { useNavigate } from 'react-router-dom';
 import Swal from "sweetalert2";
-import * as XLSX from "xlsx";
+import * as XLSX from 'xlsx';
 
 export default function Revenue() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedStatus, setSelectedStatus] = useState("all");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState('all');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [specificDate, setSpecificDate] = useState('');
   const navigate = useNavigate();
 
-  const calculateTotals = () => {
+  const calculateTotals = () => { 
     let totalOriginalPrice = 0;
     let totalDiscountedPrice = 0;
     let totalVoucherDiscount = 0;
     let totalRevenue = 0;
     let totalQuantity = 0;
 
-    const filteredOrders = filterOrdersByDateRange();
+    const filteredOrders = filterOrdersByDateRange().filter(order => order.trangthai_thanhtoan === 'Đã thanh toán');
 
-    filteredOrders.forEach((order) => {
-      order.sanPham.forEach((sp) => {
+    filteredOrders.forEach(order => {
+      order.sanPham.forEach(sp => {
         totalOriginalPrice += sp.gia_goc * sp.soLuong;
         totalDiscountedPrice += sp.gia_giam * sp.soLuong;
         totalQuantity += sp.soLuong;
@@ -31,33 +32,29 @@ export default function Revenue() {
       totalRevenue += order.tongTien;
     });
 
-    return {
-      totalOriginalPrice,
-      totalDiscountedPrice,
-      totalVoucherDiscount,
-      totalRevenue,
-      totalQuantity,
-    };
+    return { totalOriginalPrice, totalDiscountedPrice, totalVoucherDiscount, totalRevenue, totalQuantity };
   };
 
   const filterOrdersByDateRange = () => {
+    if (specificDate) {
+      const specific = new Date(specificDate);
+      return orders.filter(order => {
+        const orderDate = new Date(order.ngayDat);
+        return orderDate.getDate() === specific.getDate();
+      });
+    }
+
     if (!startDate || !endDate) return orders;
 
     const start = new Date(startDate);
     const end = new Date(endDate);
-    return orders.filter((order) => {
+    return orders.filter(order => {
       const orderDate = new Date(order.ngayDat);
       return orderDate >= start && orderDate <= end;
     });
   };
 
-  const {
-    totalOriginalPrice,
-    totalDiscountedPrice,
-    totalVoucherDiscount,
-    totalRevenue,
-    totalQuantity,
-  } = calculateTotals();
+  const { totalOriginalPrice, totalDiscountedPrice, totalVoucherDiscount, totalRevenue, totalQuantity } = calculateTotals();
 
   useEffect(() => {
     fetchOrders();
@@ -65,51 +62,51 @@ export default function Revenue() {
 
   const fetchOrders = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/donHang");
+      const response = await fetch('http://localhost:3000/api/donHang');
       const data = await response.json();
       setOrders(data);
       setLoading(false);
     } catch (error) {
-      console.error("Lỗi khi lấy danh sách đơn hàng:", error);
+      console.error('Lỗi khi lấy danh sách đơn hàng:', error);
       setLoading(false);
     }
   };
 
   const exportToExcel = () => {
-    const filteredOrders = filterOrdersByDateRange();
-    const excelData = filteredOrders.flatMap((order) =>
-      order.sanPham.map((sp) => ({
-        "Mã ĐH": order.id,
-        "Ngày đặt": new Date(order.ngayDat).toLocaleDateString("vi-VN"),
-        "Tên sản phẩm": sp.ten_sp,
-        "Số lượng": sp.soLuong,
-        "Giá gốc": sp.gia_goc,
-        "Giá đã giảm": sp.gia_giam,
-        "Giảm voucher": order.giamGia,
-        "Tổng tiền": order.tongTien,
-        "Trạng thái thanh toán": order.trangthai_thanhtoan,
-        "Hình thức thanh toán": order.hinhThucThanhToan,
+    const filteredOrders = filterOrdersByDateRange().filter(order => order.trangthai_thanhtoan === 'Đã thanh toán');
+    const excelData = filteredOrders.flatMap(order => 
+      order.sanPham.map(sp => ({
+        'Mã ĐH': order.id,
+        'Ngày đặt': new Date(order.ngayDat).toLocaleDateString('vi-VN'),
+        'Tên sản phẩm': sp.ten_sp,
+        'Số lượng': sp.soLuong,
+        'Giá gốc': sp.gia_goc,
+        'Giá đã giảm': sp.gia_giam,
+        'Giảm voucher': order.giamGia,
+        'Tổng tiền': order.tongTien,
+        'Trạng thái thanh toán': order.trangthai_thanhtoan,
+        'Hình thức thanh toán': order.hinhThucThanhToan
       }))
     );
 
     const totals = {
-      "Mã ĐH": "",
-      "Ngày đặt": "",
-      "Tên sản phẩm": "Tổng cộng:",
-      "Số lượng": totalQuantity,
-      "Giá gốc": totalOriginalPrice,
-      "Giá đã giảm": totalDiscountedPrice,
-      "Giảm voucher": totalVoucherDiscount,
-      "Tổng tiền": totalRevenue,
-      "Trạng thái thanh toán": "",
-      "Hình thức thanh toán": "",
+      'Mã ĐH': '',
+      'Ngày đặt': '',
+      'Tên sản phẩm': 'Tổng cộng:',
+      'Số lượng': totalQuantity,
+      'Giá gốc': totalOriginalPrice,
+      'Giá đã giảm': totalDiscountedPrice,
+      'Giảm voucher': totalVoucherDiscount,
+      'Tổng tiền': totalRevenue,
+      'Trạng thái thanh toán': '',
+      'Hình thức thanh toán': ''
     };
     excelData.push(totals);
 
     const worksheet = XLSX.utils.json_to_sheet(excelData);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Revenue");
-    XLSX.writeFile(workbook, "Revenue.xlsx");
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Revenue');
+    XLSX.writeFile(workbook, 'Revenue.xlsx');
   };
 
   return (
@@ -117,80 +114,41 @@ export default function Revenue() {
       <h2 className="page-title">Quản lý doanh thu</h2>
 
       <div className="date-filter d-flex justify-content-center">
-        <label
-          className="d-flex "
-          style={{
-            marginTop: "10px",
-            marginRight: "10px",
-            marginBottom: "10px",
-          }}
-        >
-          <p
-            style={{
-              marginBottom: "7px",
-              marginTop: "7px",
-              marginRight: "10px",
-            }}
-          >
-            Ngày bắt đầu
+        <label className='d-flex ' style={{marginTop:'10px',marginRight:'10px',marginBottom:'10px'}}>
+          <p style={{marginBottom:'7px',marginTop:'7px',marginRight:'10px'}}>
+          Ngày bắt đầu
           </p>
-          <input
-            style={{
-              borderRadius: "5px",
-              border: "1px solid",
-              width: "112.6px",
-              height: "36.6px",
-            }}
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-          />
+          <input style={{borderRadius:'5px',border:"1px solid",width:'112.6px',height:"36.6px"}} type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
         </label>
-        <label
-          className="d-flex"
-          style={{ marginTop: "10px", marginBottom: "10px" }}
-        >
-          <p
-            style={{
-              marginBottom: "7px",
-              marginTop: "7px",
-              marginRight: "10px",
-            }}
-          >
-            Ngày kết thúc
+        <label className='d-flex' style={{marginTop:'10px',marginBottom:'10px',marginRight:'10px'}}>
+          <p style={{marginBottom:'7px',marginTop:'7px',marginRight:'10px'}}>
+           Ngày kết thúc
           </p>
-          <input
-            style={{
-              borderRadius: "5px",
-              border: "1px solid",
-              width: "112.6px",
-              height: "36.6px",
-            }}
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-          />
+          <input style={{borderRadius:'5px',border:"1px solid",width:'112.6px',height:"36.6px"}} type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
         </label>
-        <button
-          onClick={exportToExcel}
-          style={{
-            marginBottom: "20px",
-            padding: "10px 20px",
-            background: "#007bff",
-            color: "#fff",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-            marginLeft: "20px",
-            marginTop: "9px",
-            height: "40px",
-          }}
-        >
-          Xuất Excel
-        </button>
+        <label className='d-flex' style={{marginTop:'10px',marginBottom:'10px'}}>
+          <p style={{marginBottom:'7px',marginTop:'7px',marginRight:'10px'}}>
+           Ngày cụ thể
+          </p>
+          <input style={{borderRadius:'5px',border:"1px solid",width:'112.6px',height:"36.6px"}} type="date" value={specificDate} onChange={(e) => setSpecificDate(e.target.value)} />
+        </label>
+        <button onClick={exportToExcel} style={{marginBottom: '20px', padding: '10px 20px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer',marginLeft:'20px',marginTop:'9px',height:"40px"}}>
+        Xuất Excel
+      </button>
       </div>
 
       <div className="orders-table-container">
+     
+      <div className="orders-summary" style={{ marginBottom: '20px', padding: '10px', background: '#f8f9fa', borderRadius: '5px' }}>
+    <h3 style={{ marginBottom: '10px', fontSize: '16px', color: '#007bff' }}>Tổng cộng</h3>
+    <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+      <p><strong>Tổng số lượng:</strong> {totalQuantity}</p>
+      <p><strong>Giá gốc:</strong> {totalOriginalPrice.toLocaleString('vi-VN')}đ</p>
+      <p><strong>Giá đã giảm:</strong> {totalDiscountedPrice.toLocaleString('vi-VN')}đ</p>
+      <p><strong>Giảm giá voucher:</strong> {totalVoucherDiscount.toLocaleString('vi-VN')}đ</p>
+      <p><strong>Tổng doanh thu:</strong> {totalRevenue.toLocaleString('vi-VN')}đ</p>
+    </div>
+  </div>
         <table className="orders-table">
           <thead>
             <tr>
@@ -207,55 +165,44 @@ export default function Revenue() {
             </tr>
           </thead>
           <tbody>
-            {filterOrdersByDateRange().map((order) =>
+            {filterOrdersByDateRange().filter(order => order.trangthai_thanhtoan === 'Đã thanh toán').map((order) => (
               order.sanPham.map((sp, index) => (
                 <tr key={`${order.id}-${index}`}>
                   {index === 0 && (
                     <>
                       <td rowSpan={order.sanPham.length}>#{order.id}</td>
-                      <td rowSpan={order.sanPham.length}>
-                        {new Date(order.ngayDat).toLocaleDateString("vi-VN")}
-                      </td>
+                      <td rowSpan={order.sanPham.length}>{new Date(order.ngayDat).toLocaleDateString('vi-VN')}</td>
+                      
                     </>
                   )}
                   <td>{sp.ten_sp}</td>
                   <td>{sp.soLuong}</td>
-                  <td>{sp.gia_goc.toLocaleString("vi-VN")}</td>
-                  <td>
-                    {sp.gia_giam !== 0
-                      ? sp.gia_giam.toLocaleString("vi-VN")
-                      : "0"}
-                  </td>
-                  <td>{order.giamGia.toLocaleString("vi-VN")}</td>
+                  <td>{sp.gia_goc.toLocaleString('vi-VN')}</td>
+                  <td>{sp.gia_giam !== 0 ? sp.gia_giam.toLocaleString('vi-VN') : '0'}</td>
+                  <td>{order.giamGia.toLocaleString('vi-VN')}</td>
                   {index === 0 && (
                     <>
-                      <td rowSpan={order.sanPham.length}>
-                        {order.tongTien.toLocaleString("vi-VN")}
-                      </td>
-                      <td rowSpan={order.sanPham.length}>
-                        {order.trangthai_thanhtoan}
-                      </td>
-                      <td rowSpan={order.sanPham.length}>
-                        {order.hinhThucThanhToan}
-                      </td>
+                      <td rowSpan={order.sanPham.length}>{order.tongTien.toLocaleString('vi-VN')}</td>
+                      <td rowSpan={order.sanPham.length}>{order.trangthai_thanhtoan}</td>
+                      <td rowSpan={order.sanPham.length}>{order.hinhThucThanhToan}</td>
                     </>
                   )}
                 </tr>
               ))
-            )}
+            ))}
           </tbody>
-          <tfoot>
+          {/* <tfoot>
             <tr>
               <td colSpan="3">Tổng cộng:</td>
               <td>{totalQuantity}</td>
-              <td>{totalOriginalPrice.toLocaleString("vi-VN")}</td>
-              <td>{totalDiscountedPrice.toLocaleString("vi-VN")}</td>
-              <td>{totalVoucherDiscount.toLocaleString("vi-VN")}</td>
-              <td>{totalRevenue.toLocaleString("vi-VN")}</td>
-
+              <td>{totalOriginalPrice.toLocaleString('vi-VN')}</td>
+              <td>{totalDiscountedPrice.toLocaleString('vi-VN')}</td>
+              <td>{totalVoucherDiscount.toLocaleString('vi-VN')}</td>
+              <td>{totalRevenue.toLocaleString('vi-VN')}</td>
+              
               <td colSpan="2"></td>
             </tr>
-          </tfoot>
+          </tfoot> */}
         </table>
       </div>
     </div>

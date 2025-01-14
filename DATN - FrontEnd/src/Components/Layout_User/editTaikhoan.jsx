@@ -10,10 +10,7 @@ export default function EditTaikhoan() {
   const { user, logout, updateUser } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
+
 
   const [formData, setFormData] = useState({
     fullname: user?.fullname || '',
@@ -208,10 +205,7 @@ export default function EditTaikhoan() {
             <i className="fas fa-ticket-alt"></i>
             <span>Voucher của tôi</span>
           </Link>
-          <button onClick={handleLogout} className="menu-item logout">
-            <i className="fas fa-sign-out-alt"></i>
-            <span>Đăng xuất</span>
-          </button>
+         
         </div>
       </div>
 

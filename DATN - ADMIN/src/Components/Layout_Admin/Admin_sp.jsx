@@ -2,50 +2,37 @@ import { useEffect, useState } from "react";
 import { fetchSanpham } from "../../../service/sanphamService.js";
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2';
-import '../../style.css'
+import '../../style.css';
+
 export default function Admin_sp() {
   const [sanPham, setSanpham] = useState([]);
   const [filteredCategoryId, setFilteredCategoryId] = useState(null);
-const [lockedCategories, setLockedCategories] = useState([]);
-const [searchKeyword, setSearchKeyword] = useState('');
-const [categories, setCategories] = useState([]);
-const filteredItems = sanPham.filter((item) => {
-  const isCategoryMatched = !filteredCategoryId || item.id_danhmuc === filteredCategoryId;
-  const isNotLocked = !lockedCategories.includes(item.id_danhmuc);
-  const isNameMatched = item.ten_sp.toLowerCase().includes(searchKeyword.toLowerCase());
-  return isCategoryMatched && isNotLocked && isNameMatched;
-});
+  const [lockedCategories, setLockedCategories] = useState([]);
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const [categories, setCategories] = useState([]);
 
-useEffect(() => {
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch("http://localhost:3000/api/danhMuc");
-      const categoriesData = await response.json();
-      setCategories(categoriesData);
+  const filteredItems = sanPham.filter((item) => {
+    const isCategoryMatched = !filteredCategoryId || item.id_danhmuc === filteredCategoryId;
+    const isNotLocked = !lockedCategories.includes(item.id_danhmuc);
+    const isNameMatched = item.ten_sp.toLowerCase().includes(searchKeyword.toLowerCase());
+    return isCategoryMatched && isNotLocked && isNameMatched;
+  });
 
-      // Lấy danh sách danh mục bị khóa
-      const locked = categoriesData.filter(category => category.locked).map(category => category.id);
-      setLockedCategories(locked);
-    } catch (error) {
-      console.error("Lỗi khi fetch danh mục:", error);
-    }
-  };
-  fetchCategories();
-}, []);
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/danhMuc");
+        const categoriesData = await response.json();
+        setCategories(categoriesData);
 
-
-// Combine your filtering logic into one filteredItems declaration
-// const filteredItems = sanPham.filter((item) => {
-//   const isCategoryMatched = !filteredCategoryId || item.id_danhmuc === filteredCategoryId;
-//   const isNotLocked = !lockedCategories.includes(item.id_danhmuc);
-//   return isCategoryMatched && isNotLocked;
-// });
-
- // Filter products by selected category ID
-  // const filteredItems = filteredCategoryId
-    // ? sanPham.filter((item) => item.id_danhmuc === filteredCategoryId)
-    // : sanPham;
-   
+        const locked = categoriesData.filter(category => category.locked).map(category => category.id);
+        setLockedCategories(locked);
+      } catch (error) {
+        console.error("Lỗi khi fetch danh mục:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const loadSanpham = async () => {
@@ -59,42 +46,35 @@ useEffect(() => {
     loadSanpham();
   }, []);
 
- 
+  // const handleDelete = async (id) => {
+  //   Swal.fire({
+  //     title: 'Bạn có chắc chắn muốn xóa sản phẩm này?',
+  //     icon: 'warning',
+  //     showCancelButton: true,
+  //     confirmButtonText: 'Xóa',
+  //     cancelButtonText: 'Hủy',
+  //   }).then(async (result) => {
+  //     if (result.isConfirmed) {
+  //       try {
+  //         const response = await fetch(`http://localhost:3000/api/sanPham/${id}`, {
+  //           method: 'DELETE',
+  //         });
 
-  const handleDelete = async (id) => {
-    Swal.fire({
-      title: 'Bạn có chắc chắn muốn xóa sản phẩm này?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Xóa',
-      cancelButtonText: 'Hủy',
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          const response = await fetch(`http://localhost:3000/api/sanPham/${id}`, {
-            method: 'DELETE',
-          });
-          
-          const resultData = await response.json(); // Đọc dữ liệu phản hồi từ API
-  
-          if (response.ok) {
-            setSanpham(sanPham.filter((item) => item.id !== id));
-            Swal.fire('Đã xóa!', 'Sản phẩm đã được xóa thành công.', 'success');
-          } else {
-            // Xử lý lỗi khi sản phẩm không thể xóa
-            Swal.fire('Lỗi!', resultData.message || 'Xóa không thành công.', 'error');
-          }
-        } catch (error) {
-          console.error("Lỗi:", error);
-          Swal.fire('Lỗi!', 'Đã xảy ra lỗi khi xóa sản phẩm.', 'error');
-        }
-      }
-    });
-  };
-  
+  //         const resultData = await response.json();
 
-
-  
+  //         if (response.ok) {
+  //           setSanpham(sanPham.filter((item) => item.id !== id));
+  //           Swal.fire('Đã xóa!', 'Sản phẩm đã được xóa thành công.', 'success');
+  //         } else {
+  //           Swal.fire('Lỗi!', resultData.message || 'Xóa không thành công.', 'error');
+  //         }
+  //       } catch (error) {
+  //         console.error("Lỗi:", error);
+  //         Swal.fire('Lỗi!', 'Đã xảy ra lỗi khi xóa sản phẩm.', 'error');
+  //       }
+  //     }
+  //   });
+  // };
 // Định nghĩa cấu hình cho từng danh mục
 const categoryConfigurations = {
   1: [ // Laptop
@@ -147,10 +127,48 @@ const categoryConfigurations = {
 
 };
 
+const toggleVisibility = async (id, currentStatus) => {
+  // Hiển thị hộp thoại xác nhận
+  const confirmResult = await Swal.fire({
+    title: currentStatus ? 'Bạn có muốn ẩn sản phẩm này không?' : 'Bạn có muốn hiện sản phẩm này không?',
+    text: currentStatus
+      ? 'Sản phẩm sẽ không còn hiển thị trên trang.'
+      : 'Sản phẩm sẽ được hiển thị trên trang.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Đồng ý',
+    cancelButtonText: 'Hủy',
+  });
 
+  // Kiểm tra nếu người dùng xác nhận
+  if (confirmResult.isConfirmed) {
+    try {
+      const response = await fetch(`http://localhost:3000/api/sanPham/${id}/toggleVisibility`, {
+        method: 'POST',
+      });
 
+      const resultData = await response.json();
 
-// Hàm render cấu hình cho từng danh mục
+      if (response.ok) {
+        // Cập nhật trạng thái hiển thị/ẩn cho sản phẩm trong state
+        setSanpham(sanPham.map(item => 
+          item.id === id ? { ...item, is_hidden: !currentStatus } : item
+        ));
+        Swal.fire('Thành công!', resultData.message, 'success');
+      } else {
+        Swal.fire('Lỗi!', resultData.message || 'Không thể cập nhật trạng thái hiển thị.', 'error');
+      }
+    } catch (error) {
+      console.error("Lỗi:", error);
+      Swal.fire('Lỗi!', 'Đã xảy ra lỗi khi cập nhật trạng thái hiển thị.', 'error');
+    }
+  } else {
+    // Người dùng hủy hành động
+    Swal.fire('Hủy!', 'Hành động đã bị hủy.', 'info');
+  }
+};
+
+  // Hàm render cấu hình cho từng danh mục
 const renderConfig = (cau_hinh, id_danhmuc) => {
   // Kiểm tra xem danh mục có tồn tại trong cấu hình không, nếu không thì mặc định là danh mục "khác"
   const configFields = categoryConfigurations[id_danhmuc] || categoryConfigurations[6];
@@ -163,30 +181,10 @@ const renderConfig = (cau_hinh, id_danhmuc) => {
     )
   ));
 };
-
-  // // Function to get the image path based on the category ID
-  // const getImagePath = (categoryId) => {
-  //   switch (categoryId) {
-  //     case 1:
-  //       return "Laptop";
-  //     case 2:
-  //       return "PC";
-  //     case 3:
-  //       return "Manhinh";
-  //     case 4:
-  //       return "Chuot";
-  //     case 5:
-  //       return "Banphim";
-  //     default:
-  //       return "Khac";
-  //   }
-  // };
-
- 
   return (
     <>
       <h1 className="text-center">Quản lý sản phẩm</h1>
-  
+
       <div>
         <Link to="/products/add">
           <button className="btn btn-primary">Thêm sản phẩm</button>
@@ -194,7 +192,7 @@ const renderConfig = (cau_hinh, id_danhmuc) => {
       </div>
     
       <div className="d-flex justify-content-between">
-      <div className="my-3 d-flex align-items-center">
+        <div className="my-3 d-flex align-items-center">
           <label className="me-2 fw-bold">Chọn danh mục: </label>
           <select
             className="form-select"
@@ -221,30 +219,27 @@ const renderConfig = (cau_hinh, id_danhmuc) => {
           />
         </div>
       </div>
-  
-      {/* Bảng dành cho desktop */}
+
       <div className="table-responsive d-none d-md-block">
         <table className="table table-bordered m-2">
           <thead className="table-dark">
             <tr>
-              <th className="text-center align-middle " scope="col">ID</th>
-              <th className="text-center align-middle " scope="col">Mã sản phẩm</th>
-              <th className="text-center align-middle " scope="col">Tên sản phẩm</th>
-              <th className="text-center align-middle " scope="col">Hình ảnh</th>
-              <th className="text-center align-middle " scope="col">Giá</th>
-              <th className="text-center align-middle " scope="col">Danh mục</th>
-              <th className="text-center align-middle " scope="col">Cấu hình</th>
-              <th className="text-center align-middle " scope="col">Thương hiệu</th>
-              <th className="text-center align-middle " scope="col">Bảo hành</th>
-             
-              <th className="text-center align-middle " scope="col">Thao tác</th>
+              <th className="text-center align-middle" scope="col">ID</th>
+              <th className="text-center align-middle" scope="col">Mã sản phẩm</th>
+              <th className="text-center align-middle" scope="col">Tên sản phẩm</th>
+              <th className="text-center align-middle" scope="col">Hình ảnh</th>
+              <th className="text-center align-middle" scope="col">Giá</th>
+              <th className="text-center align-middle" scope="col">Danh mục</th>
+              <th className="text-center align-middle" scope="col">Cấu hình</th>
+              <th className="text-center align-middle" scope="col">Thương hiệu</th>
+              <th className="text-center align-middle" scope="col">Bảo hành</th>
+              <th className="text-center align-middle" scope="col">Thao tác</th>
             </tr>
           </thead>
           
           <tbody>
             {filteredItems.length > 0 ? (
               filteredItems.map((sanpham, index) => {
-              
                 return (
                   <tr key={index}>
                     <td className="align-middle">{sanpham.id}</td>
@@ -265,18 +260,29 @@ const renderConfig = (cau_hinh, id_danhmuc) => {
                     </td>
                     <td className="align-middle">{sanpham.thuong_hieu}</td>
                     <td className="align-middle">{sanpham.bao_hanh}</td>
-                   
                     <td className="text-center align-middle d-flex justify-content-center gap-2 pt-5">
                       <Link to={`/products/edit/${sanpham.id}`} className="btn btn-light">
                         <i className="text-primary bi-pencil-square" />
                       </Link>
-                      <button
+                      {/* <button
                         onClick={() => handleDelete(sanpham.id)}
                         type="button"
                         className="btn btn-light"
                       >
                         <i className="text-warning bi-trash" />
-                      </button>
+                      </button> */}
+                      <button style={{
+                        backgroundColor:' #f8f9fa',
+                        border: '#f8f9fa',
+                        width:' 31px',
+                    }}
+                      onClick={() => toggleVisibility(sanpham.id, sanpham.is_hidden)}
+                      className={`btn ${sanpham.is_hidden ? 'btn-success' : 'btn-danger'}`}
+                    >
+                      <i style={{color:'#0d6efd'}} className={`me-2 bi ${sanpham.is_hidden ? 'bi-eye' : 'bi-eye-slash'}`}></i>
+                      
+                    </button>
+
                     </td>
                   </tr>
                 );
@@ -289,45 +295,6 @@ const renderConfig = (cau_hinh, id_danhmuc) => {
           </tbody>
         </table>
       </div>
-  
-      {/* Slider dành cho mobile */}
-      <div className="slider-container d-md-none">
-        {filteredItems.length > 0 ? (
-          filteredItems.map((sanpham, index) => {
-         
-            return (
-              <div key={index} className="product-card">
-                <img
-                  src={`/img/sanpham/${sanpham.hinh_anh.chinh}`}
-                  alt={sanpham.ten_sp}
-                  className="product-img"
-                />
-                <div className="product-details">
-                  <h5>{sanpham.ten_sp}</h5>
-                  <p><strong>Giá:</strong> {sanpham.gia_sp}</p>
-                  <p><strong>Danh mục:</strong> {sanpham.id_danhmuc}</p>
-                  {renderConfig(sanpham.cau_hinh, sanpham.id_danhmuc)}
-                  <div className="actions">
-                    <Link to={`/products/edit/${sanpham.id}`} className="btn btn-primary">
-                      Sửa
-                    </Link>
-                    <button
-                      onClick={() => handleDelete(sanpham.id)}
-                      className="btn btn-danger"
-                    >
-                      Xóa
-                    </button>
-                  </div>
-                </div>
-              </div>
-            );
-          })
-        ) : (
-          <div className="text-center">Không có sản phẩm nào</div>
-        )}
-      </div>
     </>
   );
-  
-  
 }

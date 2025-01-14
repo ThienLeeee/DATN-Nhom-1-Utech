@@ -38,18 +38,7 @@ export default function Thongtindonhang() {
   };
 
 
-  const handleLogout = () => {
-    // Xóa giỏ hàng khỏi localStorage
-    const cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
-    if (cartItems.length > 0) {
-      localStorage.removeItem("cartItem");
-    }
-  // Dispatch event để cập nhật số lượng trong Header
-  window.dispatchEvent(new Event("cartUpdated"));
-    // Gọi hàm logout và chuyển hướng trang
-    logout();
-    navigate("/");
-  };
+
 
   // Hàm format tiền tệ
   const formatCurrency = (amount) => {
@@ -200,10 +189,7 @@ export default function Thongtindonhang() {
             <i className="fas fa-ticket-alt"></i>
             <span>Voucher của tôi</span>
           </Link>
-          <button onClick={handleLogout} className="menu-item logout">
-            <i className="fas fa-sign-out-alt"></i>
-            <span>Đăng xuất</span>
-          </button>
+         
         </div>
       </div>
 

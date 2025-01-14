@@ -1393,9 +1393,9 @@ export default function ChiTietSanPham() {
                     <div className="product">
                       <div className="box-product">
                         <div className="pic-product" data-tooltip="sticky7385">
-                          <Link
+                        <Link
                             className="d-block"
-                            href="san-pham/laptop-dell-vostro-3530-v5i3465w1-7385.html"
+                            to={`/chitietsp/sanPham/${sanpham.id}`}
                             title={sanpham.ten_sp}
                           >
                             <img
@@ -1427,13 +1427,13 @@ export default function ChiTietSanPham() {
                           </div>
                         </div>
                         <div className="info-product">
-                          <a
+                          <Link
                             className="name-product text-split"
-                            href="san-pham/laptop-dell-vostro-3530-v5i3465w1-7385.html"
+                            to={`/chitietsp/sanPham/${sanpham.id}`}
                             title={`${sanpham.ten_sp}`}
                           >
                             {sanpham.ten_sp}
-                          </a>
+                          </Link>
                           <div className="price-product d-flex justify-content-between" style={{ margin: '8px 0', textAlign: 'left' }}>
                       {sanpham.giam_gia ? (
                         <div className="price-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '2px',  }}>
@@ -1504,14 +1504,14 @@ export default function ChiTietSanPham() {
                             }}></span>
                             {sanpham.trang_thai}
                         </span>
-                              <span
+                              {/* <span
                                 className="mua_giohang"
                                 rel={sanpham.id}
                                 data-confirm=""
                                 onClick={() =>handleBuyNow(sanpham)}
                               >
                                 Mua ngay
-                              </span>
+                              </span> */}
                             </div>
                         </div>
                       </div>

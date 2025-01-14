@@ -25,6 +25,8 @@
     "multer-storage-cloudinary": "^4.0.0",
     "next": "^15.0.3",
     "nodemailer": "^6.9.16",
+    "passport": "^0.7.0",
+    "passport-facebook-token": "^4.0.0",
     "qs": "^6.13.1",
     "request": "^2.88.2"
   },
