@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import FacebookLogin from "react-facebook-login";
-import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
-import Swal from 'sweetalert2';
+import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import Swal from "sweetalert2";
 import "/public/css/dangnhap.css";
 import "/public/css/popup.css";
 import { useAuth } from "../../context/AuthContext";
@@ -24,60 +24,61 @@ export default function Dangnhap() {
     }
   }, []);
 
- 
-
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
-  
+
     try {
-      const response = await axios.post('http://localhost:3000/api/accounts/login', {
-        username,
-        password,
-      });
-  
+      const response = await axios.post(
+        "http://localhost:3000/api/accounts/login",
+        {
+          username,
+          password,
+        }
+      );
+
       const { user, token } = response.data;
-  
-      if (user.role === 'admin') {
+
+      if (user.role === "admin") {
         window.location.href = "http://localhost:5174/";
         return;
       }
-  
+
       login(user);
-      localStorage.setItem('token', token);
-  
+      localStorage.setItem("token", token);
+
       // Xóa giỏ hàng theo cấu trúc removeItem
       localStorage.removeItem("cartItem");
-  
+
       // Dispatch event để cập nhật số lượng trong Header
       window.dispatchEvent(new Event("cartUpdated"));
-  
+
       // Hiển thị thông báo đẹp bằng SweetAlert2
       Swal.fire({
-        icon: 'success',
-        title: 'Đăng nhập thành công!',
-        text: 'Chào mừng bạn đã quay trở lại.',
+        icon: "success",
+        title: "Đăng nhập thành công!",
+        text: "Chào mừng bạn đã quay trở lại.",
         showConfirmButton: false,
-        timer: 1500
+        timer: 1500,
       });
-  
+
       // Chuyển hướng về trang chủ sau khi thông báo biến mất
       setTimeout(() => {
         window.location.href = "http://localhost:5173/";
       }, 1500);
-  
     } catch (error) {
       setError(error.response?.data?.message || "Đăng nhập thất bại!");
-      
+
       // Hiển thị thông báo lỗi bằng SweetAlert2
       Swal.fire({
-        icon: 'error',
-        title: 'Đăng nhập thất bại!',
-        text: error.response?.data?.message || 'Đã có lỗi xảy ra. Vui lòng thử lại.',
+        icon: "error",
+        title: "Đăng nhập thất bại!",
+        text:
+          error.response?.data?.message ||
+          "Đã có lỗi xảy ra. Vui lòng thử lại.",
       });
     }
   };
-  
 
   const togglePassword = () => {
     const passwordField = document.getElementById("password");
@@ -87,95 +88,99 @@ export default function Dangnhap() {
       passwordField.type = "password";
     }
   };
-  const GOOGLE_CLIENT_ID = "961938347086-inarcnt70odddjhmnecu42igfiingl0r.apps.googleusercontent.com";
-
+  const GOOGLE_CLIENT_ID =
+    "1080556897935-pinnmjrtkmfe74b92vkprnfrd03mri1e.apps.googleusercontent.com";
 
   // Facebook login
   const responseFacebook = async (response) => {
     if (response.accessToken) {
       try {
-        const res = await axios.post('http://localhost:3000/api/facebook-login', {
-          accessToken: response.accessToken,
-        });
-  
+        const res = await axios.post(
+          "http://localhost:3000/api/facebook-login",
+          {
+            accessToken: response.accessToken,
+          }
+        );
+
         const { user, token } = res.data;
         login(user);
         // Lưu token vào localStorage
-        localStorage.setItem('token', token);
-  
+        localStorage.setItem("token", token);
+
         // Xóa giỏ hàng khỏi localStorage
         localStorage.removeItem("cartItem");
-  
+
         // Dispatch event để cập nhật số lượng trong Header
         window.dispatchEvent(new Event("cartUpdated"));
-  
+
         // Chuyển hướng về trang chủ
-        navigate('/'); // Sử dụng React Router để chuyển hướng
-  
+        navigate("/"); // Sử dụng React Router để chuyển hướng
+
         // Hiển thị thông báo đẹp bằng SweetAlert2
         Swal.fire({
-          icon: 'success',
-          title: 'Đăng nhập thành công!',
-          text: 'Chào mừng bạn đã quay trở lại.',
+          icon: "success",
+          title: "Đăng nhập thành công!",
+          text: "Chào mừng bạn đã quay trở lại.",
           showConfirmButton: false,
-          timer: 1500
+          timer: 1500,
         });
       } catch (error) {
-        console.error('Facebook login failed:', error);
+        console.error("Facebook login failed:", error);
       }
     }
   };
-  
+
   // Google login
   const responseGoogle = async (response) => {
     if (response.credential) {
       try {
-        const res = await axios.post('http://localhost:3000/api/auth/google', { token: response.credential });
-  
+        const res = await axios.post("http://localhost:3000/api/auth/google", {
+          token: response.credential,
+        });
+
         const { user, token } = res.data;
         login(user);
         // Lưu token vào localStorage
-        localStorage.setItem('token', token);
-  
+        localStorage.setItem("token", token);
+
         // Xóa giỏ hàng khỏi localStorage
         localStorage.removeItem("cartItem");
-  
+
         // Dispatch event để cập nhật số lượng trong Header
         window.dispatchEvent(new Event("cartUpdated"));
-  
+
         // Chuyển hướng về trang chủ
-        navigate('/'); // Sử dụng React Router để chuyển hướng
-  
+        navigate("/"); // Sử dụng React Router để chuyển hướng
+
         // Hiển thị thông báo đẹp bằng SweetAlert2
         Swal.fire({
-          icon: 'success',
-          title: 'Đăng nhập thành công!',
-          text: 'Chào mừng bạn đã quay trở lại.',
+          icon: "success",
+          title: "Đăng nhập thành công!",
+          text: "Chào mừng bạn đã quay trở lại.",
           showConfirmButton: false,
-          timer: 1500
+          timer: 1500,
         });
       } catch (error) {
         console.error("Error during Google login:", error);
         Swal.fire({
-          icon: 'error',
-          title: 'Đăng nhập thất bại!',
-          text: 'Đã có lỗi xảy ra. Vui lòng thử lại.',
+          icon: "error",
+          title: "Đăng nhập thất bại!",
+          text: "Đã có lỗi xảy ra. Vui lòng thử lại.",
         });
       }
     } else {
-      console.error('Google credential is missing!');
+      console.error("Google credential is missing!");
       Swal.fire({
-        icon: 'error',
-        title: 'Đăng nhập thất bại!',
-        text: 'Đã có lỗi xảy ra. Vui lòng thử lại.',
+        icon: "error",
+        title: "Đăng nhập thất bại!",
+        text: "Đã có lỗi xảy ra. Vui lòng thử lại.",
       });
     }
   };
-  
 
   const failureGoogle = (error) => {
-    console.error('Google login failed:', error);
-    alert('Login failed');
+    console.error("Google login failed:", error);
+    alert("Login failed");
   };
 
   return (
@@ -248,8 +253,8 @@ export default function Dangnhap() {
                   <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
                     <div>
                       <GoogleLogin
-                        onSuccess={responseGoogle}  // Handle successful login
-                        onError={failureGoogle}      // Handle login failure
+                        onSuccess={responseGoogle} // Handle successful login
+                        onError={failureGoogle} // Handle login failure
                         useOneTap
                       />
                     </div>
@@ -290,7 +295,9 @@ export default function Dangnhap() {
               </div>
               <h3 className="popup-title">Đăng nhập thành công!</h3>
               <p className="popup-message">
-                {previousPath ? "Đang chuyển bạn về trang trước đó..." : "Chào mừng bạn đã quay trở lại."}
+                {previousPath
+                  ? "Đang chuyển bạn về trang trước đó..."
+                  : "Chào mừng bạn đã quay trở lại."}
               </p>
             </div>
           </div>

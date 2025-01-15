@@ -27,6 +27,7 @@ export default function Header() {
   const navigate = useNavigate();
   const menuRef = useRef(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showLogoutPopup, setShowLogoutPopup] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -93,7 +94,7 @@ export default function Header() {
     };
   }, []);
 
-  const handleLogout = () => {
+  const handleLogoutConfirm = () => {
     // Xóa giỏ hàng khỏi localStorage
     const cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
     if (cartItems.length > 0) {
@@ -332,10 +333,7 @@ export default function Header() {
                           </Link>
                           <div className="menu-separator"></div>
                           <button
-                            onClick={() => {
-                              handleLogout();
-                              setShowUserMenu(false);
-                            }}
+                            onClick={() => setShowLogoutPopup(true)}
                             className="logout-button"
                           >
                             <i className="fas fa-sign-out-alt"></i>
@@ -841,6 +839,31 @@ export default function Header() {
         </div>
       </div>
       {/* header end*/}
+      {showLogoutPopup && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <i className="fas fa-question-circle popup-icon" style={{ color: "#0090d0" }}></i>
+            <p>Bạn có chắc chắn muốn đăng xuất?</p>
+            <div className="popup-buttons">
+              <button
+                className="popup-button confirm"
+                onClick={() => {
+                  handleLogoutConfirm();
+                  setShowLogoutPopup(false);
+                }}
+              >
+                Đăng xuất
+              </button>
+              <button
+                className="popup-button cancel"
+                onClick={() => setShowLogoutPopup(false)}
+              >
+                Hủy
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

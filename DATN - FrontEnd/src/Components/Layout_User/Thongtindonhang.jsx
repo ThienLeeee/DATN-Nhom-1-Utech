@@ -12,6 +12,19 @@ export default function Thongtindonhang() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [showLogoutPopup, setShowLogoutPopup] = useState(false);
+  const handleLogoutConfirm = () => {
+    // Xóa giỏ hàng khỏi localStorage
+    const cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
+    if (cartItems.length > 0) {
+      localStorage.removeItem("cartItem");
+    }
+    // Dispatch event để cập nhật số lượng trong Header
+    window.dispatchEvent(new Event("cartUpdated"));
+    // Gọi hàm logout và chuyển hướng trang
+    logout();
+    navigate("/");
+  };
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -36,9 +49,6 @@ export default function Thongtindonhang() {
   const handleStatusClick = (status) => {
     setSelectedStatus(status); // Cập nhật trạng thái được chọn
   };
-
-
-
 
   // Hàm format tiền tệ
   const formatCurrency = (amount) => {
@@ -189,7 +199,10 @@ export default function Thongtindonhang() {
             <i className="fas fa-ticket-alt"></i>
             <span>Voucher của tôi</span>
           </Link>
-         
+          <button onClick={() => setShowLogoutPopup(true)} className="menu-item logout">
+            <i className="fas fa-sign-out-alt"></i>
+            <span>Đăng xuất</span>
+          </button>
         </div>
       </div>
 
@@ -358,7 +371,31 @@ export default function Thongtindonhang() {
         </div>
       </div>
 
-  
+      {showLogoutPopup && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <i className="fas fa-question-circle popup-icon" style={{ color: "#0090d0" }}></i>
+            <p>Bạn có chắc chắn muốn đăng xuất?</p>
+            <div className="popup-buttons">
+              <button
+                className="popup-button confirm"
+                onClick={() => {
+                  handleLogoutConfirm();
+                  setShowLogoutPopup(false);
+                }}
+              >
+                Đăng xuất
+              </button>
+              <button
+                className="popup-button cancel"
+                onClick={() => setShowLogoutPopup(false)}
+              >
+                Hủy
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
