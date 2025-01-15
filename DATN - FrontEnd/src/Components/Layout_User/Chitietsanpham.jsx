@@ -200,26 +200,26 @@ export default function ChiTietSanPham() {
      navigate("/giohang");
   };
 
-  const handleBuyNow = (sanPhamMoi) => {
-    if (sanPhamMoi.trang_thai !== 'Còn hàng') { Swal.fire("Thông báo", "Sản phẩm đã hết hàng", "warning"); return; }
-    let cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
-    const itemIndex = cartItems.findIndex((item) => item.id === sanPhamMoi.id);
+  // const handleBuyNow = (sanPhamMoi) => {
+  //   if (sanPhamMoi.trang_thai !== 'Còn hàng') { Swal.fire("Thông báo", "Sản phẩm đã hết hàng", "warning"); return; }
+  //   let cartItems = JSON.parse(localStorage.getItem("cartItem")) || [];
+  //   const itemIndex = cartItems.findIndex((item) => item.id === sanPhamMoi.id);
 
-    if (itemIndex > -1) {
-      cartItems[itemIndex].quantity += 1;
-    } else {
-      const priceAsNumber = parseInt(sanPhamMoi.gia_sp.replace(/\./g, ""));
-      cartItems.push({ ...sanPhamMoi, gia_sp: priceAsNumber, quantity: 1 });
-    }
+  //   if (itemIndex > -1) {
+  //     cartItems[itemIndex].quantity += 1;
+  //   } else {
+  //     const priceAsNumber = parseInt(sanPhamMoi.gia_sp.replace(/\./g, ""));
+  //     cartItems.push({ ...sanPhamMoi, gia_sp: priceAsNumber, quantity: 1 });
+  //   }
 
-    localStorage.setItem("cartItem", JSON.stringify(cartItems));
+  //   localStorage.setItem("cartItem", JSON.stringify(cartItems));
     
-    // Dispatch một custom event để thông báo thay đổi giỏ hàng
-    const event = new CustomEvent('cartUpdated');
-    window.dispatchEvent(event);
+  //   // Dispatch một custom event để thông báo thay đổi giỏ hàng
+  //   const event = new CustomEvent('cartUpdated');
+  //   window.dispatchEvent(event);
     
-    navigate("/thanhtoan");
-  };
+  //   navigate("/thanhtoan");
+  // };
   
 
   const handleClosePopup = () => {
@@ -882,24 +882,17 @@ export default function ChiTietSanPham() {
                   </div>
                 )}
 
-                <a
-                  onClick={() => handleBuyNow(sanpham)}
-                  className="muangay mua_giohang"
-                  rel={7385}
-                  style={{ cursor: "pointer" }}
-                >
-                  Mua ngay
-                </a>
+               
                 <div className="hotline_hotro">
                   <div className="title_hotline_hotro">Hỗ trợ mua hàng</div>
                   <div className="content_hotline_hotro" style={{display:'flex',justifyContent:"center",alignItems:"center"}}>
                     <p>
-                      0902 566 839
+                      0906733731
                       <br />
-                      0903 359 388
-                      <br />
-                      0932 333 667
-                      <br />
+                      0822104408
+                      
+                     
+                     
                     </p>
                     <div className="clear" />
                   </div>
@@ -1369,159 +1362,7 @@ export default function ChiTietSanPham() {
             </div>
           </div>
         </div>
-        <div className="sp_daxem">
-          <div className="title_main">
-            <span>Sản phẩm đã xem</span>
-          </div>
-          <div className="content_daxem">
-            <div
-              className="owl_daxem owl-carousel owl-theme"
-              style={{ opacity: 1, display: "block" }}
-            >
-              <div className="owl-wrapper-outer">
-                <div
-                  className="owl-wrapper"
-                  style={{
-                    width: 520,
-                    left: 0,
-                    display: "block",
-                    transition: "1000ms",
-                    transform: "translate3d(0px, 0px, 0px)",
-                  }}
-                >
-                  <div className="owl-item" style={{ width: 260 }}>
-                    <div className="product">
-                      <div className="box-product">
-                        <div className="pic-product" data-tooltip="sticky7385">
-                        <Link
-                            className="d-block"
-                            to={`/chitietsp/sanPham/${sanpham.id}`}
-                            title={sanpham.ten_sp}
-                          >
-                            <img
-                              src={`/img/sanpham/${sanpham.hinh_anh.phu1}`}
-                              alt={sanpham.ten_sp}
-                              className="w100 trans03"
-                            />
-                          </Link>
-                          <div className="btntragop1" />
-                          <div className="hot-icon blink" />
-                          <div className="desc-product">
-                            <div>
-                              {/* <ul>
-                                <li>{sanpham.cau_hinh.cpu}</li>
-                                <li>{sanpham.cau_hinh.ram}</li>
-                                <li>{sanpham.cau_hinh.ocung}</li>
-                                <li>{sanpham.cau_hinh.vga}</li>
-                                <li>{sanpham.cau_hinh.man_hinh}</li>
-                                <li>{sanpham.cau_hinh_chi_tiet.pin}</li>
-                                <li>{sanpham.cau_hinh_chi_tiet.mau_sac}</li>
-                                <li>{sanpham.cau_hinh_chi_tiet.trong_luong}</li>
-                                <li>
-                                  {sanpham.cau_hinh_chi_tiet.he_dieu_hanh}
-                                </li>
-                              </ul> */}
-                              <p>&nbsp;</p>
-                              <div className="baohanh">Bảo hành: 12 tháng</div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="info-product">
-                          <Link
-                            className="name-product text-split"
-                            to={`/chitietsp/sanPham/${sanpham.id}`}
-                            title={`${sanpham.ten_sp}`}
-                          >
-                            {sanpham.ten_sp}
-                          </Link>
-                          <div className="price-product d-flex justify-content-between" style={{ margin: '8px 0', textAlign: 'left' }}>
-                      {sanpham.giam_gia ? (
-                        <div className="price-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '2px',  }}>
-                          <div style={{ 
-                            textDecoration: 'line-through', 
-                            color: '#707070', 
-                            fontSize: '14px', 
-                            fontWeight: 'normal' 
-                          }}>
-                            {sanpham.gia_sp}đ
-                          </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <div style={{ 
-                              color: '#d70018', 
-                              fontSize: '16px', 
-                              fontWeight: '500' 
-                            }}>
-                              {sanpham.giam_gia}đ
-                            </div>
-                            <div style={{ 
-                              color: '#fff',
-                              fontSize: '12px',
-                              background: '#d70018',
-                              padding: '0 6px',
-                              borderRadius: '3px',
-                              fontWeight: '500',
-                              height: '20px',
-                              display: 'flex',
-                              alignItems: 'center'
-                            }}>
-                              -{calculateDiscount(sanpham.gia_sp, sanpham.giam_gia)}%
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <span style={{ 
-                          color: '#d70018', 
-                          fontSize: '16px', 
-                          fontWeight: '500' 
-                        }}>
-                          {sanpham.gia_sp}đ
-                        </span>
-                      )}
-                    
-                    </div>
-                    <div className="cart-product d-flex justify-content-between align-items-center">
-                            <span className="status-pro sts2" style={{
-                            fontSize: '13px',
-                            color: sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red',
-                            fontWeight: '400',
-                            position: 'relative',
-                            paddingLeft: '15px',
-                            border: `1px solid ${sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red'}`,
-                            borderRadius: '4px',
-                            padding: '4px 8px 4px 20px',
-                            display: 'inline-flex',
-                            alignItems: 'center'
-                        }}>
-                            <span style={{
-                                width: '6px',
-                                height: '6px',
-                                borderRadius: '50%',
-                                backgroundColor: sanpham.trang_thai === 'Còn hàng' ? '#32CD32' : 'red',
-                                position: 'absolute',
-                                left: '8px',
-                                top: '50%',
-                                transform: 'translateY(-50%)'
-                            }}></span>
-                            {sanpham.trang_thai}
-                        </span>
-                              {/* <span
-                                className="mua_giohang"
-                                rel={sanpham.id}
-                                data-confirm=""
-                                onClick={() =>handleBuyNow(sanpham)}
-                              >
-                                Mua ngay
-                              </span> */}
-                            </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+       
       </div>
       {/* chitietsanpham-container */}
 
