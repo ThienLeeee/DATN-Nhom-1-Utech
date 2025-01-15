@@ -24,42 +24,6 @@ export default function Admin_account() {
     }
   };
 
-  // Xử lý xóa người dùng
-  const handleDelete = async (userId) => {
-    // Kiểm tra nếu là admin gốc (ID = 1)
-    if (userId === 1) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Không thể xóa',
-        text: 'Không thể xóa tài khoản Admin gốc!'
-      });
-      return;
-    }
-
-    Swal.fire({
-      title: 'Bạn có chắc chắn muốn xóa?',
-      text: "Hành động này không thể hoàn tác!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Xóa',
-      cancelButtonText: 'Hủy'
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          const response = await axios.delete(`http://localhost:3000/api/users/${userId}`);
-          if (response.data.success) {
-            Swal.fire('Đã xóa!', 'Người dùng đã được xóa thành công.', 'success');
-            fetchUsers();
-          }
-        } catch (error) {
-          Swal.fire('Lỗi!', 'Không thể xóa người dùng.', 'error');
-        }
-      }
-    });
-  };
-
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('vi-VN');
   };
@@ -329,11 +293,7 @@ export default function Admin_account() {
                   </span>
                 </td>
                 <td className="text-center align-middle">
-                  <span 
-                    className={`badge ${user.role === 'admin' ? 'bg-danger' : 'bg-info'} cursor-pointer fw-bold`}
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => handleUpdateRole(user.id, user.role)}
-                  >
+                  <span className={`badge ${user.role === 'admin' ? 'bg-danger' : 'bg-info'}`}>
                     {user.role || 'User'}
                   </span>
                 </td>
@@ -345,14 +305,6 @@ export default function Admin_account() {
                       title="Xem chi tiết"
                     >
                       <i className="bi bi-eye"></i>
-                    </button>
-                    <button
-                      onClick={() => handleDelete(user.id)}
-                      className="btn btn-danger btn-sm"
-                      disabled={user.id === 1}
-                      title="Xóa người dùng"
-                    >
-                      <i className="bi bi-trash"></i>
                     </button>
                   </div>
                 </td>

@@ -135,11 +135,6 @@ export default function NavBar() {
             </Link>
           </p>
           <hr />
-          <div className="text-center">
-            <Link to="http://localhost:5173/" className="btn btn-primary">
-              Đăng xuất
-            </Link>
-          </div>
         </div>
 
         {/* Mobile Sidebar Menu */}
@@ -207,11 +202,6 @@ export default function NavBar() {
               Quản lý bình luận
             </Link>
           </p>
-          <div className="text-center py-2">
-            <Link to="http://localhost:5173/" className="btn btn-primary">
-              Đăng xuất
-            </Link>
-          </div>
         </div>
       </div>
 
