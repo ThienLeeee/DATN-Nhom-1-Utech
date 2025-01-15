@@ -88,8 +88,7 @@ export default function Dangnhap() {
       passwordField.type = "password";
     }
   };
-  const GOOGLE_CLIENT_ID =
-    "1080556897935-pinnmjrtkmfe74b92vkprnfrd03mri1e.apps.googleusercontent.com";
+  const GOOGLE_CLIENT_ID = "1080556897935-pinnmjrtkmfe74b92vkprnfrd03mri1e.apps.googleusercontent.com";
 
   // Facebook login
   const responseFacebook = async (response) => {
