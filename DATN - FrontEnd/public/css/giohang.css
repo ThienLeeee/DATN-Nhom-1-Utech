@@ -595,7 +595,7 @@ margin-right: 0;
 .discount, 
 .total {
 display: flex;
-justify-content: space-between;
+justify-content: flex-start;
 align-items: center;
 padding: 8px 0;
 }
@@ -1031,4 +1031,99 @@ transition: all 0.2s;
 .get-voucher-btn:hover {
 background: #c40016;
 transform: translateY(-1px);
+}
+/* Giao diện mặc định (Desktop) */
+
+/* Giao diện Mobile */
+@media screen and (max-width: 768px) {
+  .wrap-main {
+    padding: 10px;
+  }
+
+  .title_main {
+    font-size: 18px;
+    text-align: center;
+  }
+
+  .cart-table {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .cart-table thead {
+    display: none;
+  }
+
+  .cart-table tr {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ddd;
+    padding: 10px;
+  }
+
+  .cart-product-info {
+    flex-direction: column;
+  }
+
+  .cart-product-price {
+    font-size: 14px;
+  }
+
+  .quantity-controls {
+    display: flex;
+    justify-content: center;
+  }
+
+  .quantity-input {
+    width: 50px;
+    text-align: center;
+  }
+
+  .cart-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .cart-total-info {
+    font-size: 12px; /* Thu nhỏ kích thước chữ */
+  }
+
+  .cart-total-info .cart-total-amount {
+    gap: 8px; /* Thu nhỏ khoảng cách giữa các dòng */
+  }
+
+  .cart-total-info .subtotal span,
+  .cart-total-info .discount span,
+  .cart-total-info .total span {
+    font-size: 12px; /* Thu nhỏ kích thước chữ */
+  }
+
+  .cart-total-info .total span:last-child {
+    font-size: 14px; /* Giá trị tổng tiền lớn hơn một chút */
+  }
+
+  .cart-summary {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .voucher-modal-content {
+    width: 90%;
+    margin: 20px auto;
+  }
+
+  .voucher-item {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .cart-actions .btnc {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  
 }

@@ -462,57 +462,57 @@ const handleCheckout = (e) => {
                   </table>
 
                   <div className="cart-summary">
-                    <div className="cart-voucher" style={{height:'72.8px'}}>
-                      {selectedVoucher ? (
-                        <div className="applied-voucher" style={{height:'51.6px'}}>
-                          <div className="voucher-info">
-                            <span className="voucher-code">{selectedVoucher.code}</span>
-                            <span className="voucher-discount">
-                              -{discountAmount.toLocaleString('vi-VN')}đ
-                            </span>
-                          </div>
-                          <button 
-                            className="remove-voucher-btn"
-                            onClick={handleRemoveVoucher}
-                          >
-                            <i className="fas fa-times"></i>
-                          </button>
-                        </div>
-                      ) : (
-                        <button 
-                          className="select-voucher-btn"
-                          onClick={() => setShowVoucherModal(true)}
-                          disabled={totalPrice === 0}
-                        >
-                          <i className="fas fa-ticket-alt"></i>
-                          Chọn Voucher
-                        </button>
-                      )}
+                  <div className="cart-voucher" style={{ height: 'auto', padding: '10px' }}>
+  {selectedVoucher ? (
+    <div className="applied-voucher" style={{ height: '51.6px' }}>
+      <div className="voucher-info">
+        <span className="voucher-code">{selectedVoucher.code}</span>
+        <span className="voucher-discount">
+          -{discountAmount.toLocaleString('vi-VN')}đ
+        </span>
+      </div>
+      <button
+        className="remove-voucher-btn"
+        onClick={handleRemoveVoucher}
+      >
+        <i className="fas fa-times"></i>
+      </button>
+    </div>
+  ) : (
+    <button
+      className="select-voucher-btn"
+      onClick={() => setShowVoucherModal(true)}
+      disabled={totalPrice === 0}
+      style={{height:'59.6px',marginTop:'50px'}}
+    >
+      <i className="fas fa-ticket-alt"></i>
+      Chọn Voucher
+    </button>
+  )}
 
-                      <div className="cart-actions">
-                      <Link to="/">
-                        <button className="btnc btn-primary">
-                          <i className="fas fa-shopping-cart"></i> Mua tiếp
-                        </button>
-                      </Link>
-                      <Link>
-                      <button className="btnc btn-danger" onClick={clearCart}>
-                        <i className="fas fa-trash"></i> Xóa tất cả
-                      </button>
-                      </Link>
-                     
-                      <Link to="/thanhtoan" state={{ cartItems: sanPham }}>
-                        <button
-                          className="btnc btn-success"
-                          onClick={handleCheckout}
-                        >
-                          <i className="fas fa-check"></i> Thanh toán
-                        </button>
-                      </Link>
-                    </div>
-                      
-                    
-                    </div>
+  {/* Cart Actions */}
+  <div className="cart-actions">
+    <Link to="/">
+      <button className="btnc btn-primary">
+        <i className="fas fa-shopping-cart"></i> Mua tiếp
+      </button>
+    </Link>
+    <Link>
+      <button className="btnc btn-danger" onClick={clearCart}>
+        <i className="fas fa-trash"></i> Xóa tất cả
+      </button>
+    </Link>
+    <Link to="/thanhtoan" state={{ cartItems: sanPham }}>
+      <button
+        className="btnc btn-success"
+        onClick={handleCheckout}
+      >
+        <i className="fas fa-check"></i> Thanh toán
+      </button>
+    </Link>
+  </div>
+</div>
+
                       
                     <div className="cart-total-info">
                       <div className="cart-total-amount">
